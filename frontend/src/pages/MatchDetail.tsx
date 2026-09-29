@@ -119,12 +119,20 @@ function MatchDetail() {
             </code>
           </p>
         </div>
-        <Link
-          to="/matches"
-          className="rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-slate-200 transition hover:bg-slate-700"
-        >
-          ← Back to matches
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            to={`/matches/${id}/similar`}
+            className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-green-500"
+          >
+            Find similar matches
+          </Link>
+          <Link
+            to="/matches"
+            className="rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-slate-200 transition hover:bg-slate-700"
+          >
+            ← Back to matches
+          </Link>
+        </div>
       </header>
 
       <Card>

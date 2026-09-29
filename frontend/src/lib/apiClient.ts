@@ -81,7 +81,11 @@ import type {
   MatchAnalysisReport,
   MatchDetail,
   MatchSummary,
+  OddsMovement,
   OddsSnapshot,
+  PatternQueryRequest,
+  PatternResult,
+  SimilarMatch,
 } from './types'
 
 /**
@@ -122,6 +126,30 @@ export async function getMatchAnalysis(
 export async function getMatchOdds(id: string): Promise<OddsSnapshot[]> {
   return apiFetch<OddsSnapshot[]>(
     `/api/v1/analytics/matches/${encodeURIComponent(id)}/odds`,
+  )
+}
+
+/** POST /api/v1/analytics/patterns/query. */
+export async function postPatternQuery(
+  body: PatternQueryRequest,
+): Promise<PatternResult> {
+  return apiPost<PatternResult>('/api/v1/analytics/patterns/query', body)
+}
+
+/** GET /api/v1/analytics/matches/{id}/similar. */
+export async function getSimilarMatches(
+  id: string,
+  topK = 10,
+): Promise<SimilarMatch[]> {
+  return apiFetch<SimilarMatch[]>(
+    `/api/v1/analytics/matches/${encodeURIComponent(id)}/similar?topK=${topK}`,
+  )
+}
+
+/** GET /api/v1/analytics/matches/{id}/movement. */
+export async function getMatchMovement(id: string): Promise<OddsMovement[]> {
+  return apiFetch<OddsMovement[]>(
+    `/api/v1/analytics/matches/${encodeURIComponent(id)}/movement`,
   )
 }
 

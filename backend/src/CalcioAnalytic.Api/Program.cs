@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Threading.RateLimiting;
 using CalcioAnalytic.Analytics;
 using CalcioAnalytic.Api.Middleware;
+using CalcioAnalytic.Api.Observability;
 using CalcioAnalytic.Api.Security;
 using CalcioAnalytic.Application;
 using CalcioAnalytic.Infrastructure;
@@ -61,6 +62,10 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddIngestion();
 builder.Services.AddMockProvider();
 builder.Services.AddAnalytics();
+
+// OpenTelemetry tracing and metrics. Exports via OTLP only when an endpoint is
+// configured; otherwise the SDK runs without an exporter and the app is unaffected.
+builder.Services.AddCalcioObservability(builder.Configuration);
 
 // Health checks. Liveness is tag "live"; readiness includes dependencies.
 var healthChecks = builder.Services.AddHealthChecks();

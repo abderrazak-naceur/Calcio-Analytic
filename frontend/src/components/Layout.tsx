@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 const navItems = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/matches', label: 'Matches', end: false },
+  { to: '/patterns', label: 'Patterns', end: false },
 ] as const
 
 /** App shell: top navigation plus the routed page content. */

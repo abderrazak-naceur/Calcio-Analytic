@@ -146,3 +146,57 @@ export interface IngestionRequest {
   seasonExternalId?: string
   matchExternalId?: string
 }
+
+/** Query filter for POST /api/v1/analytics/patterns/query. */
+export interface PatternQueryRequest {
+  competitionId?: string
+  seasonId?: string
+  fromUtc?: string
+  toUtc?: string
+  homeOrAway?: string
+  minClosingHomeOdds?: number
+  maxClosingHomeOdds?: number
+  minMovementPercentage?: number
+  maxMovementPercentage?: number
+}
+
+/** Distribution of match outcomes (counts). */
+export interface ResultDistribution {
+  Home: number
+  Draw: number
+  Away: number
+}
+
+/** Over/under 2.5 goals distribution (counts). */
+export interface OverUnderDistribution {
+  'Over2.5': number
+  'Under2.5': number
+}
+
+/** A confidence interval bound pair. */
+export interface ConfidenceInterval {
+  lower: number
+  upper: number
+}
+
+/** Shape from POST /api/v1/analytics/patterns/query. */
+export interface PatternResult {
+  sampleSize: number
+  resultDistribution: ResultDistribution
+  resultPercentages: ResultDistribution
+  averageTotalGoals: number
+  overUnderDistribution: OverUnderDistribution
+  averageClosingHomeOdds: number
+  averageMovementPercentage: number
+  dataCompleteness: number
+  homeWinConfidenceInterval: ConfidenceInterval | null
+  methodology: string
+  queryHash: string
+}
+
+/** Item shape from GET /api/v1/analytics/matches/{id}/similar. */
+export interface SimilarMatch {
+  matchId: string
+  similarityScore: number
+  explanation: string[]
+}

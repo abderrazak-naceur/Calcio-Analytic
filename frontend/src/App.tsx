@@ -3,6 +3,8 @@ import { Layout } from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import MatchList from './pages/MatchList'
 import MatchDetail from './pages/MatchDetail'
+import PatternExplorer from './pages/PatternExplorer'
+import SimilarMatches from './pages/SimilarMatches'
 
 function App() {
   return (
@@ -12,6 +14,8 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/matches" element={<MatchList />} />
           <Route path="/matches/:id" element={<MatchDetail />} />
+          <Route path="/matches/:id/similar" element={<SimilarMatches />} />
+          <Route path="/patterns" element={<PatternExplorer />} />
         </Route>
       </Routes>
     </BrowserRouter>
