@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\CalcioAnalytic.Analytics\CalcioAnalytic.Analytics.csproj" />
     <ProjectReference Include="..\CalcioAnalytic.Application\CalcioAnalytic.Application.csproj" />
     <ProjectReference Include="..\CalcioAnalytic.Contracts\CalcioAnalytic.Contracts.csproj" />
     <ProjectReference Include="..\CalcioAnalytic.Domain\CalcioAnalytic.Domain.csproj" />

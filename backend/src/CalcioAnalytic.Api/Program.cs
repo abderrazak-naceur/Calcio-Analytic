@@ -9,6 +9,16 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// MVC controllers. Serialize enums as their string names to keep the JSON
+// contract stable and human-readable.
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
+
 // OpenAPI (ASP.NET Core first-party, OpenAPI 3.1).
 builder.Services.AddOpenApi();
 
@@ -76,6 +86,8 @@ app.MapGet("/", () => Results.Ok(new
     version = "0.1.0",
     status = "ok",
 }));
+
+app.MapControllers();
 
 app.Run();
 

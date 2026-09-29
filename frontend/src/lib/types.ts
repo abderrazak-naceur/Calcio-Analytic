@@ -1,0 +1,148 @@
+/**
+ * Response types for the Calcio-Analytic backend API.
+ *
+ * All backend JSON is camelCase. These interfaces mirror only what the API
+ * returns — nothing is fabricated on the client.
+ */
+
+/** Match status as returned by the backend (e.g. "Scheduled", "Live", "Finished"). */
+export type MatchStatus = string
+
+/** Item shape from GET /api/v1/matches. */
+export interface MatchSummary {
+  id: string
+  competitionId: string
+  seasonId: string
+  homeTeamId: string
+  awayTeamId: string
+  kickoffUtc: string
+  status: MatchStatus
+  homeScore: number | null
+  awayScore: number | null
+}
+
+/** Shape from GET /api/v1/matches/{id} (summary plus detail fields). */
+export interface MatchDetail extends MatchSummary {
+  venue: string | null
+  round: string | null
+  referee: string | null
+  homeScoreHalfTime: number | null
+  awayScoreHalfTime: number | null
+}
+
+/** A single selection within a market line. */
+export interface MarketSelection {
+  selectionId: string
+  selectionName: string
+  decimalOdds: number
+  impliedProbability: number
+  normalizedProbability: number
+}
+
+/** A market line with its selections and overround/margin. */
+export interface MarketAnalysis {
+  marketLineId: string
+  overround: number
+  marginPercentage: number
+  selections: MarketSelection[]
+}
+
+/** Match result summary within the analysis report. */
+export interface MatchResult {
+  matchId: string
+  homeTeamId: string
+  awayTeamId: string
+  homeScore: number | null
+  awayScore: number | null
+  outcome: string
+}
+
+/** Movement statistics for a single bookmaker/market/selection. */
+export interface OddsMovementStats {
+  sampleCount: number
+  openingOdds: number
+  closingOdds: number
+  minOdds: number
+  maxOdds: number
+  numberOfChanges: number
+  movementAbsolute: number
+  movementPercentage: number
+  volatility: number
+}
+
+/** An odds movement entry. */
+export interface OddsMovement {
+  bookmakerId: string
+  marketLineId: string
+  selectionId: string
+  movement: OddsMovementStats
+}
+
+/** Dispersion statistics across bookmakers. */
+export interface BookmakerDispersionStats {
+  bookmakerCount: number
+  bestOdds: number
+  worstOdds: number
+  averageOdds: number
+  dispersion: number
+}
+
+/** A bookmaker dispersion entry. */
+export interface BookmakerDispersion {
+  marketLineId: string
+  selectionId: string
+  dispersion: BookmakerDispersionStats
+}
+
+/** A named statistic aggregate. */
+export interface StatisticValue {
+  name: string
+  totalValue: number
+}
+
+/** A count of a given event type. */
+export interface EventCount {
+  type: string
+  count: number
+}
+
+/** Statistics block within the analysis report. */
+export interface MatchStatistics {
+  statistics: StatisticValue[]
+  eventCounts: EventCount[]
+  totalEvents: number
+}
+
+/** Shape from GET /api/v1/analytics/matches/{id}. */
+export interface MatchAnalysisReport {
+  result: MatchResult
+  markets: MarketAnalysis[]
+  oddsMovements: OddsMovement[]
+  bookmakerDispersions: BookmakerDispersion[]
+  statistics: MatchStatistics
+  methodologyVersion: string
+  generatedAtUtc: string
+}
+
+/** Item shape from GET /api/v1/analytics/matches/{id}/odds. */
+export interface OddsSnapshot {
+  id: string
+  matchId: string
+  bookmakerId: string
+  marketLineId: string
+  selectionId: string
+  decimalOdds: number
+  impliedProbability: number
+  isLive: boolean
+  kind: string
+  bookmakerTimestampUtc: string
+  providerTimestampUtc: string
+}
+
+/** Request body for the ingestion endpoints. */
+export interface IngestionRequest {
+  providerCode: string
+  competitionExternalId?: string
+  seasonExternalId?: string
+  matchExternalId?: string
+}

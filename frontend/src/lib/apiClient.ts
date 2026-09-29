@@ -75,3 +75,78 @@ export async function getHealth(): Promise<HealthResponse> {
 
   return result
 }
+
+import type {
+  IngestionRequest,
+  MatchAnalysisReport,
+  MatchDetail,
+  MatchSummary,
+  OddsSnapshot,
+} from './types'
+
+/**
+ * POST helper that serializes a JSON body and returns the parsed response.
+ */
+async function apiPost<TResponse>(
+  path: string,
+  body: unknown,
+): Promise<TResponse> {
+  return apiFetch<TResponse>(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+}
+
+/** GET /api/v1/matches — optionally filtered by status. */
+export async function getMatches(status?: string): Promise<MatchSummary[]> {
+  const query = status ? `?status=${encodeURIComponent(status)}` : ''
+  return apiFetch<MatchSummary[]>(`/api/v1/matches${query}`)
+}
+
+/** GET /api/v1/matches/{id}. */
+export async function getMatch(id: string): Promise<MatchDetail> {
+  return apiFetch<MatchDetail>(`/api/v1/matches/${encodeURIComponent(id)}`)
+}
+
+/** GET /api/v1/analytics/matches/{id}. */
+export async function getMatchAnalysis(
+  id: string,
+): Promise<MatchAnalysisReport> {
+  return apiFetch<MatchAnalysisReport>(
+    `/api/v1/analytics/matches/${encodeURIComponent(id)}`,
+  )
+}
+
+/** GET /api/v1/analytics/matches/{id}/odds. */
+export async function getMatchOdds(id: string): Promise<OddsSnapshot[]> {
+  return apiFetch<OddsSnapshot[]>(
+    `/api/v1/analytics/matches/${encodeURIComponent(id)}/odds`,
+  )
+}
+
+/** POST /api/v1/ingestion/catalog. */
+export async function postIngestCatalog(
+  body: IngestionRequest,
+): Promise<unknown> {
+  return apiPost<unknown>('/api/v1/ingestion/catalog', body)
+}
+
+/** POST /api/v1/ingestion/fixture. */
+export async function postIngestFixture(
+  body: IngestionRequest,
+): Promise<unknown> {
+  return apiPost<unknown>('/api/v1/ingestion/fixture', body)
+}
+
+/** POST /api/v1/ingestion/odds. */
+export async function postIngestOdds(body: IngestionRequest): Promise<unknown> {
+  return apiPost<unknown>('/api/v1/ingestion/odds', body)
+}
+
+/** POST /api/v1/ingestion/statistics. */
+export async function postIngestStatistics(
+  body: IngestionRequest,
+): Promise<unknown> {
+  return apiPost<unknown>('/api/v1/ingestion/statistics', body)
+}

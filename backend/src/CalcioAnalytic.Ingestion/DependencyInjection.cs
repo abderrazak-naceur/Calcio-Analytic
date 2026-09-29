@@ -1,4 +1,6 @@
+using CalcioAnalytic.Application.Analytics;
 using CalcioAnalytic.Application.Ingestion;
+using CalcioAnalytic.Application.Settlement;
 using CalcioAnalytic.Ingestion.Providers;
 using CalcioAnalytic.Ingestion.Providers.Mock;
 using CalcioAnalytic.Ingestion.Services;
@@ -28,6 +30,8 @@ public static class DependencyInjection
         services.AddScoped<IMatchIngestionService, MatchIngestionService>();
         services.AddScoped<IOddsIngestionService, OddsIngestionService>();
         services.AddScoped<IStatisticsIngestionService, StatisticsIngestionService>();
+        services.AddScoped<ISettlementService, SettlementService>();
+        services.AddScoped<IMatchAnalysisPersistenceService, MatchAnalysisPersistenceService>();
 
         return services;
     }
