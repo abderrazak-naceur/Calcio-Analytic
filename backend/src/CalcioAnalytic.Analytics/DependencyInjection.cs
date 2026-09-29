@@ -1,5 +1,7 @@
 using CalcioAnalytic.Analytics.Match;
+using CalcioAnalytic.Analytics.Patterns;
 using CalcioAnalytic.Analytics.Settlement;
+using CalcioAnalytic.Analytics.Similarity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CalcioAnalytic.Analytics;
@@ -9,7 +11,8 @@ public static class DependencyInjection
 {
     /// <summary>
     /// Registers the analytics engines, including the
-    /// <see cref="IMatchAnalysisEngine"/> and the <see cref="ISettlementEngine"/>.
+    /// <see cref="IMatchAnalysisEngine"/>, the <see cref="ISettlementEngine"/>,
+    /// and the <see cref="IHistoricalPatternEngine"/>.
     /// </summary>
     /// <param name="services">The service collection to configure.</param>
     /// <returns>The same <paramref name="services"/> instance for chaining.</returns>
@@ -19,6 +22,8 @@ public static class DependencyInjection
 
         services.AddSingleton<IMatchAnalysisEngine, MatchAnalysisEngine>();
         services.AddSingleton<ISettlementEngine, SettlementEngine>();
+        services.AddSingleton<IHistoricalPatternEngine, HistoricalPatternEngine>();
+        services.AddSingleton<ISimilarMatchEngine, SimilarMatchEngine>();
 
         return services;
     }
