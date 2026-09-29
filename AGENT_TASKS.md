@@ -1,7 +1,7 @@
 # Calcio-Analytic Agent Tasks
 
 > Legenda: [x] fatto e committato su `main` · [~] parziale · [ ] da fare
-> Stato aggiornato al commit `9cbd240` (Phase 11/12/16/18/20/24 + worker lifecycle).
+> Stato aggiornato al commit `5df0494` (Phase 11/12/16/19/20/22/23/24 + worker + OTel).
 
 ## P0 — Foundation and correctness
 
@@ -32,18 +32,18 @@
 - [x] TASK-019 Implement MatchAnalysisEngine. (report immutabile, methodology 1.0.0, JSON serializzato)
 - [x] TASK-020 Implement HistoricalPatternEngine. (query riproducibile con hash, distribuzioni, Wilson CI)
 - [x] TASK-021 Implement SimilarMatchEngine. (kNN pesato su feature normalizzate, spiegazioni, anti-leakage documentato)
-- [ ] TASK-022 Implement read models. (proiezioni ottimizzate per dashboard non ancora create)
-- [~] TASK-023 Implement analytics APIs. (matches/odds/movement/bookmakers/analysis + ingestion POST fatti; mancano endpoint patterns/similar/backtests)
+- [~] TASK-022 Implement read models. (dashboard summary/recent via query aggregate; materialized view a scala da fare)
+- [x] TASK-023 Implement analytics APIs. (matches/odds/movement/bookmakers/analysis + patterns/query + similar + backtests proxy + ingestion POST)
 
 ## P1 — Web
 
 - [x] TASK-024 Dashboard. (KPI + pannello ingest demo, health chip)
 - [x] TASK-025 Match list. (tabella + filtro stato + navigazione)
 - [x] TASK-026 Match detail. (tab Overview/Odds/Movement/Bookmakers/Markets/Statistics)
-- [ ] TASK-027 Odds movement screen. (dato esposto in Match Detail; schermo/explorer dedicato da fare)
-- [ ] TASK-028 Bookmaker comparison. (dato esposto; schermo dedicato da fare)
-- [ ] TASK-029 Historical pattern explorer.
-- [ ] TASK-030 Similar matches.
+- [~] TASK-027 Odds movement screen. (tab Movement in Match Detail; explorer storico dedicato ancora da fare)
+- [~] TASK-028 Bookmaker comparison. (tab Bookmakers in Match Detail; schermo comparativo dedicato da fare)
+- [x] TASK-029 Historical pattern explorer. (PatternExplorer con filtri URL-shareable)
+- [x] TASK-030 Similar matches. (pagina SimilarMatches + link da Match Detail)
 
 ## P2 — Models and scale
 
@@ -52,21 +52,21 @@
 - [x] TASK-033 Poisson baseline. (Python app/models/poisson.py + endpoint + test)
 - [x] TASK-034 Dixon-Coles baseline. (Python app/models/dixon_coles.py + endpoint + test)
 - [x] TASK-035 Backtesting engine. (Python app/backtesting: metriche + engine anti-leakage + endpoint)
-- [ ] TASK-036 OpenTelemetry dashboards. (correlation-id + security headers lato API; OTel tracing/metrics da fare)
+- [~] TASK-036 OpenTelemetry dashboards. (OTel tracing+metrics con export OTLP opzionale; dashboards/collector di produzione da configurare)
 - [ ] TASK-037 Partition large tables.
 - [~] TASK-038 Customer API and API keys. (API key filter + rate limiting lato API; gestione chiavi/quote per cliente da fare)
 - [ ] TASK-039 AI-generated descriptive summaries.
 
 ## Riepilogo cosa manca (priorità)
 
-1. Endpoint analytics per patterns/similar/backtests (completa TASK-023).
-2. Read models/proiezioni per dashboard (TASK-022).
-3. Explorer storici e comparazioni web (TASK-027/028/029/030).
-4. Result reconciliation cross-provider (TASK-010).
+1. Result reconciliation cross-provider (TASK-010).
+2. Data quality & reconciliation checks/score (Phase 21).
+3. Feature store point-in-time (TASK-031) + integrazione modelli Python nel flusso .NET.
+4. Dashboard UI collegata al read-model (summary/recent) e explorer dedicati movement/bookmaker (TASK-027/028).
 5. Transizioni lifecycle pre-match/live legate a ingestione live (completa TASK-011).
-6. Feature store point-in-time (TASK-031) + integrazione modelli Python nel flusso .NET.
-7. Osservabilità/OTel (TASK-036), partitioning (TASK-037), API clienti + quote (TASK-038), summaries AI (TASK-039).
-8. SaaS multi-utente (org/ruoli/quote).
+6. AI descriptive summaries (TASK-039), partitioning (TASK-037), API clienti + quote (TASK-038).
+7. SaaS multi-utente (org/ruoli/quote) — Phase 27.
+8. Materialized read model a scala (completa TASK-022), dashboards OTel di produzione (completa TASK-036).
 9. Verifica Docker Compose end-to-end reale con Postgres/Redis (TASK-003).
 10. Un provider reale (oltre al mock) quando disponibili credenziali.
 
