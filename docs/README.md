@@ -30,6 +30,12 @@ Questa cartella contiene la documentazione completa del prodotto e del progetto.
 - `24-IMPLEMENTATION-PLAN.md` — ordine esatto di sviluppo.
 - `25-DETAILED-MATCH-DATA-COVERAGE.md` — copertura dettagliata di dati, mercati e quote per partita.
 - `26-ANALYTICS-ENGINE.md` — motore di elaborazione post-match, analisi quote, pattern storici e backtesting.
+- `27-TECHNOLOGY-STACK.md` — stack tecnologico e responsabilità dei servizi.
+- `28-DOTNET-API-SWAGGER.md` — API .NET, OpenAPI e Swagger.
+- `29-PYTHON-ANALYTICS-SERVICE.md` — servizio Python/FastAPI per analisi quantitative.
+- `30-SERVICE-COMMUNICATION.md` — comunicazione sincrona/asincrona tra .NET e Python.
+- `31-FRONTEND-VITE-ARCHITECTURE.md` — architettura React/Vite.
+- `32-DATA-ANALYSIS-FLOW.md` — ciclo completo dalla raccolta dati al report storico.
 
 ## Source of truth
 
