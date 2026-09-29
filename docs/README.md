@@ -36,6 +36,7 @@ Questa cartella contiene la documentazione completa del prodotto e del progetto.
 - `30-SERVICE-COMMUNICATION.md` — comunicazione sincrona/asincrona tra .NET e Python.
 - `31-FRONTEND-VITE-ARCHITECTURE.md` — architettura React/Vite.
 - `32-DATA-ANALYSIS-FLOW.md` — ciclo completo dalla raccolta dati al report storico.
+- `33-MASTER-IMPLEMENTATION-ROADMAP.md` — piano completo dalla fondazione alla produzione.
 
 ## Source of truth
 
