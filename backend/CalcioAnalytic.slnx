@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CalcioAnalytic.Analytics/CalcioAnalytic.Analytics.csproj" />
+    <Project Path="src/CalcioAnalytic.Api/CalcioAnalytic.Api.csproj" />
+    <Project Path="src/CalcioAnalytic.Application/CalcioAnalytic.Application.csproj" />
+    <Project Path="src/CalcioAnalytic.Contracts/CalcioAnalytic.Contracts.csproj" />
+    <Project Path="src/CalcioAnalytic.Domain/CalcioAnalytic.Domain.csproj" />
+    <Project Path="src/CalcioAnalytic.Infrastructure/CalcioAnalytic.Infrastructure.csproj" />
+    <Project Path="src/CalcioAnalytic.Ingestion/CalcioAnalytic.Ingestion.csproj" />
+    <Project Path="src/CalcioAnalytic.Workers/CalcioAnalytic.Workers.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CalcioAnalytic.Api.Tests/CalcioAnalytic.Api.Tests.csproj" />
+  </Folder>
+</Solution>
