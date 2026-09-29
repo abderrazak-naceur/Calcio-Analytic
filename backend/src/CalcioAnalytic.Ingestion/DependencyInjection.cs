@@ -26,6 +26,8 @@ public static class DependencyInjection
         services.AddSingleton<IProviderRegistry, ProviderRegistry>();
         services.AddScoped<ICatalogIngestionService, CatalogIngestionService>();
         services.AddScoped<IMatchIngestionService, MatchIngestionService>();
+        services.AddScoped<IOddsIngestionService, OddsIngestionService>();
+        services.AddScoped<IStatisticsIngestionService, StatisticsIngestionService>();
 
         return services;
     }
