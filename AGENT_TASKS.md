@@ -1,7 +1,7 @@
 # Calcio-Analytic Agent Tasks
 
 > Legenda: [x] fatto e committato su `main` · [~] parziale · [ ] da fare
-> Stato aggiornato al commit `999a576` (Phase 7/8/9/13/14/15).
+> Stato aggiornato al commit `9cbd240` (Phase 11/12/16/18/20/24 + worker lifecycle).
 
 ## P0 — Foundation and correctness
 
@@ -18,11 +18,11 @@
 
 ## P0 — Match lifecycle
 
-- [ ] TASK-011 Implement Scheduled -> PreMatch -> Live -> Finished lifecycle. (enum + mapping status presenti; transizioni/worker non implementati)
-- [ ] TASK-012 Implement idempotent workers. (Worker ancora template; ingestion è idempotente ma non schedulata)
-- [~] TASK-013 Implement post-match processing. (MatchAnalysisPersistenceService in corso; da completare e committare)
-- [x] TASK-014 Implement settlement for supported markets. (SettlementEngine: 1X2 + Over/Under, Push, Unknown; servizio persistente in corso)
-- [~] TASK-015 Implement analysis versioning. (MatchAnalysis versionato in dominio; servizio che incrementa la versione in corso)
+- [~] TASK-011 Implement Scheduled -> PreMatch -> Live -> Finished lifecycle. (worker transiziona Finished->Analyzed; transizioni pre-match/live legate a ingestione live ancora da fare)
+- [x] TASK-012 Implement idempotent workers. (PostMatchProcessingWorker: scoped, resiliente, idempotente)
+- [x] TASK-013 Implement post-match processing. (SettlementService + MatchAnalysisPersistenceService, guidati dal worker; test verdi)
+- [x] TASK-014 Implement settlement for supported markets. (SettlementEngine + SettlementService persistente idempotente)
+- [x] TASK-015 Implement analysis versioning. (MatchAnalysisPersistenceService: versione = max+1, righe immutabili; test)
 
 ## P1 — Analytics
 
@@ -30,17 +30,17 @@
 - [x] TASK-017 Implement BookmakerAnalysisEngine. (BookmakerAnalyzer: best/worst/avg/dispersione)
 - [x] TASK-018 Implement MarketAnalysisEngine. (MarketAnalyzer: overround + prob normalizzate)
 - [x] TASK-019 Implement MatchAnalysisEngine. (report immutabile, methodology 1.0.0, JSON serializzato)
-- [ ] TASK-020 Implement HistoricalPatternEngine.
-- [ ] TASK-021 Implement SimilarMatchEngine.
-- [ ] TASK-022 Implement read models.
-- [~] TASK-023 Implement analytics APIs. (endpoint REST Phase 16 in corso: matches/odds/movement/bookmakers/analysis + ingestion POST)
+- [x] TASK-020 Implement HistoricalPatternEngine. (query riproducibile con hash, distribuzioni, Wilson CI)
+- [x] TASK-021 Implement SimilarMatchEngine. (kNN pesato su feature normalizzate, spiegazioni, anti-leakage documentato)
+- [ ] TASK-022 Implement read models. (proiezioni ottimizzate per dashboard non ancora create)
+- [~] TASK-023 Implement analytics APIs. (matches/odds/movement/bookmakers/analysis + ingestion POST fatti; mancano endpoint patterns/similar/backtests)
 
 ## P1 — Web
 
-- [~] TASK-024 Dashboard. (in corso: KPI + pannello ingest demo)
-- [~] TASK-025 Match list. (in corso)
-- [~] TASK-026 Match detail. (in corso: tab Overview/Odds/Movement/Bookmakers/Markets/Statistics)
-- [ ] TASK-027 Odds movement screen. (dato esposto in Match Detail; schermo dedicato/explorer da fare)
+- [x] TASK-024 Dashboard. (KPI + pannello ingest demo, health chip)
+- [x] TASK-025 Match list. (tabella + filtro stato + navigazione)
+- [x] TASK-026 Match detail. (tab Overview/Odds/Movement/Bookmakers/Markets/Statistics)
+- [ ] TASK-027 Odds movement screen. (dato esposto in Match Detail; schermo/explorer dedicato da fare)
 - [ ] TASK-028 Bookmaker comparison. (dato esposto; schermo dedicato da fare)
 - [ ] TASK-029 Historical pattern explorer.
 - [ ] TASK-030 Similar matches.
@@ -52,21 +52,21 @@
 - [x] TASK-033 Poisson baseline. (Python app/models/poisson.py + endpoint + test)
 - [x] TASK-034 Dixon-Coles baseline. (Python app/models/dixon_coles.py + endpoint + test)
 - [x] TASK-035 Backtesting engine. (Python app/backtesting: metriche + engine anti-leakage + endpoint)
-- [ ] TASK-036 OpenTelemetry dashboards. (solo correlation-id lato API finora)
+- [ ] TASK-036 OpenTelemetry dashboards. (correlation-id + security headers lato API; OTel tracing/metrics da fare)
 - [ ] TASK-037 Partition large tables.
-- [ ] TASK-038 Customer API and API keys.
+- [~] TASK-038 Customer API and API keys. (API key filter + rate limiting lato API; gestione chiavi/quote per cliente da fare)
 - [ ] TASK-039 AI-generated descriptive summaries.
 
 ## Riepilogo cosa manca (priorità)
 
-1. Completare e committare: SettlementService + MatchAnalysisPersistenceService (chiude TASK-013/015).
-2. Analytics REST API (TASK-023) e schermi web (TASK-024/025/026) — in corso.
-3. Match lifecycle + worker schedulato idempotente (TASK-011/012).
+1. Endpoint analytics per patterns/similar/backtests (completa TASK-023).
+2. Read models/proiezioni per dashboard (TASK-022).
+3. Explorer storici e comparazioni web (TASK-027/028/029/030).
 4. Result reconciliation cross-provider (TASK-010).
-5. HistoricalPatternEngine + SimilarMatchEngine + read models (TASK-020/021/022).
-6. Explorer storici e comparazioni web (TASK-027/028/029/030).
-7. Feature store point-in-time (TASK-031), integrazione modelli Python nel flusso .NET.
-8. Osservabilità/OTel (TASK-036), partitioning (TASK-037), API clienti + API key (TASK-038), summaries AI (TASK-039).
+5. Transizioni lifecycle pre-match/live legate a ingestione live (completa TASK-011).
+6. Feature store point-in-time (TASK-031) + integrazione modelli Python nel flusso .NET.
+7. Osservabilità/OTel (TASK-036), partitioning (TASK-037), API clienti + quote (TASK-038), summaries AI (TASK-039).
+8. SaaS multi-utente (org/ruoli/quote).
 9. Verifica Docker Compose end-to-end reale con Postgres/Redis (TASK-003).
 10. Un provider reale (oltre al mock) quando disponibili credenziali.
 
