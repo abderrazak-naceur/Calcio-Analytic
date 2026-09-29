@@ -15,6 +15,7 @@
     <ProjectReference Include="..\CalcioAnalytic.Application\CalcioAnalytic.Application.csproj" />
     <ProjectReference Include="..\CalcioAnalytic.Infrastructure\CalcioAnalytic.Infrastructure.csproj" />
     <ProjectReference Include="..\CalcioAnalytic.Analytics\CalcioAnalytic.Analytics.csproj" />
+    <ProjectReference Include="..\CalcioAnalytic.Ingestion\CalcioAnalytic.Ingestion.csproj" />
   </ItemGroup>
 
 </Project>

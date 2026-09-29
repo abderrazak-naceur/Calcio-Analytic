@@ -1,4 +1,7 @@
+using CalcioAnalytic.Application.Abstractions.Clock;
+using CalcioAnalytic.Application.Abstractions.Persistence;
 using CalcioAnalytic.Infrastructure.Persistence;
+using CalcioAnalytic.Infrastructure.Time;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +25,12 @@ public static class DependencyInjection
 
         services.AddDbContext<CalcioAnalyticDbContext>(options =>
             options.UseNpgsql(connectionString));
+
+        services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+        services.AddScoped<IMatchRepository, MatchRepository>();
+        services.AddScoped<IProviderEntityMapRepository, ProviderEntityMapRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddSingleton<IClock, SystemClock>();
 
         return services;
     }

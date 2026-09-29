@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using CalcioAnalytic.Api.Middleware;
+using CalcioAnalytic.Application;
 using CalcioAnalytic.Infrastructure;
+using CalcioAnalytic.Ingestion;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -9,8 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 // OpenAPI (ASP.NET Core first-party, OpenAPI 3.1).
 builder.Services.AddOpenApi();
 
-// Infrastructure (EF Core / PostgreSQL) wiring.
+// Application, Infrastructure (EF Core / PostgreSQL) and Ingestion wiring.
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddIngestion();
 
 // Health checks. Liveness is tag "live"; readiness includes dependencies.
 var healthChecks = builder.Services.AddHealthChecks();
