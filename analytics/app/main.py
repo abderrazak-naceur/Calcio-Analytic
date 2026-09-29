@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.backtest_router import router as backtest_router
 from app.api.models_router import router as models_router
+from app.api.summaries_router import router as summaries_router
 from app.config import settings
 
 APP_NAME = "Calcio-Analytic Analytics Service"
@@ -24,6 +25,7 @@ app.add_middleware(
 
 app.include_router(models_router)
 app.include_router(backtest_router)
+app.include_router(summaries_router)
 
 
 @app.get("/health")

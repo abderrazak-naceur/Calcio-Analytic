@@ -32,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IStatisticsIngestionService, StatisticsIngestionService>();
         services.AddScoped<ISettlementService, SettlementService>();
         services.AddScoped<IMatchAnalysisPersistenceService, MatchAnalysisPersistenceService>();
+        services.AddScoped<IResultReconciliationService, ResultReconciliationService>();
 
         return services;
     }

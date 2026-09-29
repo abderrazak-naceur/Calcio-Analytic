@@ -1,3 +1,4 @@
+using CalcioAnalytic.Analytics.DataQuality;
 using CalcioAnalytic.Analytics.Match;
 using CalcioAnalytic.Analytics.Patterns;
 using CalcioAnalytic.Analytics.Settlement;
@@ -24,6 +25,7 @@ public static class DependencyInjection
         services.AddSingleton<ISettlementEngine, SettlementEngine>();
         services.AddSingleton<IHistoricalPatternEngine, HistoricalPatternEngine>();
         services.AddSingleton<ISimilarMatchEngine, SimilarMatchEngine>();
+        services.AddSingleton<IDataQualityEngine, DataQualityEngine>();
 
         return services;
     }
