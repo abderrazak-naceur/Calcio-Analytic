@@ -7,6 +7,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Deterministic mock sample data consumed by MockProviderData at runtime. -->
     <EmbeddedResource Include="SampleData\*.json" />
   </ItemGroup>

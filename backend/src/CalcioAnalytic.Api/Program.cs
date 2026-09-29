@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using CalcioAnalytic.Analytics;
 using CalcioAnalytic.Api.Middleware;
 using CalcioAnalytic.Application;
 using CalcioAnalytic.Infrastructure;
@@ -16,6 +17,7 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddIngestion();
 builder.Services.AddMockProvider();
+builder.Services.AddAnalytics();
 
 // Health checks. Liveness is tag "live"; readiness includes dependencies.
 var healthChecks = builder.Services.AddHealthChecks();

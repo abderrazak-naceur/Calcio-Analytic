@@ -1,5 +1,7 @@
+using CalcioAnalytic.Application.Ingestion;
 using CalcioAnalytic.Ingestion.Providers;
 using CalcioAnalytic.Ingestion.Providers.Mock;
+using CalcioAnalytic.Ingestion.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -22,6 +24,8 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddSingleton<IProviderRegistry, ProviderRegistry>();
+        services.AddScoped<ICatalogIngestionService, CatalogIngestionService>();
+        services.AddScoped<IMatchIngestionService, MatchIngestionService>();
 
         return services;
     }
