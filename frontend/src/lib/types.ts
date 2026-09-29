@@ -200,3 +200,60 @@ export interface SimilarMatch {
   similarityScore: number
   explanation: string[]
 }
+/** Shape from GET /api/v1/dashboard/summary. */
+export interface DashboardSummary {
+  totalMatches: number
+  matchesByStatus: Record<string, number>
+  finishedMatches: number
+  analyzedMatches: number
+  oddsSnapshotsCount: number
+  bookmakersCount: number
+  marketsCount: number
+  competitionsCount: number
+  teamsCount: number
+  dataFreshnessUtc: string | null
+  analysisBacklog: number
+}
+
+/** Item shape from GET /api/v1/dashboard/recent. */
+export interface RecentMatch {
+  id: string
+  homeTeamId: string
+  awayTeamId: string
+  kickoffUtc: string
+  status: MatchStatus
+  homeScore: number | null
+  awayScore: number | null
+}
+
+/** A single data-quality check within a report. */
+export interface DataQualityCheck {
+  code: string
+  severity: string
+  message: string
+  count: number
+}
+
+/** Shape from GET /api/v1/dataquality/matches/{id}. */
+export interface DataQualityReport {
+  matchId: string
+  score: number
+  totalChecks: number
+  failed: number
+  checks: DataQualityCheck[]
+  methodology: string
+}
+
+/**
+ * Shape from GET /api/v1/analytics/matches/{id}/summary.
+ *
+ * The AI-generated match summary (proxied from the Python analytics service).
+ * Named `MatchAiSummary` to avoid clashing with {@link MatchSummary}, which is
+ * the match-list item.
+ */
+export interface MatchAiSummary {
+  summary: string
+  bullets: string[]
+  dataCompleteness: Record<string, boolean>
+  caveats: string[]
+}

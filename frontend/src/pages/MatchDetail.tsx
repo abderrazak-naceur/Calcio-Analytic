@@ -6,13 +6,19 @@ import { Spinner } from '../components/Spinner'
 import { StatusBadge } from '../components/StatusBadge'
 import { Tabs } from '../components/Tabs'
 import {
+  AiSummaryUnavailableError,
   ApiError,
+  getDataQuality,
+  getMatchAiSummary,
   getMatchAnalysis,
   getMatchOdds,
 } from '../lib/apiClient'
 import type {
   BookmakerDispersion,
+  DataQualityCheck,
+  DataQualityReport,
   MarketAnalysis,
+  MatchAiSummary,
   MatchAnalysisReport,
   OddsMovement,
   OddsSnapshot,
@@ -25,6 +31,8 @@ const TABS = [
   'Bookmakers',
   'Markets',
   'Statistics',
+  'Data Quality',
+  'AI Summary',
 ] as const
 
 type Tab = (typeof TABS)[number]
@@ -40,6 +48,20 @@ type OddsState =
   | { kind: 'loading' }
   | { kind: 'ready'; odds: OddsSnapshot[] }
   | { kind: 'empty' }
+  | { kind: 'error'; message: string }
+
+type DataQualityState =
+  | { kind: 'idle' }
+  | { kind: 'loading' }
+  | { kind: 'ready'; report: DataQualityReport }
+  | { kind: 'empty' }
+  | { kind: 'error'; message: string }
+
+type AiSummaryState =
+  | { kind: 'idle' }
+  | { kind: 'loading' }
+  | { kind: 'ready'; summary: MatchAiSummary }
+  | { kind: 'unavailable' }
   | { kind: 'error'; message: string }
 
 const EMPTY_MESSAGE = 'No data yet — run ingestion from the Dashboard.'
@@ -63,6 +85,10 @@ function MatchDetail() {
   const [tab, setTab] = useState<Tab>('Overview')
   const [report, setReport] = useState<ReportState>({ kind: 'loading' })
   const [odds, setOdds] = useState<OddsState>({ kind: 'idle' })
+  const [dataQuality, setDataQuality] = useState<DataQualityState>({
+    kind: 'idle',
+  })
+  const [aiSummary, setAiSummary] = useState<AiSummaryState>({ kind: 'idle' })
 
   const loadReport = useCallback(async (matchId: string) => {
     setReport({ kind: 'loading' })
@@ -94,6 +120,34 @@ function MatchDetail() {
     }
   }, [])
 
+  const loadDataQuality = useCallback(async (matchId: string) => {
+    setDataQuality({ kind: 'loading' })
+    try {
+      const data = await getDataQuality(matchId)
+      setDataQuality({ kind: 'ready', report: data })
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        setDataQuality({ kind: 'empty' })
+        return
+      }
+      setDataQuality({ kind: 'error', message: describeError(error) })
+    }
+  }, [])
+
+  const loadAiSummary = useCallback(async (matchId: string) => {
+    setAiSummary({ kind: 'loading' })
+    try {
+      const data = await getMatchAiSummary(matchId)
+      setAiSummary({ kind: 'ready', summary: data })
+    } catch (error) {
+      if (error instanceof AiSummaryUnavailableError) {
+        setAiSummary({ kind: 'unavailable' })
+        return
+      }
+      setAiSummary({ kind: 'error', message: describeError(error) })
+    }
+  }, [])
+
   useEffect(() => {
     if (id) void loadReport(id)
   }, [id, loadReport])
@@ -103,6 +157,18 @@ function MatchDetail() {
       void loadOdds(id)
     }
   }, [id, tab, odds.kind, loadOdds])
+
+  useEffect(() => {
+    if (id && tab === 'Data Quality' && dataQuality.kind === 'idle') {
+      void loadDataQuality(id)
+    }
+  }, [id, tab, dataQuality.kind, loadDataQuality])
+
+  useEffect(() => {
+    if (id && tab === 'AI Summary' && aiSummary.kind === 'idle') {
+      void loadAiSummary(id)
+    }
+  }, [id, tab, aiSummary.kind, loadAiSummary])
 
   if (!id) {
     return <p className="text-sm text-red-400">Missing match id.</p>
@@ -140,6 +206,16 @@ function MatchDetail() {
         <div className="pt-6">
           {tab === 'Odds' ? (
             <OddsTab state={odds} onRetry={() => void loadOdds(id)} />
+          ) : tab === 'Data Quality' ? (
+            <DataQualityTab
+              state={dataQuality}
+              onRetry={() => void loadDataQuality(id)}
+            />
+          ) : tab === 'AI Summary' ? (
+            <AiSummaryTab
+              state={aiSummary}
+              onRetry={() => void loadAiSummary(id)}
+            />
           ) : (
             <ReportTab
               tab={tab}
@@ -158,7 +234,7 @@ function ReportTab({
   state,
   onRetry,
 }: {
-  tab: Exclude<Tab, 'Odds'>
+  tab: Exclude<Tab, 'Odds' | 'Data Quality' | 'AI Summary'>
   state: ReportState
   onRetry: () => void
 }) {
@@ -501,6 +577,199 @@ function OddsTab({ state, onRetry }: { state: OddsState; onRetry: () => void }) 
       rowKey={(o) => o.id}
       emptyMessage={EMPTY_MESSAGE}
     />
+  )
+}
+
+function SeverityBadge({ severity }: { severity: string }) {
+  const normalized = severity.toLowerCase()
+  let tone = 'bg-slate-700/40 text-slate-300 border-slate-600/40'
+  if (normalized.includes('error')) {
+    tone = 'bg-red-500/15 text-red-400 border-red-500/30'
+  } else if (normalized.includes('warn')) {
+    tone = 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+  } else if (normalized.includes('info')) {
+    tone = 'bg-slate-500/15 text-slate-300 border-slate-500/30'
+  }
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${tone}`}
+    >
+      {severity}
+    </span>
+  )
+}
+
+function DataQualityTab({
+  state,
+  onRetry,
+}: {
+  state: DataQualityState
+  onRetry: () => void
+}) {
+  if (state.kind === 'idle' || state.kind === 'loading')
+    return <Spinner label="Loading data quality…" />
+  if (state.kind === 'empty')
+    return <p className="text-sm text-slate-400">{EMPTY_MESSAGE}</p>
+  if (state.kind === 'error') {
+    return (
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-red-400">
+          Could not load data quality: {state.message}
+        </p>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-slate-200 transition hover:bg-slate-700"
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
+
+  const { report } = state
+  const columns: ReadonlyArray<Column<DataQualityCheck>> = [
+    { header: 'Code', render: (c) => c.code },
+    {
+      header: 'Severity',
+      render: (c) => <SeverityBadge severity={c.severity} />,
+    },
+    { header: 'Message', render: (c) => c.message },
+    {
+      header: 'Count',
+      render: (c) => String(c.count),
+      className: 'text-right',
+    },
+  ]
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center gap-6">
+        <div>
+          <p className="text-sm text-slate-400">Score</p>
+          <p className="text-3xl font-bold text-white">{pct(report.score)}</p>
+        </div>
+        <div>
+          <p className="text-sm text-slate-400">Failed / total</p>
+          <p className="mt-1 text-2xl font-bold text-white">
+            {report.failed} / {report.totalChecks}
+          </p>
+        </div>
+      </div>
+      <DataTable
+        columns={columns}
+        rows={report.checks}
+        rowKey={(c, i) => `${c.code}-${i}`}
+        emptyMessage="No checks reported."
+      />
+      {report.methodology && (
+        <p className="text-xs text-slate-500">
+          Methodology: {report.methodology}
+        </p>
+      )}
+    </div>
+  )
+}
+
+function AiSummaryTab({
+  state,
+  onRetry,
+}: {
+  state: AiSummaryState
+  onRetry: () => void
+}) {
+  if (state.kind === 'idle' || state.kind === 'loading')
+    return <Spinner label="Loading AI summary…" />
+  if (state.kind === 'unavailable') {
+    return (
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-amber-400">
+          AI summary unavailable (analytics service offline).
+        </p>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-slate-200 transition hover:bg-slate-700"
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
+  if (state.kind === 'error') {
+    return (
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-red-400">
+          Could not load AI summary: {state.message}
+        </p>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-slate-200 transition hover:bg-slate-700"
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
+
+  const { summary } = state
+  const completeness = Object.entries(summary.dataCompleteness)
+  return (
+    <div className="space-y-6">
+      {summary.summary && (
+        <p className="text-sm leading-relaxed text-slate-200">
+          {summary.summary}
+        </p>
+      )}
+
+      {summary.bullets.length > 0 && (
+        <div>
+          <h3 className="mb-2 text-sm font-medium text-slate-300">
+            Key points
+          </h3>
+          <ul className="list-disc space-y-1 pl-5 text-sm text-slate-200">
+            {summary.bullets.map((bullet, index) => (
+              <li key={index}>{bullet}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {completeness.length > 0 && (
+        <div>
+          <h3 className="mb-2 text-sm font-medium text-slate-300">
+            Data completeness
+          </h3>
+          <ul className="flex flex-wrap gap-2 text-xs">
+            {completeness.map(([key, present]) => (
+              <li
+                key={key}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-medium ${
+                  present
+                    ? 'border-green-500/30 bg-green-500/15 text-green-400'
+                    : 'border-slate-600/40 bg-slate-700/40 text-slate-400'
+                }`}
+              >
+                <span aria-hidden="true">{present ? '✓' : '✕'}</span>
+                {key}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {summary.caveats.length > 0 && (
+        <div>
+          <h3 className="mb-2 text-sm font-medium text-slate-300">Caveats</h3>
+          <ul className="list-disc space-y-1 pl-5 text-sm text-amber-300">
+            {summary.caveats.map((caveat, index) => (
+              <li key={index}>{caveat}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   )
 }
 

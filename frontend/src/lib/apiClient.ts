@@ -77,7 +77,11 @@ export async function getHealth(): Promise<HealthResponse> {
 }
 
 import type {
+  BookmakerDispersion,
+  DashboardSummary,
+  DataQualityReport,
   IngestionRequest,
+  MatchAiSummary,
   MatchAnalysisReport,
   MatchDetail,
   MatchSummary,
@@ -85,6 +89,7 @@ import type {
   OddsSnapshot,
   PatternQueryRequest,
   PatternResult,
+  RecentMatch,
   SimilarMatch,
 } from './types'
 
@@ -153,6 +158,15 @@ export async function getMatchMovement(id: string): Promise<OddsMovement[]> {
   )
 }
 
+/** GET /api/v1/analytics/matches/{id}/bookmakers. */
+export async function getMatchBookmakers(
+  id: string,
+): Promise<BookmakerDispersion[]> {
+  return apiFetch<BookmakerDispersion[]>(
+    `/api/v1/analytics/matches/${encodeURIComponent(id)}/bookmakers`,
+  )
+}
+
 /** POST /api/v1/ingestion/catalog. */
 export async function postIngestCatalog(
   body: IngestionRequest,
@@ -177,4 +191,62 @@ export async function postIngestStatistics(
   body: IngestionRequest,
 ): Promise<unknown> {
   return apiPost<unknown>('/api/v1/ingestion/statistics', body)
+}
+
+/** GET /api/v1/dashboard/summary. */
+export async function getDashboardSummary(): Promise<DashboardSummary> {
+  return apiFetch<DashboardSummary>('/api/v1/dashboard/summary')
+}
+
+/** GET /api/v1/dashboard/recent — most recent matches (defaults to 10). */
+export async function getRecentMatches(take = 10): Promise<RecentMatch[]> {
+  return apiFetch<RecentMatch[]>(`/api/v1/dashboard/recent?take=${take}`)
+}
+
+/** GET /api/v1/dataquality/matches/{id}. */
+export async function getDataQuality(id: string): Promise<DataQualityReport> {
+  return apiFetch<DataQualityReport>(
+    `/api/v1/dataquality/matches/${encodeURIComponent(id)}`,
+  )
+}
+
+/**
+ * Raised when the AI summary cannot be produced because the analytics
+ * service is offline (e.g. a 502 from the proxy) or otherwise unreachable.
+ */
+export class AiSummaryUnavailableError extends Error {
+  constructor(message = 'AI summary unavailable (analytics service offline)') {
+    super(message)
+    this.name = 'AiSummaryUnavailableError'
+  }
+}
+
+/**
+ * GET /api/v1/analytics/matches/{id}/summary.
+ *
+ * The response is proxied from the Python analytics service. When that service
+ * is offline the proxy returns 502 (or the request fails to connect); in those
+ * cases this throws {@link AiSummaryUnavailableError} so the caller can show a
+ * friendly "AI summary unavailable" message rather than a generic error.
+ */
+export async function getMatchAiSummary(id: string): Promise<MatchAiSummary> {
+  try {
+    return await apiFetch<MatchAiSummary>(
+      `/api/v1/analytics/matches/${encodeURIComponent(id)}/summary`,
+    )
+  } catch (error) {
+    if (error instanceof ApiError) {
+      // 502 Bad Gateway / 503 / 504 indicate the upstream analytics service
+      // is unreachable through the proxy.
+      if (error.status === 502 || error.status === 503 || error.status === 504) {
+        throw new AiSummaryUnavailableError()
+      }
+      throw error
+    }
+    // A TypeError from fetch means the network request never completed.
+    if (error instanceof TypeError) {
+      throw new AiSummaryUnavailableError()
+    }
+    throw error
+  }
 }

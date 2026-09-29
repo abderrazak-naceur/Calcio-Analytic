@@ -5,6 +5,8 @@ import MatchList from './pages/MatchList'
 import MatchDetail from './pages/MatchDetail'
 import PatternExplorer from './pages/PatternExplorer'
 import SimilarMatches from './pages/SimilarMatches'
+import OddsMovementExplorer from './pages/OddsMovementExplorer'
+import BookmakerComparison from './pages/BookmakerComparison'
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route path="/matches/:id" element={<MatchDetail />} />
           <Route path="/matches/:id/similar" element={<SimilarMatches />} />
           <Route path="/patterns" element={<PatternExplorer />} />
+          <Route path="/movement" element={<OddsMovementExplorer />} />
+          <Route path="/bookmakers" element={<BookmakerComparison />} />
         </Route>
       </Routes>
     </BrowserRouter>

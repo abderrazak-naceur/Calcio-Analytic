@@ -157,10 +157,29 @@ public static class MatchFeatureProjector
     }
 
     /// <summary>
+    /// The point-in-time team-strength inputs for a match: each side's
+    /// <see cref="TeamFeatureProjector.TeamFeatures"/> plus its ELO-style rating,
+    /// all computed as-of the match's kickoff. Supplying this to
+    /// <see cref="ToSimilarityFeatures(Match, IReadOnlyCollection{OddsSnapshot}, TeamFeatureInputs)"/>
+    /// fills the rating/form/goal fields with real values.
+    /// </summary>
+    /// <param name="Home">The home team's form/goal features as-of kickoff.</param>
+    /// <param name="Away">The away team's form/goal features as-of kickoff.</param>
+    /// <param name="HomeRating">The home team's ELO-style rating as-of kickoff.</param>
+    /// <param name="AwayRating">The away team's ELO-style rating as-of kickoff.</param>
+    public readonly record struct TeamFeatureInputs(
+        TeamFeatureProjector.TeamFeatures Home,
+        TeamFeatureProjector.TeamFeatures Away,
+        double HomeRating,
+        double AwayRating);
+
+    /// <summary>
     /// Projects a match and its 1X2 "Home" snapshots to a
     /// <see cref="SimilarityFeatures"/> vector. Odds fields are populated from the
     /// snapshots (0 when absent). Ratings, form, and goal averages are set to 0 as
-    /// documented placeholders until a feature store exists (TASK-031).
+    /// documented placeholders. Prefer the overload that accepts
+    /// <see cref="TeamFeatureInputs"/> to supply real, point-in-time
+    /// rating/form/goal signals (TASK-031).
     /// </summary>
     public static SimilarityFeatures ToSimilarityFeatures(
         Match match,
@@ -179,13 +198,56 @@ public static class MatchFeatureProjector
             MatchId: match.Id,
             CompetitionId: match.CompetitionId,
             IsHome: true,
-            HomeRating: 0d,        // placeholder until feature store (TASK-031)
-            AwayRating: 0d,        // placeholder until feature store (TASK-031)
-            RatingDifference: 0d,  // placeholder until feature store (TASK-031)
-            HomeFormPoints: 0d,    // placeholder until feature store (TASK-031)
-            AwayFormPoints: 0d,    // placeholder until feature store (TASK-031)
-            HomeGoalsAvg: 0d,      // placeholder until feature store (TASK-031)
-            AwayGoalsAvg: 0d,      // placeholder until feature store (TASK-031)
+            HomeRating: 0d,        // placeholder: no team features supplied
+            AwayRating: 0d,        // placeholder: no team features supplied
+            RatingDifference: 0d,  // placeholder: no team features supplied
+            HomeFormPoints: 0d,    // placeholder: no team features supplied
+            AwayFormPoints: 0d,    // placeholder: no team features supplied
+            HomeGoalsAvg: 0d,      // placeholder: no team features supplied
+            AwayGoalsAvg: 0d,      // placeholder: no team features supplied
+            OpeningHomeOdds: opening,
+            ClosingHomeOdds: closing,
+            MovementPercentage: movement);
+    }
+
+    /// <summary>
+    /// Projects a match and its 1X2 "Home" snapshots to a
+    /// <see cref="SimilarityFeatures"/> vector, filling the rating/form/goal fields
+    /// from the supplied point-in-time <paramref name="teamFeatures"/>. Odds fields
+    /// are populated from the snapshots (0 when absent). <c>HomeGoalsAvg</c> and
+    /// <c>AwayGoalsAvg</c> use each side's goals-scored average; the rating
+    /// difference is <c>HomeRating - AwayRating</c>.
+    /// </summary>
+    /// <remarks>
+    /// The caller is responsible for having computed <paramref name="teamFeatures"/>
+    /// as-of this match's kickoff (see <see cref="TeamFeatureProjector"/>), so the
+    /// resulting vector carries no future information (anti-leakage).
+    /// </remarks>
+    public static SimilarityFeatures ToSimilarityFeatures(
+        Match match,
+        IReadOnlyCollection<OddsSnapshot> homeSnapshots,
+        TeamFeatureInputs teamFeatures)
+    {
+        ArgumentNullException.ThrowIfNull(match);
+        ArgumentNullException.ThrowIfNull(homeSnapshots);
+
+        var odds = SummarizeHomeOdds(homeSnapshots);
+
+        var opening = (double)(odds.OpeningHomeOdds ?? 0m);
+        var closing = (double)(odds.ClosingHomeOdds ?? 0m);
+        var movement = (double)(odds.MovementPercentage ?? 0m);
+
+        return new SimilarityFeatures(
+            MatchId: match.Id,
+            CompetitionId: match.CompetitionId,
+            IsHome: true,
+            HomeRating: teamFeatures.HomeRating,
+            AwayRating: teamFeatures.AwayRating,
+            RatingDifference: teamFeatures.HomeRating - teamFeatures.AwayRating,
+            HomeFormPoints: teamFeatures.Home.FormPoints,
+            AwayFormPoints: teamFeatures.Away.FormPoints,
+            HomeGoalsAvg: teamFeatures.Home.GoalsForAvg,
+            AwayGoalsAvg: teamFeatures.Away.GoalsForAvg,
             OpeningHomeOdds: opening,
             ClosingHomeOdds: closing,
             MovementPercentage: movement);

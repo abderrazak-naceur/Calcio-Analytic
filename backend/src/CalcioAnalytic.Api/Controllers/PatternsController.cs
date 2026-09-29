@@ -116,18 +116,53 @@ public sealed class PatternsController : ControllerBase
             return NotFound();
         }
 
-        var targetFeatures = MatchFeatureProjector.ToSimilarityFeatures(target.Match, target.HomeSnapshots);
-
         var finished = await loader.LoadFinishedAsync(ct);
+
+        // The full finished-match pool for point-in-time feature computation. Each
+        // match's features are computed as-of its own kickoff, using only matches
+        // that kicked off strictly earlier (see TeamFeatureProjector), so no future
+        // data leaks into any feature vector (TASK-031 anti-leakage).
+        var pool = finished.Select(x => x.Match).ToList();
+
+        var targetFeatures = MatchFeatureProjector.ToSimilarityFeatures(
+            target.Match,
+            target.HomeSnapshots,
+            ComputeTeamFeatureInputs(target.Match, pool));
+
         var candidates = finished
             .Where(x => x.Match.Id != id)
-            .Select(x => MatchFeatureProjector.ToSimilarityFeatures(x.Match, x.HomeSnapshots))
+            .Select(x => MatchFeatureProjector.ToSimilarityFeatures(
+                x.Match,
+                x.HomeSnapshots,
+                ComputeTeamFeatureInputs(x.Match, pool)))
             .ToList();
 
         var options = topK > 0 ? new SimilarityOptions(TopK: topK) : SimilarityOptions.Default;
 
         var results = _similarEngine.FindSimilar(targetFeatures, candidates, options);
         return Ok(results);
+    }
+
+    /// <summary>
+    /// Computes the point-in-time home/away team features and ELO-style ratings for
+    /// a match as-of its own kickoff, drawing only on the supplied finished-match
+    /// <paramref name="pool"/>. Because <see cref="TeamFeatureProjector"/> restricts
+    /// every computation to matches that kicked off strictly before the cutoff, the
+    /// resulting inputs contain no information from this match or any later one
+    /// (anti-leakage).
+    /// </summary>
+    private static MatchFeatureProjector.TeamFeatureInputs ComputeTeamFeatureInputs(
+        CalcioAnalytic.Domain.Matches.Match match,
+        IReadOnlyList<CalcioAnalytic.Domain.Matches.Match> pool)
+    {
+        var cutoff = match.KickoffUtc;
+
+        var homeForm = TeamFeatureProjector.ComputeAsOf(match.HomeTeamId, cutoff, pool);
+        var awayForm = TeamFeatureProjector.ComputeAsOf(match.AwayTeamId, cutoff, pool);
+        var homeRating = TeamFeatureProjector.ComputeRatingAsOf(match.HomeTeamId, cutoff, pool);
+        var awayRating = TeamFeatureProjector.ComputeRatingAsOf(match.AwayTeamId, cutoff, pool);
+
+        return new MatchFeatureProjector.TeamFeatureInputs(homeForm, awayForm, homeRating, awayRating);
     }
 
     /// <summary>

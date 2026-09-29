@@ -1,47 +1,39 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Card } from '../components/Card'
+import { DataTable, type Column } from '../components/DataTable'
 import { Spinner } from '../components/Spinner'
+import { StatusBadge } from '../components/StatusBadge'
 import {
   ApiError,
+  getDashboardSummary,
   getHealth,
-  getMatches,
+  getRecentMatches,
   postIngestCatalog,
   postIngestFixture,
   postIngestOdds,
   postIngestStatistics,
 } from '../lib/apiClient'
-import type { IngestionRequest, MatchSummary } from '../lib/types'
+import type {
+  DashboardSummary,
+  IngestionRequest,
+  RecentMatch,
+} from '../lib/types'
 
-interface Kpis {
-  total: number
-  finished: number
-  analyzed: number
-  live: number
-}
-
-type MatchesState =
+type SummaryState =
   | { kind: 'loading' }
-  | { kind: 'ready'; kpis: Kpis }
+  | { kind: 'ready'; summary: DashboardSummary }
+  | { kind: 'error'; message: string }
+
+type RecentState =
+  | { kind: 'loading' }
+  | { kind: 'ready'; matches: RecentMatch[] }
   | { kind: 'error'; message: string }
 
 type HealthState =
   | { kind: 'loading' }
   | { kind: 'healthy'; status: string }
   | { kind: 'error'; message: string }
-
-function computeKpis(matches: MatchSummary[]): Kpis {
-  let finished = 0
-  let live = 0
-  let analyzed = 0
-  for (const match of matches) {
-    const status = match.status.toLowerCase()
-    if (status.includes('finish') || status.includes('final')) finished += 1
-    if (status.includes('live')) live += 1
-    // "Analyzed" = a match that has a recorded score to analyze.
-    if (match.homeScore !== null && match.awayScore !== null) analyzed += 1
-  }
-  return { total: matches.length, finished, live, analyzed }
-}
 
 const INGEST_BODY: IngestionRequest = {
   providerCode: 'mock',
@@ -68,21 +60,49 @@ type StepStatus =
   | { kind: 'success' }
   | { kind: 'error'; message: string }
 
+function formatTimestamp(iso: string): string {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return iso
+  return date.toLocaleString()
+}
+
+function formatKickoff(iso: string): string {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return iso
+  return date.toLocaleString()
+}
+
+function formatScore(match: RecentMatch): string {
+  if (match.homeScore === null || match.awayScore === null) return '—'
+  return `${match.homeScore} – ${match.awayScore}`
+}
+
 function Dashboard() {
-  const [matches, setMatches] = useState<MatchesState>({ kind: 'loading' })
+  const [summary, setSummary] = useState<SummaryState>({ kind: 'loading' })
+  const [recent, setRecent] = useState<RecentState>({ kind: 'loading' })
   const [health, setHealth] = useState<HealthState>({ kind: 'loading' })
   const [stepStatuses, setStepStatuses] = useState<StepStatus[]>(
     INGEST_STEPS.map(() => ({ kind: 'pending' })),
   )
   const [ingesting, setIngesting] = useState(false)
 
-  const loadKpis = useCallback(async () => {
-    setMatches({ kind: 'loading' })
+  const loadSummary = useCallback(async () => {
+    setSummary({ kind: 'loading' })
     try {
-      const data = await getMatches()
-      setMatches({ kind: 'ready', kpis: computeKpis(data) })
+      const data = await getDashboardSummary()
+      setSummary({ kind: 'ready', summary: data })
     } catch (error) {
-      setMatches({ kind: 'error', message: describeError(error) })
+      setSummary({ kind: 'error', message: describeError(error) })
+    }
+  }, [])
+
+  const loadRecent = useCallback(async () => {
+    setRecent({ kind: 'loading' })
+    try {
+      const data = await getRecentMatches(10)
+      setRecent({ kind: 'ready', matches: data })
+    } catch (error) {
+      setRecent({ kind: 'error', message: describeError(error) })
     }
   }, [])
 
@@ -97,9 +117,10 @@ function Dashboard() {
   }, [])
 
   useEffect(() => {
-    void loadKpis()
+    void loadSummary()
+    void loadRecent()
     void loadHealth()
-  }, [loadKpis, loadHealth])
+  }, [loadSummary, loadRecent, loadHealth])
 
   const runIngestion = useCallback(async () => {
     setIngesting(true)
@@ -121,8 +142,9 @@ function Dashboard() {
     }
 
     setIngesting(false)
-    await loadKpis()
-  }, [loadKpis])
+    await loadSummary()
+    await loadRecent()
+  }, [loadSummary, loadRecent])
 
   return (
     <div className="space-y-6">
@@ -136,7 +158,11 @@ function Dashboard() {
         <HealthChip state={health} />
       </header>
 
-      <KpiRow state={matches} onRetry={() => void loadKpis()} />
+      <KpiRow state={summary} onRetry={() => void loadSummary()} />
+
+      <Card title="Recent matches">
+        <RecentMatches state={recent} onRetry={() => void loadRecent()} />
+      </Card>
 
       <Card
         title="Ingest demo data"
@@ -176,7 +202,7 @@ function KpiRow({
   state,
   onRetry,
 }: {
-  state: MatchesState
+  state: SummaryState
   onRetry: () => void
 }) {
   if (state.kind === 'loading') {
@@ -191,7 +217,7 @@ function KpiRow({
       <Card>
         <div className="flex items-center justify-between">
           <p className="text-sm text-red-400">
-            Could not load matches: {state.message}
+            Could not load summary: {state.message}
           </p>
           <button
             type="button"
@@ -205,26 +231,96 @@ function KpiRow({
     )
   }
 
-  const { kpis } = state
-  const items: ReadonlyArray<{ label: string; value: number }> = [
-    { label: 'Total matches', value: kpis.total },
-    { label: 'Finished', value: kpis.finished },
-    { label: 'Analyzed', value: kpis.analyzed },
-    { label: 'Live', value: kpis.live },
+  const { summary } = state
+  const items: ReadonlyArray<{ label: string; value: string }> = [
+    { label: 'Total matches', value: String(summary.totalMatches) },
+    { label: 'Finished', value: String(summary.finishedMatches) },
+    { label: 'Analyzed', value: String(summary.analyzedMatches) },
+    { label: 'Analysis backlog', value: String(summary.analysisBacklog) },
+    { label: 'Odds snapshots', value: String(summary.oddsSnapshotsCount) },
+    { label: 'Bookmakers', value: String(summary.bookmakersCount) },
+    { label: 'Markets', value: String(summary.marketsCount) },
+    { label: 'Competitions', value: String(summary.competitionsCount) },
+    { label: 'Teams', value: String(summary.teamsCount) },
+    {
+      label: 'Data freshness',
+      value: summary.dataFreshnessUtc
+        ? formatTimestamp(summary.dataFreshnessUtc)
+        : '—',
+    },
   ]
 
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
       {items.map((item) => (
         <div
           key={item.label}
           className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg"
         >
           <p className="text-sm text-slate-400">{item.label}</p>
-          <p className="mt-1 text-3xl font-bold text-white">{item.value}</p>
+          <p className="mt-1 text-2xl font-bold text-white">{item.value}</p>
         </div>
       ))}
     </div>
+  )
+}
+
+function RecentMatches({
+  state,
+  onRetry,
+}: {
+  state: RecentState
+  onRetry: () => void
+}) {
+  if (state.kind === 'loading') return <Spinner label="Loading recent matches…" />
+  if (state.kind === 'error') {
+    return (
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-red-400">
+          Could not load recent matches: {state.message}
+        </p>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-slate-200 transition hover:bg-slate-700"
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
+
+  const columns: ReadonlyArray<Column<RecentMatch>> = [
+    { header: 'Kickoff', render: (m) => formatKickoff(m.kickoffUtc) },
+    { header: 'Home', render: (m) => m.homeTeamId },
+    { header: 'Away', render: (m) => m.awayTeamId },
+    {
+      header: 'Score',
+      render: (m) => formatScore(m),
+      className: 'text-center',
+    },
+    { header: 'Status', render: (m) => <StatusBadge status={m.status} /> },
+    {
+      header: '',
+      render: (m) => (
+        <Link
+          to={`/matches/${m.id}`}
+          className="text-sm font-medium text-green-400 transition hover:text-green-300"
+        >
+          View
+        </Link>
+      ),
+      className: 'text-right',
+    },
+  ]
+
+  return (
+    <DataTable
+      columns={columns}
+      rows={state.matches}
+      rowKey={(m) => m.id}
+      emptyMessage="No matches yet. Run ingestion below."
+    />
   )
 }
 

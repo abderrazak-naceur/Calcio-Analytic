@@ -3,6 +3,8 @@ import { NavLink, Outlet } from 'react-router-dom'
 const navItems = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/matches', label: 'Matches', end: false },
+  { to: '/movement', label: 'Movement', end: false },
+  { to: '/bookmakers', label: 'Bookmakers', end: false },
   { to: '/patterns', label: 'Patterns', end: false },
 ] as const
 
