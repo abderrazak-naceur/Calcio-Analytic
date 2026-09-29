@@ -24,15 +24,25 @@ Questa cartella contiene la documentazione completa del prodotto e del progetto.
 - `18-LEGAL-DATA-GOVERNANCE.md` — data licensing, provenance e governance.
 - `19-AI-ANALYTICS.md` — AI assistant e natural-language analytics.
 - `20-ADMIN-SPECIFICATION.md` — area amministrativa e operations.
-- `21-API-CUSTOMER.md` — API customer, quotas e usage.
+- `21-API-CUSTOMER.md` — API customer e query analytics.
 - `22-TESTING-STRATEGY.md` — unit, integration, E2E e data tests.
 - `23-OBSERVABILITY.md` — logging, metrics, tracing e alerting.
 - `24-IMPLEMENTATION-PLAN.md` — ordine esatto di sviluppo.
+- `25-DETAILED-MATCH-DATA-COVERAGE.md` — copertura dettagliata di dati, mercati e quote per partita.
+- `26-ANALYTICS-ENGINE.md` — motore di elaborazione post-match, analisi quote, pattern storici e backtesting.
 
 ## Source of truth
 
-Il documento `01-PRODUCT-VISION.md` definisce il prodotto. `03-FUNCTIONAL-SPECIFICATION.md` definisce cosa deve fare. `04-SYSTEM-ARCHITECTURE.md` definisce come costruirlo. Gli altri documenti dettagliano le rispettive aree.
+`01-PRODUCT-VISION.md` definisce il prodotto.
+`03-FUNCTIONAL-SPECIFICATION.md` definisce cosa deve fare.
+`04-SYSTEM-ARCHITECTURE.md` definisce come costruirlo.
+`25-DETAILED-MATCH-DATA-COVERAGE.md` definisce quali dati dobbiamo conservare.
+`26-ANALYTICS-ENGINE.md` definisce come trasformare quei dati in analisi riproducibili.
+
+## Repository execution
+
+`AGENT_TASKS.md` contiene il backlog implementativo P0/P1/P2. Una task non deve essere marcata DONE senza implementazione, test, documentazione e verifica.
 
 ## Current repository status
 
-Il repository era inizialmente quasi vuoto; la documentazione costituisce la base per la successiva implementazione del backend, ingestion engine, analytics engine e web application.
+La documentazione costituisce la base per l'implementazione del backend .NET 10, ingestion engine, Analytics Engine, PostgreSQL data layer, worker services e web application React/TypeScript.
