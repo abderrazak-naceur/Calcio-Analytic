@@ -1,0 +1,14 @@
+[
+  {
+    "externalId": "1x2",
+    "name": "Match Winner",
+    "code": "1X2",
+    "description": "Full-time result: home win, draw, or away win."
+  },
+  {
+    "externalId": "ou25",
+    "name": "Over/Under 2.5 Goals",
+    "code": "OU",
+    "description": "Total full-time goals over or under 2.5."
+  }
+]

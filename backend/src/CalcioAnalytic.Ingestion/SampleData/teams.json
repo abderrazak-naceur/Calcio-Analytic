@@ -1,0 +1,16 @@
+[
+  {
+    "externalId": "inter",
+    "name": "FC Internazionale Milano",
+    "shortName": "Inter",
+    "countryName": "Italy",
+    "countryCode": "IT"
+  },
+  {
+    "externalId": "juventus",
+    "name": "Juventus FC",
+    "shortName": "Juventus",
+    "countryName": "Italy",
+    "countryCode": "IT"
+  }
+]

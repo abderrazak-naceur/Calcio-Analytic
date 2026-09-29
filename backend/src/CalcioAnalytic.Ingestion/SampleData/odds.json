@@ -1,0 +1,176 @@
+[
+  {
+    "bookmakerExternalId": "bet365",
+    "matchExternalId": "match-001",
+    "isLive": false,
+    "matchMinute": null,
+    "bookmakerTimestamp": "2024-10-25T19:45:00+00:00",
+    "providerTimestamp": "2024-10-25T19:45:05+00:00",
+    "markets": [
+      {
+        "marketExternalId": "1x2",
+        "line": null,
+        "period": "FullTime",
+        "selections": [
+          { "name": "Home", "decimalOdds": 2.10, "isSuspended": false },
+          { "name": "Draw", "decimalOdds": 3.40, "isSuspended": false },
+          { "name": "Away", "decimalOdds": 3.60, "isSuspended": false }
+        ]
+      },
+      {
+        "marketExternalId": "ou25",
+        "line": 2.5,
+        "period": "FullTime",
+        "selections": [
+          { "name": "Over", "decimalOdds": 1.95, "isSuspended": false },
+          { "name": "Under", "decimalOdds": 1.90, "isSuspended": false }
+        ]
+      }
+    ]
+  },
+  {
+    "bookmakerExternalId": "bet365",
+    "matchExternalId": "match-001",
+    "isLive": false,
+    "matchMinute": null,
+    "bookmakerTimestamp": "2024-10-27T17:45:00+00:00",
+    "providerTimestamp": "2024-10-27T17:45:04+00:00",
+    "markets": [
+      {
+        "marketExternalId": "1x2",
+        "line": null,
+        "period": "FullTime",
+        "selections": [
+          { "name": "Home", "decimalOdds": 1.95, "isSuspended": false },
+          { "name": "Draw", "decimalOdds": 3.50, "isSuspended": false },
+          { "name": "Away", "decimalOdds": 3.90, "isSuspended": false }
+        ]
+      },
+      {
+        "marketExternalId": "ou25",
+        "line": 2.5,
+        "period": "FullTime",
+        "selections": [
+          { "name": "Over", "decimalOdds": 1.90, "isSuspended": false },
+          { "name": "Under", "decimalOdds": 1.95, "isSuspended": false }
+        ]
+      }
+    ]
+  },
+  {
+    "bookmakerExternalId": "bet365",
+    "matchExternalId": "match-001",
+    "isLive": false,
+    "matchMinute": null,
+    "bookmakerTimestamp": "2024-10-27T19:40:00+00:00",
+    "providerTimestamp": "2024-10-27T19:40:03+00:00",
+    "markets": [
+      {
+        "marketExternalId": "1x2",
+        "line": null,
+        "period": "FullTime",
+        "selections": [
+          { "name": "Home", "decimalOdds": 1.85, "isSuspended": false },
+          { "name": "Draw", "decimalOdds": 3.60, "isSuspended": false },
+          { "name": "Away", "decimalOdds": 4.20, "isSuspended": false }
+        ]
+      },
+      {
+        "marketExternalId": "ou25",
+        "line": 2.5,
+        "period": "FullTime",
+        "selections": [
+          { "name": "Over", "decimalOdds": 1.88, "isSuspended": false },
+          { "name": "Under", "decimalOdds": 1.98, "isSuspended": false }
+        ]
+      }
+    ]
+  },
+  {
+    "bookmakerExternalId": "williamhill",
+    "matchExternalId": "match-001",
+    "isLive": false,
+    "matchMinute": null,
+    "bookmakerTimestamp": "2024-10-25T20:00:00+00:00",
+    "providerTimestamp": "2024-10-25T20:00:06+00:00",
+    "markets": [
+      {
+        "marketExternalId": "1x2",
+        "line": null,
+        "period": "FullTime",
+        "selections": [
+          { "name": "Home", "decimalOdds": 2.05, "isSuspended": false },
+          { "name": "Draw", "decimalOdds": 3.30, "isSuspended": false },
+          { "name": "Away", "decimalOdds": 3.75, "isSuspended": false }
+        ]
+      },
+      {
+        "marketExternalId": "ou25",
+        "line": 2.5,
+        "period": "FullTime",
+        "selections": [
+          { "name": "Over", "decimalOdds": 1.91, "isSuspended": false },
+          { "name": "Under", "decimalOdds": 1.91, "isSuspended": false }
+        ]
+      }
+    ]
+  },
+  {
+    "bookmakerExternalId": "williamhill",
+    "matchExternalId": "match-001",
+    "isLive": false,
+    "matchMinute": null,
+    "bookmakerTimestamp": "2024-10-27T17:30:00+00:00",
+    "providerTimestamp": "2024-10-27T17:30:05+00:00",
+    "markets": [
+      {
+        "marketExternalId": "1x2",
+        "line": null,
+        "period": "FullTime",
+        "selections": [
+          { "name": "Home", "decimalOdds": 1.90, "isSuspended": false },
+          { "name": "Draw", "decimalOdds": 3.45, "isSuspended": false },
+          { "name": "Away", "decimalOdds": 4.00, "isSuspended": false }
+        ]
+      },
+      {
+        "marketExternalId": "ou25",
+        "line": 2.5,
+        "period": "FullTime",
+        "selections": [
+          { "name": "Over", "decimalOdds": 1.87, "isSuspended": false },
+          { "name": "Under", "decimalOdds": 1.96, "isSuspended": false }
+        ]
+      }
+    ]
+  },
+  {
+    "bookmakerExternalId": "williamhill",
+    "matchExternalId": "match-001",
+    "isLive": false,
+    "matchMinute": null,
+    "bookmakerTimestamp": "2024-10-27T19:42:00+00:00",
+    "providerTimestamp": "2024-10-27T19:42:04+00:00",
+    "markets": [
+      {
+        "marketExternalId": "1x2",
+        "line": null,
+        "period": "FullTime",
+        "selections": [
+          { "name": "Home", "decimalOdds": 1.83, "isSuspended": false },
+          { "name": "Draw", "decimalOdds": 3.65, "isSuspended": false },
+          { "name": "Away", "decimalOdds": 4.33, "isSuspended": false }
+        ]
+      },
+      {
+        "marketExternalId": "ou25",
+        "line": 2.5,
+        "period": "FullTime",
+        "selections": [
+          { "name": "Over", "decimalOdds": 1.85, "isSuspended": false },
+          { "name": "Under", "decimalOdds": 2.00, "isSuspended": false }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,5 @@
+[
+  { "matchExternalId": "match-001", "type": "goal", "minute": 23, "teamExternalId": "inter", "playerExternalId": "inter-lautaro", "detail": "Lautaro Martinez, right-footed shot" },
+  { "matchExternalId": "match-001", "type": "goal", "minute": 58, "teamExternalId": "juventus", "playerExternalId": "juventus-vlahovic", "detail": "Dusan Vlahovic, header" },
+  { "matchExternalId": "match-001", "type": "goal", "minute": 79, "teamExternalId": "inter", "playerExternalId": "inter-thuram", "detail": "Marcus Thuram, left-footed shot" }
+]

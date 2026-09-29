@@ -1,6 +1,10 @@
+using CalcioAnalytic.Domain.Analytics;
 using CalcioAnalytic.Domain.Catalog;
 using CalcioAnalytic.Domain.Common;
 using CalcioAnalytic.Domain.Matches;
+using CalcioAnalytic.Domain.Odds;
+using CalcioAnalytic.Domain.Settlement;
+using CalcioAnalytic.Domain.Statistics;
 using Microsoft.EntityFrameworkCore;
 
 namespace CalcioAnalytic.Infrastructure.Persistence;
@@ -18,6 +22,15 @@ public class CalcioAnalyticDbContext : DbContext
     /// <summary>Schema used for match entities.</summary>
     public const string MatchesSchema = "matches";
 
+    /// <summary>Schema used for odds, market lines, selections, and settlement entities.</summary>
+    public const string OddsSchema = "odds";
+
+    /// <summary>Schema used for match statistics and events.</summary>
+    public const string StatisticsSchema = "statistics";
+
+    /// <summary>Schema used for versioned match analyses.</summary>
+    public const string AnalyticsSchema = "analytics";
+
     public CalcioAnalyticDbContext(DbContextOptions<CalcioAnalyticDbContext> options)
         : base(options)
     {
@@ -33,6 +46,13 @@ public class CalcioAnalyticDbContext : DbContext
     public DbSet<Market> Markets => Set<Market>();
     public DbSet<ProviderEntityMap> ProviderEntityMaps => Set<ProviderEntityMap>();
     public DbSet<Match> Matches => Set<Match>();
+    public DbSet<MarketLine> MarketLines => Set<MarketLine>();
+    public DbSet<Selection> Selections => Set<Selection>();
+    public DbSet<OddsSnapshot> OddsSnapshots => Set<OddsSnapshot>();
+    public DbSet<MarketSettlement> MarketSettlements => Set<MarketSettlement>();
+    public DbSet<MatchStatistic> MatchStatistics => Set<MatchStatistic>();
+    public DbSet<MatchEvent> MatchEvents => Set<MatchEvent>();
+    public DbSet<MatchAnalysis> MatchAnalyses => Set<MatchAnalysis>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

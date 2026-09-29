@@ -1,0 +1,8 @@
+[
+  { "matchExternalId": "match-001", "teamExternalId": "inter", "name": "possession", "value": 54 },
+  { "matchExternalId": "match-001", "teamExternalId": "juventus", "name": "possession", "value": 46 },
+  { "matchExternalId": "match-001", "teamExternalId": "inter", "name": "shots", "value": 15 },
+  { "matchExternalId": "match-001", "teamExternalId": "juventus", "name": "shots", "value": 9 },
+  { "matchExternalId": "match-001", "teamExternalId": "inter", "name": "shots_on_target", "value": 6 },
+  { "matchExternalId": "match-001", "teamExternalId": "juventus", "name": "shots_on_target", "value": 3 }
+]

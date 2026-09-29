@@ -15,6 +15,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddIngestion();
+builder.Services.AddMockProvider();
 
 // Health checks. Liveness is tag "live"; readiness includes dependencies.
 var healthChecks = builder.Services.AddHealthChecks();

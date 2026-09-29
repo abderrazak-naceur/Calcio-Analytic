@@ -1,0 +1,18 @@
+[
+  {
+    "externalId": "match-001",
+    "competitionExternalId": "serie-a",
+    "seasonExternalId": "serie-a-2024-2025",
+    "homeTeamExternalId": "inter",
+    "awayTeamExternalId": "juventus",
+    "kickoffUtc": "2024-10-27T19:45:00+00:00",
+    "venue": "Giuseppe Meazza",
+    "round": "Matchday 9",
+    "referee": "Daniele Orsato",
+    "status": "finished",
+    "homeScore": 2,
+    "awayScore": 1,
+    "homeScoreHalfTime": 1,
+    "awayScoreHalfTime": 0
+  }
+]

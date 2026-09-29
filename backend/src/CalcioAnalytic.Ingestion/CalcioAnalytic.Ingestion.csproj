@@ -6,6 +6,11 @@
     <ProjectReference Include="..\CalcioAnalytic.Domain\CalcioAnalytic.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Deterministic mock sample data consumed by MockProviderData at runtime. -->
+    <EmbeddedResource Include="SampleData\*.json" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
