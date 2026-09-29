@@ -1,7 +1,7 @@
 # Calcio-Analytic Agent Tasks
 
 > Legenda: [x] fatto e committato su `main` · [~] parziale · [ ] da fare
-> Stato aggiornato al commit `5df0494` (Phase 11/12/16/19/20/22/23/24 + worker + OTel).
+> Stato aggiornato al commit `f7621da` (Phase 9/11/12/16/19/20/21/22/23/24/28 + worker + OTel + reconciliation).
 
 ## P0 — Foundation and correctness
 
@@ -14,7 +14,7 @@
 - [x] TASK-007 Implement match ingestion. (MatchIngestionService idempotente, test end-to-end mock: Inter 2-1 Juventus)
 - [~] TASK-008 Implement bookmaker/market catalog. (CatalogIngestionService upserta bookmaker/market; manca sync schedulata/alias)
 - [x] TASK-009 Implement immutable odds snapshots. (OddsIngestionService append-only + dedup PayloadHash + unique index)
-- [ ] TASK-010 Implement result reconciliation. (cross-provider reconciliation non implementata)
+- [x] TASK-010 Implement result reconciliation. (ResultReconciliationService: Reconciled/Unconfirmed/Conflict; non sovrascrive mai, idempotente)
 
 ## P0 — Match lifecycle
 
@@ -55,18 +55,21 @@
 - [~] TASK-036 OpenTelemetry dashboards. (OTel tracing+metrics con export OTLP opzionale; dashboards/collector di produzione da configurare)
 - [ ] TASK-037 Partition large tables.
 - [~] TASK-038 Customer API and API keys. (API key filter + rate limiting lato API; gestione chiavi/quote per cliente da fare)
-- [ ] TASK-039 AI-generated descriptive summaries.
+- [~] TASK-039 AI-generated descriptive summaries. (endpoint Python /api/v1/summaries/match: deterministico, tracciabile, non predittivo; proxy .NET + UI da fare)
+
+## Nota: Data quality (Phase 21)
+DataQualityEngine (8 check + score dq-1.0.0) + GET api/v1/dataquality/matches/{id} fatti.
 
 ## Riepilogo cosa manca (priorità)
 
-1. Result reconciliation cross-provider (TASK-010).
-2. Data quality & reconciliation checks/score (Phase 21).
-3. Feature store point-in-time (TASK-031) + integrazione modelli Python nel flusso .NET.
-4. Dashboard UI collegata al read-model (summary/recent) e explorer dedicati movement/bookmaker (TASK-027/028).
-5. Transizioni lifecycle pre-match/live legate a ingestione live (completa TASK-011).
-6. AI descriptive summaries (TASK-039), partitioning (TASK-037), API clienti + quote (TASK-038).
-7. SaaS multi-utente (org/ruoli/quote) — Phase 27.
-8. Materialized read model a scala (completa TASK-022), dashboards OTel di produzione (completa TASK-036).
+1. Feature store point-in-time (TASK-031) + integrazione modelli Python nel flusso .NET (rating/form reali per similarity).
+2. Dashboard UI collegata al read-model (summary/recent) + pannello Data Quality; explorer dedicati movement/bookmaker (TASK-027/028).
+3. Proxy .NET + UI per AI summaries (completa TASK-039).
+4. Transizioni lifecycle pre-match/live legate a ingestione live (completa TASK-011).
+5. SaaS multi-utente (org/ruoli/quote) — Phase 27; API clienti + quote (TASK-038).
+6. Partitioning tabelle grandi (TASK-037); materialized read model a scala (completa TASK-022).
+7. Dashboards OTel di produzione/collector (completa TASK-036).
+8. Data quality aggregata per provider/competizione/giorno (estende Phase 21).
 9. Verifica Docker Compose end-to-end reale con Postgres/Redis (TASK-003).
 10. Un provider reale (oltre al mock) quando disponibili credenziali.
 
