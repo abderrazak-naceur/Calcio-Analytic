@@ -81,6 +81,8 @@ import type {
   DashboardSummary,
   DataQualityReport,
   IngestionRequest,
+  HighOddsAnalytics,
+  HighOddsCatalog,
   MatchAiSummary,
   MatchAnalysisReport,
   MatchDetail,
@@ -165,6 +167,40 @@ export async function getMatchBookmakers(
   return apiFetch<BookmakerDispersion[]>(
     `/api/v1/analytics/matches/${encodeURIComponent(id)}/bookmakers`,
   )
+}
+
+/** GET /api/v1/analytics/high-odds. */
+export async function getHighOddsAnalytics(params: {
+  fromUtc?: string
+  toUtc?: string
+  minOdds?: number
+  competitionId?: string
+  bookmakerId?: string
+  result?: string
+  page?: number
+  pageSize?: number
+}): Promise<HighOddsAnalytics> {
+  const query = new URLSearchParams()
+  if (params.fromUtc) query.set('fromUtc', params.fromUtc)
+  if (params.toUtc) query.set('toUtc', params.toUtc)
+  if (params.minOdds !== undefined) query.set('minOdds', String(params.minOdds))
+  if (params.competitionId) query.set('competitionId', params.competitionId)
+  if (params.bookmakerId) query.set('bookmakerId', params.bookmakerId)
+  if (params.result) query.set('result', params.result)
+  query.set('page', String(params.page ?? 1))
+  query.set('pageSize', String(params.pageSize ?? 100))
+  return apiFetch<HighOddsAnalytics>('/api/v1/analytics/high-odds?' + query.toString())
+}
+
+/** GET /api/v1/analytics/high-odds/catalog. */
+export async function getHighOddsCatalog(
+  fromUtc?: string,
+  toUtc?: string,
+): Promise<HighOddsCatalog> {
+  const query = new URLSearchParams()
+  if (fromUtc) query.set('fromUtc', fromUtc)
+  if (toUtc) query.set('toUtc', toUtc)
+  return apiFetch<HighOddsCatalog>('/api/v1/analytics/high-odds/catalog?' + query.toString())
 }
 
 /** POST /api/v1/ingestion/catalog. */

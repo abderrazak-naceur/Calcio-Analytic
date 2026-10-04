@@ -257,3 +257,95 @@ export interface MatchAiSummary {
   dataCompleteness: Record<string, boolean>
   caveats: string[]
 }
+
+/** Historical high-odds intelligence contracts. */
+export interface HighOddsQuery {
+  fromUtc: string | null
+  toUtc: string | null
+  minOdds: number
+  competitionId: string | null
+  bookmakerId: string | null
+  result: string | null
+  page: number
+  pageSize: number
+}
+
+export interface HighOddsSelection {
+  matchId: string
+  kickoffUtc: string
+  competitionId: string
+  competitionName: string
+  homeTeamId: string
+  homeTeamName: string
+  awayTeamId: string
+  awayTeamName: string
+  selection: string
+  result: string
+  won: boolean
+  odds: number
+  impliedProbability: number
+  bookmakerId: string
+  bookmakerName: string
+  openingOdds: number | null
+  closingOdds: number | null
+  movementPercentage: number | null
+  profitUnits: number
+}
+
+export interface HighOddsRangeStats {
+  range: string
+  selections: number
+  wins: number
+  winRatePercentage: number
+  averageOdds: number
+  profitUnits: number
+  roiPercentage: number
+}
+
+export interface HighOddsGroupStats {
+  group: string
+  selections: number
+  wins: number
+  winRatePercentage: number
+  averageOdds: number
+  profitUnits: number
+  roiPercentage: number
+}
+
+export interface HighOddsSummary {
+  uniqueMatches: number
+  qualifyingSelections: number
+  wins: number
+  winRatePercentage: number
+  averageOdds: number
+  averageImpliedProbabilityPercentage: number
+  stakeUnits: number
+  returnUnits: number
+  profitUnits: number
+  roiPercentage: number
+  maxDrawdownUnits: number
+  maxWinningStreak: number
+  maxLosingStreak: number
+}
+
+export interface HighOddsAnalytics {
+  query: HighOddsQuery
+  summary: HighOddsSummary
+  byOddsRange: HighOddsRangeStats[]
+  bySelection: HighOddsGroupStats[]
+  byBookmaker: HighOddsGroupStats[]
+  results: HighOddsSelection[]
+  totalResults: number
+  page: number
+  pageSize: number
+}
+
+export interface HighOddsCatalogItem {
+  id: string
+  name: string
+}
+
+export interface HighOddsCatalog {
+  competitions: HighOddsCatalogItem[]
+  bookmakers: HighOddsCatalogItem[]
+}
