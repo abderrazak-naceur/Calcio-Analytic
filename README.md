@@ -103,6 +103,22 @@ analytics/  Python + FastAPI quantitative service
 docs/        Product, architecture and implementation specifications
 ```
 
+## High Odds Intelligence
+
+The web application now includes a dedicated historical high-odds research workflow at `/high-odds`.
+
+It analyses stored full-time 1X2 odds using only pre-kickoff snapshots and exposes:
+
+- Minimum odds filters such as 6.00, 7.00, 8.00, 10.00, 15.00 and 20.00.
+- Date range, competition, bookmaker and final-result filters.
+- Best available pre-kickoff closing price by match and selection.
+- Opening-to-closing movement.
+- Hit rate, average odds, implied probability, flat-stake profit, ROI, drawdown and streaks.
+- Breakdowns by odds range, Home/Draw/Away selection and bookmaker.
+- Pagination and CSV export for Excel workflows.
+
+The feature is historical analytics, not a prediction or profitability guarantee. ROI is a one-unit flat-stake simulation over the qualifying historical selections.
+
 ## Development principle
 
 Build the smallest complete vertical slice first, then expand coverage.
