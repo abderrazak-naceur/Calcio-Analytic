@@ -74,6 +74,7 @@ function HighOddsIntelligence() {
   const [loading, setLoading] = useState(true)
   const [catalogLoading, setCatalogLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
 
   const loadCatalog = useCallback(async () => {
     setCatalogLoading(true)
@@ -97,7 +98,7 @@ function HighOddsIntelligence() {
         competitionId: filters.competitionId || undefined,
         bookmakerId: filters.bookmakerId || undefined,
         result: filters.result || undefined,
-        page: 1,
+        page,
         pageSize: 100,
       })
       setData(result)
@@ -107,7 +108,7 @@ function HighOddsIntelligence() {
     } finally {
       setLoading(false)
     }
-  }, [filters])
+  }, [filters, page])
 
   useEffect(() => {
     void loadCatalog()
@@ -173,8 +174,8 @@ function HighOddsIntelligence() {
         filters={filters}
         catalog={catalog}
         catalogLoading={catalogLoading}
-        onChange={setFilters}
-        onPreset={applyPreset}
+        onChange={(next) => { setPage(1); setFilters(next) }}
+        onPreset={(preset) => { setPage(1); applyPreset(preset) }}
       />
 
       {loading && <Card><Spinner label="Analysing historical odds…" /></Card>}
@@ -204,7 +205,7 @@ function HighOddsIntelligence() {
             <OddsRangeChart ranges={data.byOddsRange} />
             <SelectionBreakdown groups={data.bySelection} />
           </div>
-          <HighOddsTable rows={data.results} total={data.totalResults} />
+          <HighOddsTable rows={data.results} total={data.totalResults} page={page} pageSize={data.pageSize} onPageChange={setPage} />
           <div className="grid gap-6 xl:grid-cols-2">
             <BookmakerTable groups={data.byBookmaker} />
             <ResearchNotes data={data} />
@@ -435,7 +436,7 @@ function SelectionBreakdown({ groups }: { groups: HighOddsGroupStats[] }) {
   )
 }
 
-function HighOddsTable({ rows, total }: { rows: HighOddsSelection[]; total: number }) {
+function HighOddsTable({ rows, total, page, pageSize, onPageChange }: { rows: HighOddsSelection[]; total: number; page: number; pageSize: number; onPageChange: (page: number) => void }) {
   const columns: ReadonlyArray<Column<HighOddsSelection>> = [
     {
       header: 'Date',
@@ -494,10 +495,33 @@ function HighOddsTable({ rows, total }: { rows: HighOddsSelection[]; total: numb
         rowKey={(row) => row.matchId + '-' + row.selection + '-' + row.bookmakerId}
         emptyMessage="No high-odds selections found for the selected period."
       />
-      <p className="mt-4 text-xs text-slate-500">
-        Displayed odds are the best pre-kickoff closing price available in the
-        stored bookmaker snapshots. One flat unit is used for the historical P/L simulation.
-      </p>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs text-slate-500">
+          Displayed odds are the best pre-kickoff closing price available in the
+          stored bookmaker snapshots. One flat unit is used for the historical P/L simulation.
+        </p>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled={page <= 1}
+            onClick={() => onPageChange(Math.max(1, page - 1))}
+            className="rounded-md bg-slate-800 px-3 py-1.5 text-xs text-slate-200 disabled:opacity-40"
+          >
+            Previous
+          </button>
+          <span className="text-xs text-slate-500">
+            Page {page} / {Math.max(1, Math.ceil(total / pageSize))}
+          </span>
+          <button
+            type="button"
+            disabled={page >= Math.ceil(total / pageSize)}
+            onClick={() => onPageChange(page + 1)}
+            className="rounded-md bg-slate-800 px-3 py-1.5 text-xs text-slate-200 disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </Card>
   )
 }
