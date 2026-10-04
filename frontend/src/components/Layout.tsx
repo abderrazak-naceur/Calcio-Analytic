@@ -6,6 +6,7 @@ const navItems = [
   { to: '/movement', label: 'Movement', end: false },
   { to: '/bookmakers', label: 'Bookmakers', end: false },
   { to: '/patterns', label: 'Patterns', end: false },
+  { to: '/high-odds', label: 'High Odds Intelligence', end: false },
 ] as const
 
 /** App shell: top navigation plus the routed page content. */
