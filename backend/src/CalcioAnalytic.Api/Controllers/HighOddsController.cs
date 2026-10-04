@@ -192,7 +192,7 @@ public sealed class HighOddsController : ControllerBase
             .ToList();
 
         return Ok(BuildResponse(
-            from, to, minOdds, bookmakerId, normalizedResult, page, pageSize,
+            from, to, minOdds, competitionId, bookmakerId, normalizedResult, page, pageSize,
             candidates, ranges, selections, bookmakers, paged, total));
     }
 
