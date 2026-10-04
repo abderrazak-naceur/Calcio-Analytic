@@ -351,23 +351,6 @@ public sealed class HighOddsController : ControllerBase
             .ToList();
     }
 
-    private static HighOddsAnalyticsResponseDto BuildResponse(
-        DateTime from,
-        DateTime to,
-        decimal minOdds,
-        Guid? bookmakerId,
-        string? result,
-        int page,
-        int pageSize,
-        IReadOnlyList<HighOddsRow> candidates,
-        IReadOnlyList<HighOddsRangeStatsDto> ranges,
-        IReadOnlyList<HighOddsGroupStatsDto> selections,
-        IReadOnlyList<HighOddsGroupStatsDto> bookmakers,
-        IReadOnlyList<HighOddsSelectionDto> results,
-        int totalResults)
-        => BuildResponse(from, to, minOdds, bookmakerId, result, page, pageSize,
-            candidates, ranges, selections, bookmakers, results, totalResults);
-
     private static HighOddsSelectionDto ToDto(HighOddsRow x) =>
         new(
             x.MatchId,
@@ -413,7 +396,7 @@ public sealed class HighOddsController : ControllerBase
     }
 
     private static string Csv(string value) =>
-        """ + value.Replace(""", """") + """;
+        "\"" + value.Replace("\"", "\"\"") + "\"";
 
     private sealed record MatchRow(
         Guid Id,
