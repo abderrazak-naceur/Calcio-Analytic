@@ -42,7 +42,7 @@ public sealed class HighOddsController : ControllerBase
             return BadRequest(new { message = "minOdds must be between 1.01 and 1000." });
 
         page = Math.Max(1, page);
-        pageSize = Math.Clamp(pageSize, 1, 200);
+        pageSize = Math.Clamp(pageSize, 1, 5000);
 
         var to = (toUtc ?? DateTime.UtcNow).ToUniversalTime();
         var from = (fromUtc ?? to.AddDays(-30)).ToUniversalTime();
@@ -239,7 +239,7 @@ public sealed class HighOddsController : ControllerBase
         [FromQuery] string? result = null,
         CancellationToken ct = default)
     {
-        var response = await Get(fromUtc, toUtc, minOdds, null, bookmakerId, result, 1, 200, ct);
+        var response = await Get(fromUtc, toUtc, minOdds, null, bookmakerId, result, 1, 5000, ct);
         if (response.Result is not OkObjectResult ok || ok.Value is not HighOddsAnalyticsResponseDto data)
             return response.Result ?? BadRequest();
 
