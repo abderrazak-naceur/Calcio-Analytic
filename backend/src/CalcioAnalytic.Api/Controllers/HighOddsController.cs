@@ -235,11 +235,12 @@ public sealed class HighOddsController : ControllerBase
         [FromQuery] DateTime? fromUtc,
         [FromQuery] DateTime? toUtc,
         [FromQuery] decimal minOdds = 6m,
+        [FromQuery] Guid? competitionId = null,
         [FromQuery] Guid? bookmakerId = null,
         [FromQuery] string? result = null,
         CancellationToken ct = default)
     {
-        var response = await Get(fromUtc, toUtc, minOdds, null, bookmakerId, result, 1, 5000, ct);
+        var response = await Get(fromUtc, toUtc, minOdds, competitionId, bookmakerId, result, 1, 5000, ct);
         if (response.Result is not OkObjectResult ok || ok.Value is not HighOddsAnalyticsResponseDto data)
             return response.Result ?? BadRequest();
 
