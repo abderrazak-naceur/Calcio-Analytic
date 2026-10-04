@@ -47,7 +47,7 @@
 
 ## P2 — Models and scale
 
-- [ ] TASK-031 Point-in-time feature store.
+- [~] TASK-031 Point-in-time feature store. (immutable pre-kickoff snapshot entity, PostgreSQL persistence, unique timestamp index and database check constraint; model population/integration still to do)
 - [x] TASK-032 ELO baseline. (Python app/models/elo.py + endpoint + test)
 - [x] TASK-033 Poisson baseline. (Python app/models/poisson.py + endpoint + test)
 - [x] TASK-034 Dixon-Coles baseline. (Python app/models/dixon_coles.py + endpoint + test)
@@ -63,7 +63,7 @@ DataQualityEngine (8 check + score dq-1.0.0) + GET api/v1/dataquality/matches/{i
 
 ## Riepilogo cosa manca (priorità)
 
-1. Feature store point-in-time (TASK-031) + integrazione modelli Python nel flusso .NET (rating/form reali per similarity).
+1. Complete TASK-031 feature population + integrate Python ELO/Poisson/Dixon-Coles into the .NET point-in-time pipeline.
 2. Dashboard UI collegata al read-model (summary/recent) + pannello Data Quality; explorer dedicati movement/bookmaker (TASK-027/028).
 3. Proxy .NET + UI per AI summaries (completa TASK-039).
 4. Transizioni lifecycle pre-match/live legate a ingestione live (completa TASK-011).
