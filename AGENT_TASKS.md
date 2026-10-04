@@ -56,7 +56,7 @@
 - [ ] TASK-037 Partition large tables.
 - [~] TASK-038 Customer API and API keys. (API key filter + rate limiting lato API; gestione chiavi/quote per cliente da fare)
 - [~] TASK-039 AI-generated descriptive summaries. (endpoint Python /api/v1/summaries/match: deterministico, tracciabile, non predittivo; proxy .NET + UI da fare)
-- [x] TASK-040 High Odds Intelligence. (historical 1X2 high-odds explorer, point-in-time pre-kickoff snapshots, opening/closing movement, win-rate/ROI/drawdown/streaks, bookmaker/competition/result filters, pagination and CSV export)
+- [x] TASK-040 High Odds Intelligence. (historical 1X2 high-odds explorer, point-in-time pre-kickoff snapshots, opening/closing movement, win-rate/ROI/drawdown/streaks, bookmaker/competition/result filters, pagination, CSV export and a High Odds Strategy Backtesting Lab UI)
 
 ## Nota: Data quality (Phase 21)
 DataQualityEngine (8 check + score dq-1.0.0) + GET api/v1/dataquality/matches/{id} fatti.
@@ -94,7 +94,7 @@ The new High Odds Intelligence vertical slice adds:
 - Filters for date range, minimum odds, competition, bookmaker and final result.
 - KPIs for unique matches, qualifying selections, hit rate, average odds, implied probability, flat-stake profit/ROI, drawdown and streaks.
 - Breakdown by odds range, 1X2 selection and bookmaker.
-- Paginated React dashboard and CSV export suitable for Excel.
+- Paginated React dashboard, CSV export suitable for Excel, and a High Odds Strategy Backtesting Lab UI.
 - Route /high-odds and navigation entry in the web application.
 
 Important research boundary: this feature describes historical price/outcome relationships. It does not claim that high odds imply positive expected value or future profitability. The displayed ROI uses one flat unit per qualifying historical selection and should be interpreted alongside sample size, chronology and data coverage.
