@@ -8,6 +8,7 @@ import SimilarMatches from './pages/SimilarMatches'
 import OddsMovementExplorer from './pages/OddsMovementExplorer'
 import BookmakerComparison from './pages/BookmakerComparison'
 import HighOddsIntelligence from './pages/HighOddsIntelligence'
+import BacktestingLab from './pages/BacktestingLab'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/movement" element={<OddsMovementExplorer />} />
           <Route path="/bookmakers" element={<BookmakerComparison />} />
           <Route path="/high-odds" element={<HighOddsIntelligence />} />
+          <Route path="/backtesting" element={<BacktestingLab />} />
         </Route>
       </Routes>
     </BrowserRouter>
