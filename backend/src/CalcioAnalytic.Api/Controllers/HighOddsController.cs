@@ -31,6 +31,7 @@ public sealed class HighOddsController : ControllerBase
         [FromQuery] DateTime? fromUtc,
         [FromQuery] DateTime? toUtc,
         [FromQuery] decimal minOdds = 6m,
+        [FromQuery] Guid? competitionId = null,
         [FromQuery] Guid? bookmakerId = null,
         [FromQuery] string? result = null,
         [FromQuery] int page = 1,
@@ -59,7 +60,8 @@ public sealed class HighOddsController : ControllerBase
                  m.Status == MatchStatus.Analyzed ||
                  m.Status == MatchStatus.Reconciled) &&
                 m.KickoffUtc >= from &&
-                m.KickoffUtc <= to)
+                m.KickoffUtc <= to &&
+                (competitionId == null || m.CompetitionId == competitionId.Value))
             .Select(m => new MatchRow(
                 m.Id,
                 m.KickoffUtc,
@@ -76,7 +78,7 @@ public sealed class HighOddsController : ControllerBase
         if (matchRows.Count == 0)
         {
             return Ok(BuildResponse(
-                from, to, minOdds, bookmakerId, normalizedResult, page, pageSize,
+                from, to, minOdds, competitionId, bookmakerId, normalizedResult, page, pageSize,
                 [], [], [], [], 0));
         }
 
@@ -194,6 +196,38 @@ public sealed class HighOddsController : ControllerBase
             candidates, ranges, selections, bookmakers, paged, total));
     }
 
+    /// <summary>Returns competition and bookmaker filter values for the selected period.</summary>
+    [HttpGet("catalog")]
+    [ProducesResponseType(typeof(HighOddsCatalogDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<HighOddsCatalogDto>> Catalog(
+        [FromQuery] DateTime? fromUtc,
+        [FromQuery] DateTime? toUtc,
+        CancellationToken ct = default)
+    {
+        var to = (toUtc ?? DateTime.UtcNow).ToUniversalTime();
+        var from = (fromUtc ?? to.AddDays(-365)).ToUniversalTime();
+
+        var competitions = await _db.Matches.AsNoTracking()
+            .Where(m => m.KickoffUtc >= from && m.KickoffUtc <= to)
+            .Join(_db.Competitions.AsNoTracking(), m => m.CompetitionId, c => c.Id,
+                (m, c) => new { c.Id, c.Name })
+            .Distinct()
+            .OrderBy(x => x.Name)
+            .Select(x => new HighOddsCatalogItemDto(x.Id, x.Name))
+            .ToListAsync(ct);
+
+        var bookmakers = await _db.OddsSnapshots.AsNoTracking()
+            .Where(s => s.ProviderTimestampUtc >= from && s.ProviderTimestampUtc <= to && !s.IsLive)
+            .Join(_db.Bookmakers.AsNoTracking(), s => s.BookmakerId, b => b.Id,
+                (s, b) => new { b.Id, b.Name })
+            .Distinct()
+            .OrderBy(x => x.Name)
+            .Select(x => new HighOddsCatalogItemDto(x.Id, x.Name))
+            .ToListAsync(ct);
+
+        return Ok(new HighOddsCatalogDto(competitions, bookmakers));
+    }
+
     /// <summary>Exports the same historical high-odds query as CSV for Excel.</summary>
     [HttpGet("export")]
     [Produces("text/csv")]
@@ -205,7 +239,7 @@ public sealed class HighOddsController : ControllerBase
         [FromQuery] string? result = null,
         CancellationToken ct = default)
     {
-        var response = await Get(fromUtc, toUtc, minOdds, bookmakerId, result, 1, 200, ct);
+        var response = await Get(fromUtc, toUtc, minOdds, null, bookmakerId, result, 1, 200, ct);
         if (response.Result is not OkObjectResult ok || ok.Value is not HighOddsAnalyticsResponseDto data)
             return response.Result ?? BadRequest();
 
@@ -237,6 +271,7 @@ public sealed class HighOddsController : ControllerBase
         DateTime from,
         DateTime to,
         decimal minOdds,
+        Guid? competitionId,
         Guid? bookmakerId,
         string? result,
         int page,
@@ -296,7 +331,7 @@ public sealed class HighOddsController : ControllerBase
             maxLoss);
 
         return new HighOddsAnalyticsResponseDto(
-            new HighOddsQueryDto(from, to, minOdds, bookmakerId, result, page, pageSize),
+            new HighOddsQueryDto(from, to, minOdds, competitionId, bookmakerId, result, page, pageSize),
             summary,
             ranges,
             selections,
