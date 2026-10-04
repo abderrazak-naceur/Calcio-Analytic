@@ -4,6 +4,7 @@ public sealed record HighOddsQueryDto(
     DateTime? FromUtc,
     DateTime? ToUtc,
     decimal MinOdds,
+    Guid? CompetitionId,
     Guid? BookmakerId,
     string? Result,
     int Page,
@@ -88,3 +89,9 @@ public sealed record HighOddsExportRowDto(
     decimal? OpeningOdds,
     decimal? ClosingOdds,
     decimal? MovementPercentage);
+
+public sealed record HighOddsCatalogItemDto(Guid Id, string Name);
+
+public sealed record HighOddsCatalogDto(
+    IReadOnlyList<HighOddsCatalogItemDto> Competitions,
+    IReadOnlyList<HighOddsCatalogItemDto> Bookmakers);
