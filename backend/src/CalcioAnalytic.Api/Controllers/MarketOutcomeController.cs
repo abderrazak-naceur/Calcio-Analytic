@@ -55,7 +55,8 @@ public sealed class MarketOutcomeController : ControllerBase
             ? null
             : classification.Trim().ToUpperInvariant();
 
-        if (normalizedClassification is not null && normalizedClassification is not ("HIT" or "MISS" or "UNKNOWN" or "UPSET"))
+        if (normalizedClassification is not null &&
+            !new[] { "HIT", "MISS", "UNKNOWN", "UPSET" }.Contains(normalizedClassification, StringComparer.Ordinal))
             return BadRequest(new { message = "classification must be HIT, MISS, UPSET, or UNKNOWN." });
 
         page = Math.Max(1, page);
