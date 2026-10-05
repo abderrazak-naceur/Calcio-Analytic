@@ -116,10 +116,10 @@ public sealed class IngestionPipelineTests
 
         Assert.True(result.TeamsUpserted >= 2);
         Assert.Equal(2, result.BookmakersUpserted);
-        Assert.Equal(2, result.MarketsUpserted);
+        Assert.Equal(3, result.MarketsUpserted);
 
         var db = scope.ServiceProvider.GetRequiredService<CalcioAnalyticDbContext>();
         Assert.Equal(2, await db.Bookmakers.CountAsync());
-        Assert.Equal(2, await db.Markets.CountAsync());
+        Assert.Equal(3, await db.Markets.CountAsync());
     }
 }
