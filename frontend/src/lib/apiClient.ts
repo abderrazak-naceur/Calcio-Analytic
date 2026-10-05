@@ -85,6 +85,7 @@ import type {
   HighOddsCatalog,
   MatchAiSummary,
   MarketOutcomeAnalytics,
+  UpcomingAnalysis,
   MatchAnalysisReport,
   MatchDetail,
   MatchSummary,
@@ -370,4 +371,17 @@ export async function getMarketOutcomeAnalytics(params: {
   return apiFetch<MarketOutcomeAnalytics>(
     '/api/v1/analytics/market-outcomes?' + query.toString(),
   )
+}
+
+/** GET /api/v1/analytics/upcoming. */
+export async function getUpcomingAnalysis(params: {
+  window?: string
+  marketCode?: string
+  minimumComparableSamples?: number
+} = {}): Promise<UpcomingAnalysis> {
+  const query = new URLSearchParams()
+  query.set('window', params.window ?? 'today')
+  query.set('marketCode', params.marketCode ?? '1X2')
+  query.set('minimumComparableSamples', String(params.minimumComparableSamples ?? 5))
+  return apiFetch<UpcomingAnalysis>('/api/v1/analytics/upcoming?' + query.toString())
 }

@@ -82,7 +82,7 @@ These capabilities must be treated as first-class product requirements, using ex
 - [~] MARKET-006 Over/Under 1.5 / 2.5 / 3.5 analysis. Settlement/API path is generic; representative 2.5 fixture exists.
 - [~] MARKET-007 BTTS YES/NO analysis. Settlement and representative fixture added; historical aggregation remains.
 - [x] MARKET-008 Historical odds-range statistics: sample, wins, losses, hit/miss rate, upset rate, implied vs actual probability, flat-stake P/L and ROI. Implemented for Market vs Reality with deterministic statistics tests and dashboard presentation.
-- [ ] MARKET-009 Upcoming analysis: today, tomorrow, 2/7/14/30 days using comparable historical situations.
+- [x] MARKET-009 Upcoming analysis: today, tomorrow, 2/7/14/30 days using comparable historical situations. Added 1X2 upcoming endpoint, historical comparable statistics and dashboard view with minimum-sample filtering.
 - [~] MARKET-010 Dedicated Market Failures and Upsets views. Market Failures route is live; dedicated Upsets view remains.
 - [~] MARKET-011 Main Analysis Dashboard connected to market-outcome read API; richer optimized production read models remain.
 - [x] MARKET-012 Match Detail market-outcome and odds-history presentation. Market Reality is live in Match Detail; deeper odds-history presentation remains a separate data-depth enhancement.
@@ -127,7 +127,7 @@ Advanced models must be used to compare model probability vs market probability 
 1. Validate the real SportMonks connection, subscribed markets and historical odds depth.
 2. Harden historical Market vs Reality aggregation for 1X2, Over/Under and BTTS.
 3. Implement historical odds-range statistics including P/L and ROI.
-4. Implement Upcoming Analysis for today/2/7/14/30-day windows.
+4. ~~Implement Upcoming Analysis for today/2/7/14/30-day windows.~~ Done for the current 1X2 market slice.
 5. Complete dedicated Upsets view and richer dashboard/read models.
 6. Add Daily Market Report and scheduled jobs.
 7. Add data-quality visibility and historical backfill.

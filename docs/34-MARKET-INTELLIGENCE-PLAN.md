@@ -147,6 +147,14 @@ Return:
 
 ## Upcoming analysis
 
+The first production slice is available at `/api/v1/analytics/upcoming` and in the
+Upcoming Analysis UI. It supports Today, Tomorrow, 2, 7, 14 and 30-day windows for
+1X2. Each upcoming bookmaker/market line is matched to historical 1X2 situations in
+the same favorite-odds bucket and reports comparable sample size, hit/failure rate,
+upsets, implied versus actual probability and flat-stake ROI. Results below the
+minimum comparable sample threshold are excluded from the UI. The endpoint only uses
+pre-kickoff snapshots for the upcoming match and settled historical observations.
+
 Analyze:
 
 - today;

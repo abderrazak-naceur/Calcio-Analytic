@@ -487,3 +487,44 @@ export interface MarketOutcomeAnalytics {
   page: number
   pageSize: number
 }
+
+export interface UpcomingComparableStats {
+  sampleSize: number
+  hitCount: number
+  missCount: number
+  upsetCount: number
+  hitRatePercentage: number | null
+  failureRatePercentage: number | null
+  averageFavoriteOdds: number | null
+  averageWinnerOdds: number | null
+  impliedProbabilityPercentage: number | null
+  actualProbabilityPercentage: number | null
+  roiPercentage: number | null
+}
+
+export interface UpcomingAnalysisRow {
+  matchId: string
+  kickoffUtc: string
+  competitionName: string
+  homeTeamName: string
+  awayTeamName: string
+  bookmakerId: string
+  bookmakerName: string
+  marketCode: string
+  favoriteSelection: string
+  favoriteOdds: number
+  comparableSampleSize: number
+  comparableHistory: UpcomingComparableStats
+}
+
+export interface UpcomingAnalysis {
+  query: {
+    window: string
+    fromUtc: string
+    toUtc: string
+    marketCode: string
+    minimumComparableSamples: number
+  }
+  results: UpcomingAnalysisRow[]
+  totalResults: number
+}
