@@ -900,6 +900,12 @@ The platform can ingest a match, preserve its complete history, process its fina
 
 ---
 
+## Current implementation status
+
+The repository has completed the first Market vs Reality vertical slice on `main`: favorite detection, HIT/MISS/UPSET classification, BTTS settlement, Market Outcome API, dashboard integration, Market Failures view and Match Detail Market Reality. CI is green.
+
+The next milestone is real SportMonks validation followed by historical aggregation, Upcoming Analysis, Daily Reports and data-quality hardening. Advanced models remain secondary until this data pipeline is proven.
+
 # Recommended execution order
 
 Do NOT implement everything simultaneously.
@@ -907,35 +913,21 @@ Do NOT implement everything simultaneously.
 Execute:
 
 1. Foundation
-2. .NET architecture
-3. PostgreSQL
-4. Provider abstraction
-5. Catalog
-6. Matches
-7. Odds
-8. Statistics/events
-9. Results/settlement
-10. MatchAnalysisEngine
-11. HistoricalPatternEngine
-12. SimilarMatchEngine
-13. Python quantitative layer
-14. Models
-15. Backtesting
-16. Analytics API
-17. React/Vite foundation
-18. Match Detail
-19. Historical UI
-20. Dashboard
-21. Data quality
-22. Scale
-23. Observability
-24. Security
-25. Provider expansion
-26. Historical backfill
-27. SaaS
-28. AI
-29. Production
-30. Final validation
+2. Provider abstraction and real SportMonks validation
+3. Match + result + immutable odds vertical slice
+4. Market normalization and settlement
+5. HIT / MISS / UPSET + favorite failure + high-odds analysis
+6. 1X2 + Over/Under + BTTS historical aggregation
+7. Odds-range statistics, P/L and ROI
+8. Upcoming Analysis
+9. Market Failures + Upsets + Match Detail + Dashboard hardening
+10. Daily Reports and scheduled automation
+11. Data quality + historical backfill
+12. Optimized read models and scale
+13. Advanced ELO/Poisson/Dixon-Coles comparison
+14. Backtesting and model evaluation
+15. SaaS / API customers / AI assistant
+16. Production hardening and final validation
 
 # First milestone
 
