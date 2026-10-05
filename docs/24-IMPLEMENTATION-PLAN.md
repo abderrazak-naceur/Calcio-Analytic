@@ -101,9 +101,24 @@ Implement point-in-time feature store and reproducible runs.
 - queue heavy analytics
 - introduce read models/materialized aggregates
 
+## Current Market Intelligence priority
+
+The repository has moved beyond the original generic phase sequence. The active implementation priority is:
+
+1. Real SportMonks validation and representative odds coverage.
+2. Historical Market vs Reality aggregation for 1X2, Over/Under and BTTS.
+3. Odds-range statistics, P/L and ROI.
+4. Upcoming comparable-situation analysis.
+5. Market Failures, Upsets and Match Detail hardening.
+6. Daily reports, data-quality visibility and scheduled automation.
+7. Historical backfill and optimized read models.
+8. Advanced ELO/Poisson/Dixon-Coles comparison.
+
+The original phases remain useful as architectural guidance, but this Market Intelligence sequence is the current execution order.
+
 ## Priority
 P0: data correctness, timestamps, identity mapping, odds snapshots, result lifecycle.
-P1: analysis engine, historical explorer, match detail.
+P1: Market vs Reality analysis, historical explorer, upcoming analysis, match detail.
 P2: advanced models, AI summaries, customer API, billing.
 
 ## Definition of done
