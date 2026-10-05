@@ -182,7 +182,6 @@ export async function getHighOddsAnalytics(params: {
   pageSize?: number
 }): Promise<HighOddsAnalytics> {
   const query = new URLSearchParams()
-  if (params.matchId) query.set('matchId', params.matchId)
   if (params.fromUtc) query.set('fromUtc', params.fromUtc)
   if (params.toUtc) query.set('toUtc', params.toUtc)
   if (params.minOdds !== undefined) query.set('minOdds', String(params.minOdds))
@@ -305,6 +304,7 @@ export async function getMarketOutcomeAnalytics(params: {
   pageSize?: number
 }): Promise<MarketOutcomeAnalytics> {
   const query = new URLSearchParams()
+  if (params.matchId) query.set('matchId', params.matchId)
   if (params.fromUtc) query.set('fromUtc', params.fromUtc)
   if (params.toUtc) query.set('toUtc', params.toUtc)
   if (params.marketCode) query.set('marketCode', params.marketCode)
