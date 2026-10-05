@@ -92,7 +92,7 @@ These capabilities must be treated as first-class product requirements, using ex
 ### P2 — SportMonks depth and historical coverage
 
 - [~] DATA-001 Validate the real SportMonks integration and supported odds/market endpoints. Adapter/controller/tests are present; real token, subscription/market coverage and historical depth still need verification.
-- [ ] DATA-002 Historical backfill for configurable periods.
+- [x] DATA-002 Historical backfill for configurable periods. Added an idempotent SportMonks backfill orchestrator with explicit UTC date windows, optional odds ingestion, result reconciliation and a protected ingestion endpoint.
 - [x] DATA-003 Persist opening/current/pre-kickoff/closing/min/max odds without overwriting snapshots. Added an indexed lifecycle read model rebuilt from immutable snapshots after each odds ingestion, with full-slice coverage for all lifecycle values.
 - [x] DATA-004 Provider/bookmaker/market provenance and completeness checks. Odds snapshots now persist the supplying provider directly, with FK/index integrity, provenance coverage metrics in Data Quality, and end-to-end verification.
 - [x] DATA-005 Representative SportMonks payload integration tests. Existing provider tests cover leagues, pagination, fixtures/results/teams, 1X2 odds mapping and missing-token errors with representative JSON payloads.

@@ -36,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<ISettlementService, SettlementService>();
         services.AddScoped<IMatchAnalysisPersistenceService, MatchAnalysisPersistenceService>();
         services.AddScoped<IResultReconciliationService, ResultReconciliationService>();
+        services.AddScoped<IHistoricalBackfillService, HistoricalBackfillService>();
 
         return services;
     }

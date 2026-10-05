@@ -32,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IPointInTimeFeatureStore, PointInTimeFeatureStore>();
         services.AddScoped<IOddsLifecycleStore, OddsLifecycleStore>();
         services.AddScoped<IProviderEntityMapRepository, ProviderEntityMapRepository>();
+        services.AddScoped<IHistoricalMatchQuery, HistoricalMatchQuery>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddSingleton<IClock, SystemClock>();
 

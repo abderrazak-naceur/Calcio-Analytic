@@ -15,17 +15,20 @@ public sealed class SportmonksIngestionController : ControllerBase
     private readonly ICatalogIngestionService _catalog;
     private readonly IMatchIngestionService _matches;
     private readonly IOddsIngestionService _odds;
+    private readonly IHistoricalBackfillService _backfill;
 
     public SportmonksIngestionController(
         IProviderRegistry providers,
         ICatalogIngestionService catalog,
         IMatchIngestionService matches,
-        IOddsIngestionService odds)
+        IOddsIngestionService odds,
+        IHistoricalBackfillService backfill)
     {
         _providers = providers;
         _catalog = catalog;
         _matches = matches;
         _odds = odds;
+        _backfill = backfill;
     }
 
     [HttpGet("leagues")]
@@ -109,6 +112,18 @@ public sealed class SportmonksIngestionController : ControllerBase
             snapshotsSkipped,
             oddsWarning,
             catalog));
+    }
+
+    [HttpPost("backfill")]
+    [ProducesResponseType(typeof(HistoricalBackfillResult), StatusCodes.Status200OK)]
+    public async Task<ActionResult<HistoricalBackfillResult>> Backfill(
+        [FromBody] HistoricalBackfillRequest request,
+        CancellationToken ct)
+    {
+        if (request.FromUtc >= request.ToUtc)
+            return BadRequest("FromUtc must be earlier than ToUtc.");
+
+        return Ok(await _backfill.RunAsync(request, ct).ConfigureAwait(false));
     }
 
     private static bool IsCompleted(ProviderMatchDto fixture) =>
