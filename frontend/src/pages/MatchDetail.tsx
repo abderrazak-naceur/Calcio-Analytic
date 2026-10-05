@@ -303,7 +303,7 @@ function MarketRealityTab({
           { header: 'Favorite', render: (row) => `${row.favoriteSelection} @ ${row.favoriteOdds.toFixed(2)}` },
           { header: 'Winner', render: (row) => row.winnerSelection ? `${row.winnerSelection} @ ${row.winnerOdds?.toFixed(2) ?? '—'}` : '—' },
           { header: 'Result', render: (row) => row.isUpset ? 'UPSET' : row.classification },
-        ] satisfies ReadonlyArray<Column<MarketOutcomeAnalytics['results'][number]>>,
+        ]}
         rows={results}
         rowKey={(row) => `${row.bookmakerId}-${row.marketLineId}`}
         emptyMessage="No market outcomes."
