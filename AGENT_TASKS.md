@@ -65,17 +65,17 @@ ELO / Poisson / Dixon-Coles restano **Advanced Analytics / Phase 2** e non devon
 
 These capabilities must be treated as first-class product requirements, using existing implementations where possible and adding missing tests/contracts/UI rather than duplicating engines.
 
-- [ ] MARKET-001 Favorite detection for supported markets.
-- [ ] MARKET-002 Generic HIT / MISS classification.
-- [ ] MARKET-003 UPSET classification with configurable thresholds (default 5+, 6+, 7+, 8+, 10+).
-- [ ] MARKET-004 Favorite-failure analysis: favorite odds vs winner odds distribution.
-- [ ] MARKET-005 1X2 historical market analysis.
-- [ ] MARKET-006 Over/Under 1.5 / 2.5 / 3.5 analysis.
-- [ ] MARKET-007 BTTS YES/NO analysis.
+- [x] MARKET-001 Favorite detection for supported markets. Pure engine + deterministic tests.
+- [x] MARKET-002 Generic HIT / MISS classification. Pure engine + deterministic tests.
+- [x] MARKET-003 UPSET classification with configurable thresholds (default 5+, 6+, 7+, 8+, 10+). Engine supports configurable threshold; API exposes the standard 5/6/7/8/10 breakdown.
+- [~] MARKET-004 Favorite-failure analysis: API/dashboard implemented with favorite-odds ranges and winner-odds thresholds; CI/integration verification pending.
+- [~] MARKET-005 1X2 historical market analysis. First historical read endpoint implemented; broader backfill/robustness remains.
+- [~] MARKET-006 Over/Under 1.5 / 2.5 / 3.5 analysis. Settlement/API path is generic; representative 2.5 fixture exists.
+- [~] MARKET-007 BTTS YES/NO analysis. Settlement and representative fixture added; historical aggregation remains.
 - [ ] MARKET-008 Historical odds-range statistics: sample, wins, losses, hit/miss rate, upset rate, implied vs actual probability, flat-stake P/L and ROI.
 - [ ] MARKET-009 Upcoming analysis: today, tomorrow, 2/7/14/30 days using comparable historical situations.
-- [ ] MARKET-010 Dedicated Market Failures and Upsets views.
-- [ ] MARKET-011 Main Analysis Dashboard connected to real read models.
+- [~] MARKET-010 Dedicated Market Failures and Upsets views. Market Failures route is live; dedicated Upsets view remains.
+- [~] MARKET-011 Main Analysis Dashboard connected to market-outcome read API; richer production read models remain.
 - [ ] MARKET-012 Match Detail market-outcome and odds-history presentation.
 - [ ] MARKET-013 Daily Market Report.
 - [ ] MARKET-014 Data-quality visibility for missing/incomplete odds/results.

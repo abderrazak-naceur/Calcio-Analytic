@@ -246,3 +246,23 @@ The first important end-to-end milestone is:
 **One real SportMonks match → complete odds history → final result → automatic HIT/MISS/UPSET → historical aggregation → API → dashboard.**
 
 Only after this vertical slice is reliable should the project expand into advanced model comparison and SaaS features.
+
+
+## Current implementation status
+
+The first Market vs Reality vertical slice is now present on
+`feature/platform-completion-phase-1`:
+
+- pure Favorite / HIT / MISS / UPSET classification;
+- configurable upset threshold;
+- BTTS settlement support;
+- historical market-outcome API for 1X2, OU and BTTS;
+- strict pre-kickoff evidence rule: `ProviderTimestampUtc < KickoffUtc`;
+- bookmaker-specific grouping without mixing prices between bookmakers;
+- standard winner-odds thresholds 5+, 6+, 7+, 8+, 10+;
+- favorite-odds failure ranges;
+- Market vs Reality dashboard card and dedicated Market Failures page.
+
+The API currently uses the latest available pre-kickoff snapshot for each
+bookmaker/market/selection. Closing/opening derivation and deeper historical
+backfill remain separate data-depth tasks.
