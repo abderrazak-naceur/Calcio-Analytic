@@ -9,4 +9,8 @@ public sealed record DataQualitySummaryDto(
     int DuplicateOddsMatches,
     int StaleScheduledMatches,
     decimal QualityScorePercentage,
-    DateTime GeneratedAtUtc);
+    DateTime GeneratedAtUtc,
+    int OddsSnapshotCount,
+    int OddsProviderCount,
+    int OddsBookmakerCount,
+    int OddsMarketCount);

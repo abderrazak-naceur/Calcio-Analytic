@@ -15,6 +15,9 @@ public class OddsSnapshot : Entity
     /// <summary>Foreign key to the bookmaker offering the price.</summary>
     public Guid BookmakerId { get; set; }
 
+    /// <summary>Foreign key to the provider that supplied the price.</summary>
+    public Guid ProviderId { get; set; }
+
     /// <summary>Foreign key to the market line being priced.</summary>
     public Guid MarketLineId { get; set; }
 

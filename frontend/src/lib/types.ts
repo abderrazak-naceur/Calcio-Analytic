@@ -563,4 +563,8 @@ export interface DataQualitySummary {
   staleScheduledMatches: number
   qualityScorePercentage: number
   generatedAtUtc: string
+  oddsSnapshotCount: number
+  oddsProviderCount: number
+  oddsBookmakerCount: number
+  oddsMarketCount: number
 }

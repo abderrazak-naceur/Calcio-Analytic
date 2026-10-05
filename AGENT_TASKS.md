@@ -86,7 +86,7 @@ These capabilities must be treated as first-class product requirements, using ex
 - [x] MARKET-010 Dedicated Market Failures and Upsets views. Market Failures and dedicated Upsets routes are live and use the market-outcome read API.
 - [x] MARKET-011 Main Analysis Dashboard connected to market-outcome read API; the dashboard now surfaces live 1X2 Market vs Reality KPIs with period and upset-threshold controls.
 - [x] MARKET-012 Match Detail market-outcome and odds-history presentation. Market Reality is live in Match Detail; deeper odds-history presentation remains a separate data-depth enhancement.
-- [ ] MARKET-013 Daily Market Report.
+- [x] MARKET-013 Daily Market Report. Added daily 1X2 aggregation API, upcoming count and top upset rows, with full-slice automated coverage and dashboard route.
 - [x] MARKET-014 Data-quality visibility for missing/incomplete odds/results. Added global quality summary API and Data Quality dashboard for odds, results, settlements, duplicate snapshots and stale scheduled matches.
 
 ### P2 — SportMonks depth and historical coverage
@@ -94,7 +94,7 @@ These capabilities must be treated as first-class product requirements, using ex
 - [~] DATA-001 Validate the real SportMonks integration and supported odds/market endpoints. Adapter/controller/tests are present; real token, subscription/market coverage and historical depth still need verification.
 - [ ] DATA-002 Historical backfill for configurable periods.
 - [ ] DATA-003 Persist opening/current/pre-kickoff/closing/min/max odds without overwriting snapshots.
-- [ ] DATA-004 Provider/bookmaker/market provenance and completeness checks.
+- [x] DATA-004 Provider/bookmaker/market provenance and completeness checks. Odds snapshots now persist the supplying provider directly, with FK/index integrity, provenance coverage metrics in Data Quality, and end-to-end verification.
 - [x] DATA-005 Representative SportMonks payload integration tests. Existing provider tests cover leagues, pagination, fixtures/results/teams, 1X2 odds mapping and missing-token errors with representative JSON payloads.
 - [ ] DATA-006 Scheduled odds/result synchronization respecting provider limits.
 

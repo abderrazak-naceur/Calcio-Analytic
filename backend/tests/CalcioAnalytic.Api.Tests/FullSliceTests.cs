@@ -7,6 +7,8 @@ using CalcioAnalytic.Domain.Settlement;
 using CalcioAnalytic.Infrastructure.Persistence;
 using CalcioAnalytic.Ingestion;
 using CalcioAnalytic.Ingestion.Providers.Mock;
+using CalcioAnalytic.Api.Controllers;
+using CalcioAnalytic.Api.Contracts.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
@@ -84,6 +86,13 @@ public sealed class FullSliceTests
         // The mock provides 6 snapshots x (3 1X2 + 2 O/U) selections = 30 selection-level snapshots.
         var count = await db.OddsSnapshots.CountAsync(s => s.MatchId == matchId);
         Assert.True(count > 0);
+        var providerId = await db.Providers
+            .Where(p => p.Code == ProviderCode)
+            .Select(p => p.Id)
+            .SingleAsync();
+        Assert.All(
+            await db.OddsSnapshots.Where(s => s.MatchId == matchId).ToListAsync(),
+            snapshot => Assert.Equal(providerId, snapshot.ProviderId));
 
         // A second identical odds run must not double the snapshot count.
         var distinctHashes = await db.OddsSnapshots
@@ -171,5 +180,28 @@ public sealed class FullSliceTests
         Assert.Equal(2, analyses.Count);
         Assert.Equal(new[] { 1, 2 }, analyses.Select(a => a.Version).ToArray());
         Assert.All(analyses, a => Assert.False(string.IsNullOrWhiteSpace(a.AnalysisJson)));
+    }
+
+    [Fact]
+    public async Task Daily_market_report_aggregates_settled_1x2_market()
+    {
+        await using var sp = BuildServices(nameof(Daily_market_report_aggregates_settled_1x2_market));
+
+        var matchId = await IngestFullMatchAsync(sp);
+        using var scope = sp.CreateScope();
+        var settlement = scope.ServiceProvider.GetRequiredService<ISettlementService>();
+        await settlement.SettleMatchAsync(matchId);
+
+        var db = scope.ServiceProvider.GetRequiredService<CalcioAnalyticDbContext>();
+        var controller = new DailyMarketReportController(db);
+
+        var result = await controller.Get(new DateTime(2024, 10, 27), CancellationToken.None);
+        var ok = Assert.IsType<Microsoft.AspNetCore.Mvc.OkObjectResult>(result.Result);
+        var report = Assert.IsType<DailyMarketReportDto>(ok.Value);
+
+        Assert.Equal(1, report.SettledMarkets);
+        Assert.Equal(1, report.FavoriteHits);
+        Assert.Equal(0, report.FavoriteFailures);
+        Assert.Equal(0, report.Upsets);
     }
 }

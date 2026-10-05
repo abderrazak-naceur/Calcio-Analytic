@@ -205,6 +205,7 @@ public sealed class OddsIngestionService : IOddsIngestionService
                     {
                         Id = Guid.NewGuid(),
                         MatchId = matchInternalId,
+                        ProviderId = provider.Id,
                         BookmakerId = bookmakerInternalId,
                         MarketLineId = marketLineId,
                         SelectionId = selectionId,

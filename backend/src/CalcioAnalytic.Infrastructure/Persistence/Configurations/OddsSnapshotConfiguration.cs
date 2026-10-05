@@ -16,6 +16,7 @@ public class OddsSnapshotConfiguration : IEntityTypeConfiguration<OddsSnapshot>
 
         builder.Property(x => x.MatchId).IsRequired();
         builder.Property(x => x.BookmakerId).IsRequired();
+        builder.Property(x => x.ProviderId).IsRequired();
         builder.Property(x => x.MarketLineId).IsRequired();
         builder.Property(x => x.SelectionId).IsRequired();
 
@@ -50,6 +51,11 @@ public class OddsSnapshotConfiguration : IEntityTypeConfiguration<OddsSnapshot>
             .HasForeignKey(x => x.BookmakerId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne<Provider>()
+            .WithMany()
+            .HasForeignKey(x => x.ProviderId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne<MarketLine>()
             .WithMany()
             .HasForeignKey(x => x.MarketLineId)
@@ -64,6 +70,7 @@ public class OddsSnapshotConfiguration : IEntityTypeConfiguration<OddsSnapshot>
         builder.HasIndex(x => new
         {
             x.MatchId,
+            x.ProviderId,
             x.BookmakerId,
             x.MarketLineId,
             x.SelectionId,

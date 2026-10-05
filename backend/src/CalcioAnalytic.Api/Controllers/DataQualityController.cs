@@ -154,6 +154,22 @@ public sealed class DataQualityController : ControllerBase
             .CountAsync(m => (m.Status == Domain.Matches.MatchStatus.Scheduled || m.Status == Domain.Matches.MatchStatus.PreMatch)
                 && m.KickoffUtc < staleCutoff, ct);
 
+        var oddsSnapshotCount = await _db.OddsSnapshots.AsNoTracking().CountAsync(ct);
+        var oddsProviderCount = await _db.OddsSnapshots.AsNoTracking()
+            .Select(o => o.ProviderId)
+            .Distinct()
+            .CountAsync(ct);
+        var oddsBookmakerCount = await _db.OddsSnapshots.AsNoTracking()
+            .Select(o => o.BookmakerId)
+            .Distinct()
+            .CountAsync(ct);
+        var oddsMarketCount = await (
+            from snapshot in _db.OddsSnapshots.AsNoTracking()
+            join line in _db.MarketLines.AsNoTracking() on snapshot.MarketLineId equals line.Id
+            select line.MarketId)
+            .Distinct()
+            .CountAsync(ct);
+
         var issues = missingOdds + missingResults + missingSettlements + duplicateOddsMatches + staleScheduled;
         var denominator = Math.Max(1, finishedMatches + totalMatches);
         var score = decimal.Max(0m, decimal.Round(100m - issues * 100m / denominator, 2));
@@ -167,6 +183,10 @@ public sealed class DataQualityController : ControllerBase
             duplicateOddsMatches,
             staleScheduled,
             score,
-            DateTime.UtcNow));
+            DateTime.UtcNow,
+            oddsSnapshotCount,
+            oddsProviderCount,
+            oddsBookmakerCount,
+            oddsMarketCount));
     }
 }

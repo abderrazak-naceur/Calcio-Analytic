@@ -43,6 +43,15 @@ export default function DataQuality() {
             <Issue label="Stale scheduled" value={data.staleScheduledMatches} />
             <Issue label="Finished matches" value={data.finishedMatches} neutral />
           </div>
+
+          <Card title="Odds provenance coverage">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              <Issue label="Snapshots" value={data.oddsSnapshotCount} neutral />
+              <Issue label="Providers" value={data.oddsProviderCount} neutral />
+              <Issue label="Bookmakers" value={data.oddsBookmakerCount} neutral />
+              <Issue label="Markets" value={data.oddsMarketCount} neutral />
+            </div>
+          </Card>
         </>
       )}
     </div>
