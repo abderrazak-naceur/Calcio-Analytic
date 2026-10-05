@@ -46,6 +46,7 @@ services:
       ConnectionStrings__Redis: ${ConnectionStrings__Redis}
       ANALYTICS_BASE_URL: ${ANALYTICS_BASE_URL}
       Sportmonks__ApiToken: ${Sportmonks__ApiToken:-}
+      OpenTelemetry__OtlpEndpoint: http://otel-collector:4317
     ports:
       - "${API_PORT}:8080"
     networks:
@@ -78,6 +79,53 @@ services:
     networks:
       - calcio
 
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.139.0
+    restart: unless-stopped
+    command: ["--config=/etc/otelcol-contrib/config.yml"]
+    volumes:
+      - ./observability/otel-collector-config.yml:/etc/otelcol-contrib/config.yml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "9464:9464"
+    networks:
+      - calcio
+
+  prometheus:
+    image: prom/prometheus:v3.7.1
+    restart: unless-stopped
+    depends_on:
+      - otel-collector
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=7d
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - calcio
+
+  grafana:
+    image: grafana/grafana:12.2.0
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3001:3000"
+    networks:
+      - calcio
+
   web:
     build:
       context: ./frontend
@@ -98,3 +146,5 @@ networks:
 
 volumes:
   postgres_data:
+  prometheus_data:
+  grafana_data:

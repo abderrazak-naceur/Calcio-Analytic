@@ -105,7 +105,7 @@ These capabilities must be treated as first-class product requirements, using ex
 - [x] TASK-033 Poisson baseline.
 - [x] TASK-034 Dixon-Coles baseline.
 - [x] TASK-035 Backtesting engine.
-- [~] TASK-036 OpenTelemetry dashboards.
+- [x] TASK-036 OpenTelemetry dashboards. Added an OTLP collector, Prometheus and Grafana Compose stack with a provisioned operations dashboard using real ASP.NET Core/runtime telemetry; domain counters remain additive as instrumentation is introduced.
 - [ ] TASK-037 Partition large tables.
 - [~] TASK-038 Customer API and API keys.
 - [~] TASK-039 AI-generated descriptive summaries.

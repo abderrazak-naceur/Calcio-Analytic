@@ -88,6 +88,23 @@ Analytics dashboard:
 - backtest volume
 - model evaluation status
 
+### Local dashboard stack
+
+The Docker Compose stack now includes an OpenTelemetry Collector, Prometheus and
+Grafana. The API exports OTLP telemetry to the collector when Compose is used;
+Prometheus receives the collector's metrics and Grafana is provisioned with the
+`Calcio-Analytic Operations Overview` dashboard.
+
+- Grafana: `http://localhost:3001`
+- Prometheus: `http://localhost:9090`
+- OTLP gRPC: `localhost:4317`
+- OTLP HTTP: `localhost:4318`
+
+The dashboard intentionally uses only telemetry emitted by the application
+(ASP.NET Core HTTP instrumentation and .NET runtime metrics). Domain-specific
+ingestion/provider counters should be added when their instrumentation exists;
+the dashboard must not manufacture operational data.
+
 ## Auditability
 Every generated analysis stores:
 - analysis version

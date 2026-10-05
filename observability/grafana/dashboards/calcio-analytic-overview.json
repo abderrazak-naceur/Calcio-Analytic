@@ -1,0 +1,49 @@
+{
+  "annotations": { "list": [] },
+  "editable": false,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "HTTP requests / 5m",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "targets": [{ "expr": "sum(increase(http_server_request_duration_seconds_count{service_name=\"calcio-analytic-api\"}[5m]))", "legendFormat": "requests" }],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "type": "stat",
+      "title": "HTTP error rate / 5m",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "targets": [{ "expr": "100 * sum(increase(http_server_request_duration_seconds_count{service_name=\"calcio-analytic-api\",http_response_status_code=~\"5..\"}[5m])) / clamp_min(sum(increase(http_server_request_duration_seconds_count{service_name=\"calcio-analytic-api\"}[5m])), 1)", "legendFormat": "5xx %" }],
+      "fieldConfig": { "defaults": { "unit": "percent" } },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP request rate",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [{ "expr": "sum by (http_request_method) (rate(http_server_request_duration_seconds_count{service_name=\"calcio-analytic-api\"}[5m]))", "legendFormat": "{{http_request_method}}" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP latency p95",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [{ "expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_request_duration_seconds_bucket{service_name=\"calcio-analytic-api\"}[5m])))", "legendFormat": "p95" }],
+      "fieldConfig": { "defaults": { "unit": "s" } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Runtime memory",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [{ "expr": "dotnet_gc_last_collection_heap_size_bytes{service_name=\"calcio-analytic-api\"}", "legendFormat": "{{dotnet_gc_heap_generation}}" }],
+      "fieldConfig": { "defaults": { "unit": "bytes" } }
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["calcio-analytic", "operations", "otel"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "title": "Calcio-Analytic Operations Overview",
+  "uid": "calcio-analytic-overview",
+  "version": 1
+}
