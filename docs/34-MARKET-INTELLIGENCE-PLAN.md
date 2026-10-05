@@ -250,8 +250,7 @@ Only after this vertical slice is reliable should the project expand into advanc
 
 ## Current implementation status
 
-The first Market vs Reality vertical slice is now present on
-`feature/platform-completion-phase-1`:
+The first Market vs Reality vertical slice is now merged into `main`:
 
 - pure Favorite / HIT / MISS / UPSET classification;
 - configurable upset threshold;
@@ -261,8 +260,14 @@ The first Market vs Reality vertical slice is now present on
 - bookmaker-specific grouping without mixing prices between bookmakers;
 - standard winner-odds thresholds 5+, 6+, 7+, 8+, 10+;
 - favorite-odds failure ranges;
-- Market vs Reality dashboard card and dedicated Market Failures page.
+- Market vs Reality dashboard card and dedicated Market Failures page;
+- Match Detail Market Reality presentation;
+- automated CI verification across backend, frontend, Python analytics and Docker Compose.
 
 The API currently uses the latest available pre-kickoff snapshot for each
 bookmaker/market/selection. Closing/opening derivation and deeper historical
 backfill remain separate data-depth tasks.
+
+## Verified repository state
+
+The implementation described above is currently integrated in `main`. The remaining gaps are primarily real SportMonks validation, historical data depth/backfill, richer read models, Upcoming Analysis, Daily Reports and data-quality hardening. These are intentionally kept separate from the already working Market vs Reality vertical slice.
