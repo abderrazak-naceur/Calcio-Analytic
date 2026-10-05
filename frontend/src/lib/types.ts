@@ -314,6 +314,8 @@ export interface MatchAiSummary {
   bullets: string[]
   dataCompleteness: Record<string, boolean>
   caveats: string[]
+  provider?: string
+  model?: string | null
 }
 
 /** Historical high-odds intelligence contracts. */

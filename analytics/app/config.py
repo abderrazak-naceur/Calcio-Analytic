@@ -32,6 +32,13 @@ class Settings(BaseSettings):
     # Comma-separated list of allowed CORS origins (frontend).
     cors_origins: str = "http://localhost:3000,http://localhost:5173"
 
+    # Optional OpenAI-compatible LLM used only to verbalize computed facts.
+    ai_summary_enabled: bool = False
+    ai_summary_base_url: Optional[str] = None
+    ai_summary_api_key: Optional[str] = None
+    ai_summary_model: Optional[str] = None
+    ai_summary_timeout_seconds: float = 15.0
+
     @property
     def cors_origin_list(self) -> list[str]:
         """Return CORS origins as a cleaned list."""

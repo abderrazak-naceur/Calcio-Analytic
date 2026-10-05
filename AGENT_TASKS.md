@@ -108,7 +108,7 @@ These capabilities must be treated as first-class product requirements, using ex
 - [x] TASK-036 OpenTelemetry dashboards. Added an OTLP collector, Prometheus and Grafana Compose stack with a provisioned operations dashboard using real ASP.NET Core/runtime telemetry; domain counters remain additive as instrumentation is introduced.
 - [ ] TASK-037 Partition large tables.
 - [~] TASK-038 Customer API and API keys.
-- [~] TASK-039 AI-generated descriptive summaries.
+- [~] TASK-039 AI-generated descriptive summaries. Added an opt-in OpenAI-compatible LLM provider with strict JSON/guardrail prompting, provider/model provenance and deterministic fallback; existing UI remains compatible. Python runtime dependencies are not installed on this workstation, so the pytest suite still needs a CI/analytics-environment verification before marking DONE.
 - [x] TASK-040 High Odds Intelligence.
 
 Advanced models must be used to compare model probability vs market probability only after the core market-intelligence pipeline is stable. They must not replace the historical Market vs Reality analysis.

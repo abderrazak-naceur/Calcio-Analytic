@@ -19,7 +19,9 @@ from typing import Any
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
+from app.config import settings
 from app.summaries.generator import summarize_match
+from app.summaries.ai_provider import generate_ai_summary
 
 router = APIRouter(prefix="/api/v1/summaries", tags=["summaries"])
 
@@ -48,6 +50,8 @@ class MatchSummaryResponse(BaseModel):
     bullets: list[str]
     dataCompleteness: dict[str, bool]
     caveats: list[str]
+    provider: str = "deterministic"
+    model: str | None = None
 
 
 # --------------------------------------------------------------------------- #
@@ -56,5 +60,14 @@ class MatchSummaryResponse(BaseModel):
 @router.post("/match", response_model=MatchSummaryResponse)
 def post_match_summary(request: MatchSummaryRequest) -> MatchSummaryResponse:
     """Return a descriptive, non-predictive summary of the supplied facts."""
-    result = summarize_match(request.facts)
+    result = generate_ai_summary(request.facts)
+    provider = "openai-compatible"
+    model = None
+    if result is None:
+        result = summarize_match(request.facts)
+        provider = "deterministic"
+    else:
+        model = settings.ai_summary_model
+    result["provider"] = provider
+    result["model"] = model
     return MatchSummaryResponse(**result)

@@ -98,6 +98,11 @@ Values can be provided through environment variables or an optional `.env` file.
 | `DATABASE_URL`   | _(unset)_                                        | Optional database connection string.     |
 | `APP_ENV`        | `development`                                    | Deployment environment.                  |
 | `CORS_ORIGINS`   | `http://localhost:3000,http://localhost:5173`    | Comma-separated allowed CORS origins.    |
+| `AI_SUMMARY_ENABLED` | `false` | Enable the optional OpenAI-compatible descriptive summarizer. |
+| `AI_SUMMARY_BASE_URL` | _(unset)_ | Base URL of the OpenAI-compatible provider. |
+| `AI_SUMMARY_API_KEY` | _(unset)_ | Provider credential; never commit it. |
+| `AI_SUMMARY_MODEL` | _(unset)_ | Model identifier used by the provider. |
+| `AI_SUMMARY_TIMEOUT_SECONDS` | `15` | Maximum provider request duration. |
 
 ## Local development
 

@@ -39,6 +39,7 @@ def test_match_summary_endpoint_returns_200_with_summary_and_bullets():
     assert isinstance(body["bullets"], list) and len(body["bullets"]) > 0
     assert _DESCRIPTIVE_CAVEAT in body["caveats"]
     assert body["dataCompleteness"]["result"] is True
+    assert body["provider"] == "deterministic"
 
 
 def test_match_summary_endpoint_missing_scores_reports_unavailable():
