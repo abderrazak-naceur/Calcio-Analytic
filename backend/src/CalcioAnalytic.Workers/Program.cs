@@ -23,6 +23,7 @@ builder.Services.Configure<WorkerOptions>(
 
 builder.Services.AddHostedService<PostMatchProcessingWorker>();
 builder.Services.AddHostedService<SportmonksSyncWorker>();
+builder.Services.AddHostedService<FeatureSnapshotPopulationWorker>();
 
 var host = builder.Build();
 host.Run();

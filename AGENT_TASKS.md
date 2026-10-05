@@ -100,7 +100,7 @@ These capabilities must be treated as first-class product requirements, using ex
 
 ### P2 — Advanced analytics
 
-- [~] TASK-031 Point-in-time feature store. Foundation exists; population/integration remains.
+- [x] TASK-031 Point-in-time feature store. Added automatic pre-kickoff snapshot population for recent-form and 1X2 market features, with persisted closing prices/probabilities and a scheduled worker; advanced model fields remain nullable until their dedicated models have usable inputs.
 - [x] TASK-032 ELO baseline.
 - [x] TASK-033 Poisson baseline.
 - [x] TASK-034 Dixon-Coles baseline.

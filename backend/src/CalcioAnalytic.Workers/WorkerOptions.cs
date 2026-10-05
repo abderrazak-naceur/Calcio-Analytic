@@ -30,4 +30,7 @@ public sealed class WorkerOptions
 
     /// <summary>How far back finished fixtures are rechecked for result corrections.</summary>
     public int SportmonksRecentHours { get; set; } = 12;
+
+    public int FeatureSnapshotIntervalMinutes { get; set; } = 60;
+    public int FeatureSnapshotBatchSize { get; set; } = 100;
 }
