@@ -93,7 +93,7 @@ These capabilities must be treated as first-class product requirements, using ex
 
 - [~] DATA-001 Validate the real SportMonks integration and supported odds/market endpoints. Adapter/controller/tests are present; real token, subscription/market coverage and historical depth still need verification.
 - [ ] DATA-002 Historical backfill for configurable periods.
-- [ ] DATA-003 Persist opening/current/pre-kickoff/closing/min/max odds without overwriting snapshots.
+- [x] DATA-003 Persist opening/current/pre-kickoff/closing/min/max odds without overwriting snapshots. Added an indexed lifecycle read model rebuilt from immutable snapshots after each odds ingestion, with full-slice coverage for all lifecycle values.
 - [x] DATA-004 Provider/bookmaker/market provenance and completeness checks. Odds snapshots now persist the supplying provider directly, with FK/index integrity, provenance coverage metrics in Data Quality, and end-to-end verification.
 - [x] DATA-005 Representative SportMonks payload integration tests. Existing provider tests cover leagues, pagination, fixtures/results/teams, 1X2 odds mapping and missing-token errors with representative JSON payloads.
 - [x] DATA-006 Scheduled odds/result synchronization respecting provider limits. Added opt-in SportMonks worker with bounded batches, configurable lookahead/recent windows, minimum request delay and safe disabled-by-default behavior when no token is configured.

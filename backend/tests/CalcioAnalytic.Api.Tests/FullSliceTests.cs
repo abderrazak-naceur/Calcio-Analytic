@@ -41,6 +41,7 @@ public sealed class FullSliceTests
         services.AddScoped<Application.Abstractions.Persistence.IMatchRepository, MatchRepository>();
         services.AddScoped<Application.Abstractions.Persistence.IProviderEntityMapRepository, ProviderEntityMapRepository>();
         services.AddScoped<Application.Abstractions.Persistence.IUnitOfWork, UnitOfWork>();
+        services.AddScoped<Application.Abstractions.Persistence.IOddsLifecycleStore, OddsLifecycleStore>();
         services.AddSingleton<Application.Abstractions.Clock.IClock, Infrastructure.Time.SystemClock>();
 
         services.AddIngestion();
@@ -93,6 +94,20 @@ public sealed class FullSliceTests
         Assert.All(
             await db.OddsSnapshots.Where(s => s.MatchId == matchId).ToListAsync(),
             snapshot => Assert.Equal(providerId, snapshot.ProviderId));
+        var lifecycle = await db.OddsLifecycleSummaries
+            .Where(x => x.MatchId == matchId)
+            .ToListAsync();
+        Assert.NotEmpty(lifecycle);
+        Assert.All(lifecycle, summary =>
+        {
+            Assert.NotNull(summary.OpeningOdds);
+            Assert.NotNull(summary.CurrentOdds);
+            Assert.NotNull(summary.PreKickoffOdds);
+            Assert.NotNull(summary.ClosingOdds);
+            Assert.NotNull(summary.MinOdds);
+            Assert.NotNull(summary.MaxOdds);
+            Assert.True(summary.MinOdds <= summary.MaxOdds);
+        });
 
         // A second identical odds run must not double the snapshot count.
         var distinctHashes = await db.OddsSnapshots

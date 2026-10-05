@@ -50,6 +50,7 @@ public class CalcioAnalyticDbContext : DbContext
     public DbSet<MarketLine> MarketLines => Set<MarketLine>();
     public DbSet<Selection> Selections => Set<Selection>();
     public DbSet<OddsSnapshot> OddsSnapshots => Set<OddsSnapshot>();
+    public DbSet<OddsLifecycleSummary> OddsLifecycleSummaries => Set<OddsLifecycleSummary>();
     public DbSet<MarketSettlement> MarketSettlements => Set<MarketSettlement>();
     public DbSet<MatchStatistic> MatchStatistics => Set<MatchStatistic>();
     public DbSet<MatchEvent> MatchEvents => Set<MatchEvent>();

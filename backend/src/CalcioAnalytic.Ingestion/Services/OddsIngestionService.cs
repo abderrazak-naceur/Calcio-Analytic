@@ -48,6 +48,7 @@ public sealed class OddsIngestionService : IOddsIngestionService
     private readonly IRepository<Selection> _selections;
     private readonly IRepository<OddsSnapshot> _snapshots;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IOddsLifecycleStore _lifecycleStore;
     private readonly IClock _clock;
     private readonly ILogger<OddsIngestionService> _logger;
 
@@ -60,6 +61,7 @@ public sealed class OddsIngestionService : IOddsIngestionService
         IRepository<Selection> selections,
         IRepository<OddsSnapshot> snapshots,
         IUnitOfWork unitOfWork,
+        IOddsLifecycleStore lifecycleStore,
         IClock clock,
         ILogger<OddsIngestionService> logger)
     {
@@ -70,6 +72,7 @@ public sealed class OddsIngestionService : IOddsIngestionService
         ArgumentNullException.ThrowIfNull(selections);
         ArgumentNullException.ThrowIfNull(snapshots);
         ArgumentNullException.ThrowIfNull(unitOfWork);
+        ArgumentNullException.ThrowIfNull(lifecycleStore);
         ArgumentNullException.ThrowIfNull(clock);
         ArgumentNullException.ThrowIfNull(logger);
 
@@ -80,6 +83,7 @@ public sealed class OddsIngestionService : IOddsIngestionService
         _selections = selections;
         _snapshots = snapshots;
         _unitOfWork = unitOfWork;
+        _lifecycleStore = lifecycleStore;
         _clock = clock;
         _logger = logger;
     }
@@ -231,6 +235,7 @@ public sealed class OddsIngestionService : IOddsIngestionService
         }
 
         await _unitOfWork.SaveChangesAsync(ct).ConfigureAwait(false);
+        await _lifecycleStore.RefreshAsync(matchInternalId, ct).ConfigureAwait(false);
 
         _logger.LogInformation(
             "Completed odds ingestion for provider {ProviderCode}, match {MatchExternalId}: {Inserted} inserted, {Skipped} duplicates skipped, {Lines} market lines, {Selections} selections.",
