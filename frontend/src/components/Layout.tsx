@@ -16,6 +16,7 @@ const sections = [
       { to: '/market-outcomes', label: 'Market Failures', end: false, icon: '◆' },
       { to: '/upcoming', label: 'Upcoming Analysis', end: false, icon: '◈' },
       { to: '/upsets', label: 'Upsets', end: false, icon: '⚡' },
+      { to: '/daily-report', label: 'Daily Report', end: false, icon: '▣' },
       { to: '/bookmakers', label: 'Bookmakers', end: false, icon: '◐' },
       { to: '/patterns', label: 'Patterns', end: false, icon: '⬣' },
     ],

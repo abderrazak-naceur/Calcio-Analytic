@@ -12,6 +12,7 @@ import BacktestingLab from './pages/BacktestingLab'
 import MarketOutcomes from './pages/MarketOutcomes'
 import UpcomingAnalysis from './pages/UpcomingAnalysis'
 import Upsets from './pages/Upsets'
+import DailyReport from './pages/DailyReport'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/market-outcomes" element={<MarketOutcomes />} />
           <Route path="/upcoming" element={<UpcomingAnalysis />} />
           <Route path="/upsets" element={<Upsets />} />
+          <Route path="/daily-report" element={<DailyReport />} />
           <Route path="/backtesting" element={<BacktestingLab />} />
         </Route>
       </Routes>

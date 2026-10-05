@@ -528,3 +528,27 @@ export interface UpcomingAnalysis {
   results: UpcomingAnalysisRow[]
   totalResults: number
 }
+
+export interface DailyMarketReport {
+  dateUtc: string
+  settledMarkets: number
+  favoriteHits: number
+  favoriteFailures: number
+  upsets: number
+  favoriteFailureRatePercentage: number | null
+  roiPercentage: number | null
+  upcomingMatches: number
+  biggestUpsets: Array<{
+    matchId: string
+    kickoffUtc: string
+    competitionName: string
+    homeTeamName: string
+    awayTeamName: string
+    favoriteSelection: string
+    favoriteOdds: number
+    winnerSelection: string | null
+    winnerOdds: number | null
+    classification: string
+    isUpset: boolean
+  }>
+}

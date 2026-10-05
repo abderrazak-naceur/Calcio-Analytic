@@ -86,6 +86,7 @@ import type {
   MatchAiSummary,
   MarketOutcomeAnalytics,
   UpcomingAnalysis,
+  DailyMarketReport,
   MatchAnalysisReport,
   MatchDetail,
   MatchSummary,
@@ -384,4 +385,10 @@ export async function getUpcomingAnalysis(params: {
   query.set('marketCode', params.marketCode ?? '1X2')
   query.set('minimumComparableSamples', String(params.minimumComparableSamples ?? 5))
   return apiFetch<UpcomingAnalysis>('/api/v1/analytics/upcoming?' + query.toString())
+}
+
+/** GET /api/v1/analytics/daily-report. */
+export async function getDailyMarketReport(dateUtc?: string): Promise<DailyMarketReport> {
+  const query = dateUtc ? `?dateUtc=${encodeURIComponent(dateUtc)}` : ''
+  return apiFetch<DailyMarketReport>('/api/v1/analytics/daily-report' + query)
 }
