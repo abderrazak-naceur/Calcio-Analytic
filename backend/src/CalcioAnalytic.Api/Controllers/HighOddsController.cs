@@ -79,7 +79,7 @@ public sealed class HighOddsController : ControllerBase
         {
             return Ok(BuildResponse(
                 from, to, minOdds, competitionId, bookmakerId, normalizedResult, page, pageSize,
-                [], [], [], [], 0));
+                [], [], [], [], [], 0));
         }
 
         var matchIds = matchRows.Select(m => m.Id).ToArray();
