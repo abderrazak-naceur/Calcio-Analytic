@@ -349,3 +349,58 @@ export interface HighOddsCatalog {
   competitions: HighOddsCatalogItem[]
   bookmakers: HighOddsCatalogItem[]
 }
+
+
+export interface MarketOutcomeQuery {
+  fromUtc: string | null
+  toUtc: string | null
+  marketCode: string
+  minFavoriteOdds: number | null
+  maxFavoriteOdds: number | null
+  upsetThreshold: number
+  bookmakerId: string | null
+  classification: string | null
+  page: number
+  pageSize: number
+}
+
+export interface MarketOutcomeRow {
+  matchId: string
+  kickoffUtc: string
+  competitionId: string
+  competitionName: string
+  homeTeamId: string
+  homeTeamName: string
+  awayTeamId: string
+  awayTeamName: string
+  bookmakerId: string
+  bookmakerName: string
+  marketLineId: string
+  marketCode: string
+  line: number | null
+  favoriteSelection: string
+  favoriteOdds: number
+  favoriteStatus: string
+  classification: string
+  isUpset: boolean
+  winnerSelection: string | null
+  winnerOdds: number | null
+}
+
+export interface MarketOutcomeSummary {
+  totalMarkets: number
+  hitCount: number
+  missCount: number
+  upsetCount: number
+  unknownCount: number
+  favoriteFailureRatePercentage: number | null
+}
+
+export interface MarketOutcomeAnalytics {
+  query: MarketOutcomeQuery
+  summary: MarketOutcomeSummary
+  results: MarketOutcomeRow[]
+  totalResults: number
+  page: number
+  pageSize: number
+}

@@ -84,6 +84,7 @@ import type {
   HighOddsAnalytics,
   HighOddsCatalog,
   MatchAiSummary,
+  MarketOutcomeAnalytics,
   MatchAnalysisReport,
   MatchDetail,
   MatchSummary,
@@ -285,4 +286,34 @@ export async function getMatchAiSummary(id: string): Promise<MatchAiSummary> {
     }
     throw error
   }
+}
+
+
+/** GET /api/v1/analytics/market-outcomes. */
+export async function getMarketOutcomeAnalytics(params: {
+  fromUtc?: string
+  toUtc?: string
+  marketCode?: string
+  minFavoriteOdds?: number
+  maxFavoriteOdds?: number
+  upsetThreshold?: number
+  bookmakerId?: string
+  classification?: string
+  page?: number
+  pageSize?: number
+}): Promise<MarketOutcomeAnalytics> {
+  const query = new URLSearchParams()
+  if (params.fromUtc) query.set('fromUtc', params.fromUtc)
+  if (params.toUtc) query.set('toUtc', params.toUtc)
+  if (params.marketCode) query.set('marketCode', params.marketCode)
+  if (params.minFavoriteOdds !== undefined) query.set('minFavoriteOdds', String(params.minFavoriteOdds))
+  if (params.maxFavoriteOdds !== undefined) query.set('maxFavoriteOdds', String(params.maxFavoriteOdds))
+  if (params.upsetThreshold !== undefined) query.set('upsetThreshold', String(params.upsetThreshold))
+  if (params.bookmakerId) query.set('bookmakerId', params.bookmakerId)
+  if (params.classification) query.set('classification', params.classification)
+  query.set('page', String(params.page ?? 1))
+  query.set('pageSize', String(params.pageSize ?? 50))
+  return apiFetch<MarketOutcomeAnalytics>(
+    '/api/v1/analytics/market-outcomes?' + query.toString(),
+  )
 }

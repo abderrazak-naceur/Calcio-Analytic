@@ -8,7 +8,9 @@ import {
   ApiError,
   getDashboardSummary,
   getHealth,
+  getMarketOutcomeAnalytics,
   getRecentMatches,
+
   postIngestCatalog,
   postIngestFixture,
   postIngestOdds,
@@ -85,6 +87,7 @@ function Dashboard() {
     INGEST_STEPS.map(() => ({ kind: 'pending' })),
   )
   const [ingesting, setIngesting] = useState(false)
+  const [marketReality, setMarketReality] = useState<import('../lib/types').MarketOutcomeAnalytics | null>(null)
 
   const loadSummary = useCallback(async () => {
     setSummary({ kind: 'loading' })
@@ -120,6 +123,9 @@ function Dashboard() {
     void loadSummary()
     void loadRecent()
     void loadHealth()
+    void getMarketOutcomeAnalytics({ marketCode: '1X2', pageSize: 10 })
+      .then(setMarketReality)
+      .catch(() => setMarketReality(null))
   }, [loadSummary, loadRecent, loadHealth])
 
   const runIngestion = useCallback(async () => {
@@ -160,6 +166,8 @@ function Dashboard() {
 
       <KpiRow state={summary} onRetry={() => void loadSummary()} />
 
+      <MarketRealityCard data={marketReality} />
+
       <Card title="Recent matches">
         <RecentMatches state={recent} onRetry={() => void loadRecent()} />
       </Card>
@@ -194,6 +202,98 @@ function Dashboard() {
           ))}
         </ol>
       </Card>
+    </div>
+  )
+}
+
+
+function MarketRealityCard({
+  data,
+}: {
+  data: import('../lib/types').MarketOutcomeAnalytics | null
+}) {
+  if (!data) {
+    return (
+      <Card title="Market vs Reality">
+        <p className="text-sm text-slate-500">
+          No settled 1X2 market intelligence is available yet.
+        </p>
+      </Card>
+    )
+  }
+
+  const { summary, results } = data
+  const failures = results.filter((row) => row.classification === 'MISS').slice(0, 5)
+
+  return (
+    <Card
+      title="Market vs Reality"
+      actions={
+        <Link
+          to="/market-outcomes"
+          className="text-sm font-medium text-green-400 hover:text-green-300"
+        >
+          Open analysis
+        </Link>
+      }
+    >
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Metric label="Markets" value={summary.totalMarkets} />
+        <Metric label="HIT" value={summary.hitCount} />
+        <Metric label="MISS" value={summary.missCount} />
+        <Metric label="UPSETS" value={summary.upsetCount} />
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-400">
+        <span className="rounded-full border border-slate-700 px-2.5 py-1">
+          Favorite failure {summary.favoriteFailureRatePercentage ?? 0}%
+        </span>
+        <span className="rounded-full border border-slate-700 px-2.5 py-1">
+          Threshold {data.query.upsetThreshold.toFixed(2)}+
+        </span>
+      </div>
+      {failures.length > 0 && (
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="text-xs uppercase text-slate-500">
+              <tr>
+                <th className="pb-2">Match</th>
+                <th className="pb-2">Favorite</th>
+                <th className="pb-2">Winner</th>
+                <th className="pb-2">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {failures.map((row) => (
+                <tr key={`${row.matchId}-${row.bookmakerId}-${row.marketLineId}`} className="border-t border-slate-800">
+                  <td className="py-2 text-slate-200">
+                    {row.homeTeamName} – {row.awayTeamName}
+                  </td>
+                  <td className="py-2">
+                    {row.favoriteSelection} @ {row.favoriteOdds.toFixed(2)}
+                  </td>
+                  <td className="py-2">
+                    {row.winnerSelection ?? '—'} {row.winnerOdds ? `@${row.winnerOdds.toFixed(2)}` : ''}
+                  </td>
+                  <td className="py-2">
+                    <span className={row.isUpset ? 'font-semibold text-amber-400' : 'text-red-400'}>
+                      {row.isUpset ? 'UPSET' : 'MISS'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Card>
+  )
+}
+
+function Metric({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+      <p className="text-xs uppercase tracking-wide text-slate-500">{label}</p>
+      <p className="mt-1 text-xl font-semibold text-white">{value}</p>
     </div>
   )
 }
