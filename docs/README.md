@@ -37,6 +37,7 @@ Questa cartella contiene la documentazione completa del prodotto e del progetto.
 - `31-FRONTEND-VITE-ARCHITECTURE.md` — architettura React/Vite.
 - `32-DATA-ANALYSIS-FLOW.md` — ciclo completo dalla raccolta dati al report storico.
 - `33-MASTER-IMPLEMENTATION-ROADMAP.md` — piano completo dalla fondazione alla produzione.
+- `34-MARKET-INTELLIGENCE-PLAN.md` — **nuovo source-of-truth per il focus Market vs Reality: HIT/MISS/UPSET, favorite failures, high-odds analysis, Over/Under, BTTS, storico e upcoming analysis**.
 
 ## Source of truth
 
@@ -45,11 +46,8 @@ Questa cartella contiene la documentazione completa del prodotto e del progetto.
 `04-SYSTEM-ARCHITECTURE.md` definisce come costruirlo.
 `25-DETAILED-MATCH-DATA-COVERAGE.md` definisce quali dati dobbiamo conservare.
 `26-ANALYTICS-ENGINE.md` definisce come trasformare quei dati in analisi riproducibili.
+`34-MARKET-INTELLIGENCE-PLAN.md` definisce la priorità attuale del prodotto e il percorso Market vs Reality.
 
 ## Repository execution
 
-`AGENT_TASKS.md` contiene il backlog implementativo P0/P1/P2. Una task non deve essere marcata DONE senza implementazione, test, documentazione e verifica.
-
-## Current repository status
-
-La documentazione costituisce la base per l'implementazione del backend .NET 10, ingestion engine, Analytics Engine, PostgreSQL data layer, worker services e web application React/TypeScript.
+`AGENT_TASKS.md` contiene il backlog implementativo e il suo stato verificato. Una task non deve essere marcata DONE senza implementazione, test, documentazione e verifica.
