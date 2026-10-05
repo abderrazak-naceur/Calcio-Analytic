@@ -31,3 +31,13 @@ public sealed record MatchIngestionRequest(
 /// match identifier that was created or updated.
 /// </summary>
 public sealed record FixtureIngestionResponse(Guid MatchId);
+
+/// <summary>
+/// Response for an on-demand post-match processing batch (settlement +
+/// versioned analysis for finished matches).
+/// </summary>
+public sealed record PostMatchProcessResponse(
+    int Processed,
+    int SettledSelections,
+    int Failed,
+    int RemainingFinished);

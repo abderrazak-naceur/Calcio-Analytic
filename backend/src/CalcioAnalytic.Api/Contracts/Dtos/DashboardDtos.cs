@@ -30,7 +30,9 @@ public sealed record DashboardSummaryDto(
 public sealed record RecentMatchDto(
     Guid Id,
     Guid HomeTeamId,
+    string HomeTeamName,
     Guid AwayTeamId,
+    string AwayTeamName,
     DateTime KickoffUtc,
     string Status,
     int? HomeScore,

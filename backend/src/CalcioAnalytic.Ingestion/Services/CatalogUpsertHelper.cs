@@ -193,8 +193,21 @@ internal sealed class CatalogUpsertHelper
             var existing = await _teams.GetByIdAsync(id, ct).ConfigureAwait(false);
             if (existing is not null)
             {
-                existing.Name = dto.Name;
-                existing.ShortName = dto.ShortName ?? existing.ShortName;
+                // Never overwrite a real display name with a fallback id: the
+                // Sportmonks schedule payload only carries participant ids, so
+                // fixture-only upserts resolve teams as id-as-name rows. Only
+                // upgrade the name when the incoming value looks like a real
+                // display name (not a purely numeric external id).
+                if (IsRealDisplayName(dto.Name))
+                {
+                    existing.Name = dto.Name;
+                }
+
+                if (!string.IsNullOrWhiteSpace(dto.ShortName))
+                {
+                    existing.ShortName = dto.ShortName;
+                }
+
                 if (countryId != Guid.Empty)
                 {
                     existing.CountryId = countryId;
@@ -220,6 +233,21 @@ internal sealed class CatalogUpsertHelper
             .ConfigureAwait(false);
         RememberPending(TeamEntityType, dto.ExternalId, team.Id);
         return team.Id;
+    }
+
+    /// <summary>
+    /// Returns true when a team name looks like a real display name rather than
+    /// a numeric external id used as a fallback by fixture-only upserts.
+    /// </summary>
+    private static bool IsRealDisplayName(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return false;
+        }
+
+        var trimmed = name.Trim();
+        return trimmed.Any(char.IsLetter);
     }
 
     /// <summary>

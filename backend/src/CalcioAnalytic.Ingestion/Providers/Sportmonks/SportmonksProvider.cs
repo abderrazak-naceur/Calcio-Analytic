@@ -75,7 +75,7 @@ public sealed class SportmonksProvider :
         ArgumentException.ThrowIfNullOrWhiteSpace(seasonExternalId);
 
         using var document = await GetAsync(
-            $"football/schedules/seasons/{Uri.EscapeDataString(seasonExternalId)}",
+            $"football/schedules/seasons/{Uri.EscapeDataString(seasonExternalId)}?include=participants",
             ct).ConfigureAwait(false);
 
         var teams = new Dictionary<string, ProviderTeamDto>(StringComparer.Ordinal);

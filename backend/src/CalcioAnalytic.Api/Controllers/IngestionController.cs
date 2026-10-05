@@ -1,5 +1,9 @@
 using CalcioAnalytic.Api.Contracts.Dtos;
+using CalcioAnalytic.Application.Abstractions.Persistence;
+using CalcioAnalytic.Application.Analytics;
 using CalcioAnalytic.Application.Ingestion;
+using CalcioAnalytic.Application.Settlement;
+using CalcioAnalytic.Domain.Matches;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CalcioAnalytic.Api.Controllers;
@@ -17,17 +21,29 @@ public sealed class IngestionController : ControllerBase
     private readonly IMatchIngestionService _match;
     private readonly IOddsIngestionService _odds;
     private readonly IStatisticsIngestionService _statistics;
+    private readonly IMatchRepository _matches;
+    private readonly ISettlementService _settlement;
+    private readonly IMatchAnalysisPersistenceService _analysis;
+    private readonly IUnitOfWork _unitOfWork;
 
     public IngestionController(
         ICatalogIngestionService catalog,
         IMatchIngestionService match,
         IOddsIngestionService odds,
-        IStatisticsIngestionService statistics)
+        IStatisticsIngestionService statistics,
+        IMatchRepository matches,
+        ISettlementService settlement,
+        IMatchAnalysisPersistenceService analysis,
+        IUnitOfWork unitOfWork)
     {
         _catalog = catalog;
         _match = match;
         _odds = odds;
         _statistics = statistics;
+        _matches = matches;
+        _settlement = settlement;
+        _analysis = analysis;
+        _unitOfWork = unitOfWork;
     }
 
     /// <summary>
@@ -131,5 +147,55 @@ public sealed class IngestionController : ControllerBase
             ct);
 
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Runs settlement + versioned analysis for finished matches awaiting
+    /// post-match processing (same work as the background worker, on demand).
+    /// Bounded per call so large backlogs are drained across repeated calls.
+    /// </summary>
+    /// <param name="take">Maximum finished matches to process (1..500, default 50).</param>
+    /// <param name="ct">A token to observe for cancellation.</param>
+    [HttpPost("post-match/process")]
+    [ProducesResponseType(typeof(PostMatchProcessResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PostMatchProcessResponse>> ProcessPostMatch(
+        [FromQuery] int take = 50,
+        CancellationToken ct = default)
+    {
+        var limit = Math.Clamp(take, 1, 500);
+        var finished = await _matches.GetByStatusAsync(MatchStatus.Finished, ct).ConfigureAwait(false);
+
+        var processed = 0;
+        var settledSelections = 0;
+        var failed = 0;
+        foreach (var match in finished.Take(limit))
+        {
+            ct.ThrowIfCancellationRequested();
+            try
+            {
+                settledSelections += await _settlement.SettleMatchAsync(match.Id, ct).ConfigureAwait(false);
+                await _analysis.GenerateAndStoreAsync(match.Id, ct).ConfigureAwait(false);
+
+                var tracked = await _matches.GetByIdAsync(match.Id, ct).ConfigureAwait(false);
+                if (tracked is not null && tracked.Status == MatchStatus.Finished)
+                {
+                    tracked.Status = MatchStatus.Analyzed;
+                    _matches.Update(tracked);
+                    await _unitOfWork.SaveChangesAsync(ct).ConfigureAwait(false);
+                }
+
+                processed++;
+            }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch
+            {
+                failed++;
+            }
+        }
+
+        return Ok(new PostMatchProcessResponse(processed, settledSelections, failed, finished.Count));
     }
 }

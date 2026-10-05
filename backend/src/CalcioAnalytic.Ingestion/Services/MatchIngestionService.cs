@@ -217,6 +217,8 @@ public sealed class MatchIngestionService : IMatchIngestionService
     // These delegate to the helper's upsert methods, which are idempotent via
     // both the provider entity map (committed rows) and an in-run pending cache
     // (staged-but-uncommitted rows), so no duplicates are created within a run.
+    private const int MaximumDemoMatches = 2000;
+
     private static Task<Guid> ResolveCompetitionAsync(
         Guid providerId,
         CatalogUpsertHelper helper,

@@ -95,7 +95,9 @@ import type {
   ProviderSeason,
   RecentMatch,
   SimilarMatch,
+  SportmonksBulkSeasonImportResult,
   SportmonksSeasonImportResult,
+  DemoOddsSeedResult,
 } from './types'
 
 /**
@@ -130,10 +132,38 @@ export async function getSportmonksSeasons(
 export async function postSportmonksSeasonImport(
   leagueId: string,
   seasonId: string,
+  seedDemoOdds = false,
 ): Promise<SportmonksSeasonImportResult> {
   return apiPost<SportmonksSeasonImportResult>(
     '/api/v1/ingestion/sportmonks/seasons/import',
-    { leagueId, seasonId },
+    { leagueId, seasonId, seedDemoOdds },
+  )
+}
+
+/** POST /api/v1/ingestion/sportmonks/seasons/import-all. */
+export async function postSportmonksBulkSeasonImport(
+  seasonLabelOrId: string,
+  options?: { seedDemoOdds?: boolean; maxLeagues?: number; skipLeagues?: number },
+): Promise<SportmonksBulkSeasonImportResult> {
+  return apiPost<SportmonksBulkSeasonImportResult>(
+    '/api/v1/ingestion/sportmonks/seasons/import-all',
+    {
+      seasonLabelOrId,
+      seedDemoOdds: options?.seedDemoOdds ?? true,
+      maxLeagues: options?.maxLeagues ?? 10,
+      skipLeagues: options?.skipLeagues ?? 0,
+    },
+  )
+}
+
+/** POST /api/v1/ingestion/sportmonks/demo-odds/seed. */
+export async function postSeedDemoOdds(
+  leagueId?: string,
+  seasonId?: string,
+): Promise<DemoOddsSeedResult> {
+  return apiPost<DemoOddsSeedResult>(
+    '/api/v1/ingestion/sportmonks/demo-odds/seed',
+    { leagueId: leagueId ?? null, seasonId: seasonId ?? null },
   )
 }
 

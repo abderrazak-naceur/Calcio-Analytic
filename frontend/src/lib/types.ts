@@ -219,7 +219,9 @@ export interface DashboardSummary {
 export interface RecentMatch {
   id: string
   homeTeamId: string
+  homeTeamName: string
   awayTeamId: string
+  awayTeamName: string
   kickoffUtc: string
   status: MatchStatus
   homeScore: number | null
@@ -249,6 +251,7 @@ export interface SportmonksSeasonImportResult {
   oddsRequestsAttempted: number
   oddsSnapshotsInserted: number
   duplicateOddsSnapshotsSkipped: number
+  demoOddsSnapshotsInserted: number
   oddsWarning: string | null
   catalog: {
     competitionsUpserted: number
@@ -257,6 +260,28 @@ export interface SportmonksSeasonImportResult {
     bookmakersUpserted: number
     marketsUpserted: number
   }
+}
+
+export interface SportmonksBulkSeasonSkip {
+  leagueId: string
+  leagueName: string
+  reason: string
+}
+
+export interface SportmonksBulkSeasonImportResult {
+  seasonLabelOrId: string
+  leaguesImported: number
+  leaguesSkipped: number
+  fixturesUpserted: number
+  oddsSnapshotsInserted: number
+  demoOddsSnapshotsInserted: number
+  results: SportmonksSeasonImportResult[]
+  skipped: SportmonksBulkSeasonSkip[]
+}
+
+export interface DemoOddsSeedResult {
+  matchesProcessed: number
+  snapshotsInserted: number
 }
 
 /** A single data-quality check within a report. */

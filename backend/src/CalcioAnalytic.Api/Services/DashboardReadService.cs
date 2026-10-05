@@ -104,6 +104,7 @@ public static class DashboardReadService
         var limit = Math.Clamp(take, 1, 100);
 
         // Project scalars in SQL (status stays an enum) and take only N rows.
+        // Team names are joined here so the dashboard never renders raw ids.
         var rows = await db.Matches.AsNoTracking()
             .OrderByDescending(m => m.KickoffUtc)
             .Take(limit)
@@ -111,7 +112,9 @@ public static class DashboardReadService
             {
                 m.Id,
                 m.HomeTeamId,
+                HomeTeamName = m.HomeTeam!.Name,
                 m.AwayTeamId,
+                AwayTeamName = m.AwayTeam!.Name,
                 m.KickoffUtc,
                 m.Status,
                 m.HomeScore,
@@ -123,7 +126,9 @@ public static class DashboardReadService
             .Select(m => new RecentMatchDto(
                 m.Id,
                 m.HomeTeamId,
+                m.HomeTeamName,
                 m.AwayTeamId,
+                m.AwayTeamName,
                 m.KickoffUtc,
                 m.Status.ToString(),
                 m.HomeScore,
