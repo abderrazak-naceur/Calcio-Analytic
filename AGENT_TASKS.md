@@ -10,6 +10,7 @@
 - [~] TASK-003 Configure PostgreSQL, Redis and Docker Compose. (compose + CI presenti; non ancora avviato/verificato end-to-end con container)
 - [x] TASK-004 Create base migrations and schemas. (InitialCreate + OddsStatsSettlementAnalytics; schemi catalog/matches/odds/statistics/analytics)
 - [x] TASK-005 Implement provider abstraction. (IFootball/IFixture/IOdds/IStatistics/IStandings/IBookmaker + registry + options)
+- [~] TASK-005A Implement compliant web-data acquisition layer. (throttled HTTP scraper source, retry/backoff and DI foundation; source-specific parser, robots/ToS validation, raw snapshot persistence and scheduling still to do)
 - [~] TASK-006 Implement football identity mappings. (entità ProviderEntityMap + repo + upsert idempotente; manca reconciliation/alias/dedup avanzati)
 - [x] TASK-007 Implement match ingestion. (MatchIngestionService idempotente, test end-to-end mock: Inter 2-1 Juventus)
 - [~] TASK-008 Implement bookmaker/market catalog. (CatalogIngestionService upserta bookmaker/market; manca sync schedulata/alias)
@@ -64,15 +65,16 @@ DataQualityEngine (8 check + score dq-1.0.0) + GET api/v1/dataquality/matches/{i
 ## Riepilogo cosa manca (priorità)
 
 1. Complete TASK-031 feature population + integrate Python ELO/Poisson/Dixon-Coles into the .NET point-in-time pipeline.
-2. Dashboard UI collegata al read-model (summary/recent) + pannello Data Quality; explorer dedicati movement/bookmaker (TASK-027/028).
-3. Proxy .NET + UI per AI summaries (completa TASK-039).
-4. Transizioni lifecycle pre-match/live legate a ingestione live (completa TASK-011).
-5. SaaS multi-utente (org/ruoli/quote) — Phase 27; API clienti + quote (TASK-038).
-6. Partitioning tabelle grandi (TASK-037); materialized read model a scala (completa TASK-022).
-7. Dashboards OTel di produzione/collector (completa TASK-036).
-8. Data quality aggregata per provider/competizione/giorno (estende Phase 21).
-9. Verifica Docker Compose end-to-end reale con Postgres/Redis (TASK-003).
-10. Un provider reale (oltre al mock) quando disponibili credenziali.
+2. Complete TASK-005A with a legally/technically validated public source, source-specific parser, raw snapshot persistence, scheduling and representative payload tests.
+3. Dashboard UI collegata al read-model (summary/recent) + pannello Data Quality; explorer dedicati movement/bookmaker (TASK-027/028).
+4. Proxy .NET + UI per AI summaries (completa TASK-039).
+5. Transizioni lifecycle pre-match/live legate a ingestione live (completa TASK-011).
+6. SaaS multi-utente (org/ruoli/quote) — Phase 27; API clienti + quote (TASK-038).
+7. Partitioning tabelle grandi (TASK-037); materialized read model a scala (completa TASK-022).
+8. Dashboards OTel di produzione/collector (completa TASK-036).
+9. Data quality aggregata per provider/competizione/giorno (estende Phase 21).
+10. Verifica Docker Compose end-to-end reale con Postgres/Redis (TASK-003).
+11. Un provider reale/API come fallback quando disponibile e necessario.
 
 ## Rule
 
