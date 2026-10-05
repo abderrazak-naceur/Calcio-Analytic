@@ -26,6 +26,7 @@ public sealed class MarketOutcomeController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(MarketOutcomeAnalyticsResponseDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<MarketOutcomeAnalyticsResponseDto>> Get(
+        [FromQuery] Guid? matchId,
         [FromQuery] DateTime? fromUtc,
         [FromQuery] DateTime? toUtc,
         [FromQuery] string marketCode = "1X2",
@@ -62,8 +63,12 @@ public sealed class MarketOutcomeController : ControllerBase
         page = Math.Max(1, page);
         pageSize = Math.Clamp(pageSize, 1, 500);
 
-        var to = (toUtc ?? DateTime.UtcNow).ToUniversalTime();
-        var from = (fromUtc ?? to.AddDays(-30)).ToUniversalTime();
+        var to = matchId.HasValue
+            ? (toUtc ?? DateTime.MaxValue).ToUniversalTime()
+            : (toUtc ?? DateTime.UtcNow).ToUniversalTime();
+        var from = matchId.HasValue
+            ? (fromUtc ?? DateTime.MinValue).ToUniversalTime()
+            : (fromUtc ?? to.AddDays(-30)).ToUniversalTime();
         if (from >= to)
             return BadRequest(new { message = "fromUtc must be earlier than toUtc." });
 
@@ -81,6 +86,7 @@ public sealed class MarketOutcomeController : ControllerBase
                 && snapshot.ProviderTimestampUtc < match.KickoffUtc
                 && match.KickoffUtc >= from
                 && match.KickoffUtc <= to
+                && (matchId == null || match.Id == matchId.Value)
                 && (match.Status == MatchStatus.Finished ||
                     match.Status == MatchStatus.SettlementPending ||
                     match.Status == MatchStatus.Analyzed ||
@@ -165,6 +171,7 @@ public sealed class MarketOutcomeController : ControllerBase
         var paged = latest.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
         var query = new MarketOutcomeQueryDto(
+            matchId,
             from,
             to,
             normalizedMarket,

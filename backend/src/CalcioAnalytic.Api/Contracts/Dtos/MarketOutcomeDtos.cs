@@ -1,6 +1,7 @@
 namespace CalcioAnalytic.Api.Contracts.Dtos;
 
 public sealed record MarketOutcomeQueryDto(
+    Guid? MatchId,
     DateTime? FromUtc,
     DateTime? ToUtc,
     string MarketCode,
