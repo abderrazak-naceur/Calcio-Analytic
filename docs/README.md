@@ -37,7 +37,8 @@ Questa cartella contiene la documentazione completa del prodotto e del progetto.
 - `31-FRONTEND-VITE-ARCHITECTURE.md` — architettura React/Vite.
 - `32-DATA-ANALYSIS-FLOW.md` — ciclo completo dalla raccolta dati al report storico.
 - `33-MASTER-IMPLEMENTATION-ROADMAP.md` — piano completo dalla fondazione alla produzione.
-- `34-MARKET-INTELLIGENCE-PLAN.md` — **nuovo source-of-truth per il focus Market vs Reality: HIT/MISS/UPSET, favorite failures, high-odds analysis, Over/Under, BTTS, storico e upcoming analysis**.
+- `34-MARKET-INTELLIGENCE-PLAN.md` — **source-of-truth per il focus Market vs Reality: HIT/MISS/UPSET, favorite failures, high-odds analysis, Over/Under, BTTS, storico e upcoming analysis**.
+- `35-SPORTMONKS-INTEGRATION.md` — adapter, ingestion flow, configuration, provider limitations and validation checklist.
 
 ## Source of truth
 

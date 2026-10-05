@@ -82,7 +82,7 @@ These capabilities must be treated as first-class product requirements, using ex
 
 ### P2 — SportMonks depth and historical coverage
 
-- [ ] DATA-001 Validate the real SportMonks integration and supported odds/market endpoints.
+- [~] DATA-001 Validate the real SportMonks integration and supported odds/market endpoints. Adapter/controller/tests are present; real token, subscription/market coverage and historical depth still need verification.
 - [ ] DATA-002 Historical backfill for configurable periods.
 - [ ] DATA-003 Persist opening/current/pre-kickoff/closing/min/max odds without overwriting snapshots.
 - [ ] DATA-004 Provider/bookmaker/market provenance and completeness checks.
