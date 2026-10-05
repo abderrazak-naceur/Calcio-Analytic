@@ -194,6 +194,7 @@ Dedicated views:
 - Upsets;
 - Historical Analysis;
 - Upcoming Analysis;
+- Dedicated Upsets view with configurable winner-odds thresholds;
 - Odds Movement;
 - Match Detail;
 - Daily Reports.

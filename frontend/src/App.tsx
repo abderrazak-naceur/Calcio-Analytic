@@ -11,6 +11,7 @@ import HighOddsIntelligence from './pages/HighOddsIntelligence'
 import BacktestingLab from './pages/BacktestingLab'
 import MarketOutcomes from './pages/MarketOutcomes'
 import UpcomingAnalysis from './pages/UpcomingAnalysis'
+import Upsets from './pages/Upsets'
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/high-odds" element={<HighOddsIntelligence />} />
           <Route path="/market-outcomes" element={<MarketOutcomes />} />
           <Route path="/upcoming" element={<UpcomingAnalysis />} />
+          <Route path="/upsets" element={<Upsets />} />
           <Route path="/backtesting" element={<BacktestingLab />} />
         </Route>
       </Routes>
