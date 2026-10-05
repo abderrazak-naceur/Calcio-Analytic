@@ -66,10 +66,10 @@ public sealed class MarketOutcomeController : ControllerBase
         var to = matchId.HasValue
             ? (toUtc ?? DateTime.MaxValue).ToUniversalTime()
             : (toUtc ?? DateTime.UtcNow).ToUniversalTime();
-        var from = matchId.HasValue
+        var fromUtcBound = matchId.HasValue
             ? (fromUtc ?? DateTime.MinValue).ToUniversalTime()
             : (fromUtc ?? to.AddDays(-30)).ToUniversalTime();
-        if (from >= to)
+        if (fromUtcBound >= to)
             return BadRequest(new { message = "fromUtc must be earlier than toUtc." });
 
         var rows = await (
@@ -84,7 +84,7 @@ public sealed class MarketOutcomeController : ControllerBase
                 equals new { settlement.MatchId, settlement.MarketLineId, settlement.SelectionId }
             where snapshot.IsLive == false
                 && snapshot.ProviderTimestampUtc < match.KickoffUtc
-                && match.KickoffUtc >= from
+                && match.KickoffUtc >= fromUtcBound
                 && match.KickoffUtc <= to
                 && (matchId == null || match.Id == matchId.Value)
                 && (match.Status == MatchStatus.Finished ||
