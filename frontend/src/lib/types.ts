@@ -219,11 +219,69 @@ export interface DashboardSummary {
 export interface RecentMatch {
   id: string
   homeTeamId: string
+  homeTeamName: string
   awayTeamId: string
+  awayTeamName: string
   kickoffUtc: string
   status: MatchStatus
   homeScore: number | null
   awayScore: number | null
+}
+
+export interface ProviderCompetition {
+  externalId: string
+  name: string
+  countryName: string | null
+  tier: string | null
+}
+
+export interface ProviderSeason {
+  externalId: string
+  competitionExternalId: string
+  label: string
+  startDate: string | null
+  endDate: string | null
+}
+
+export interface SportmonksSeasonImportResult {
+  leagueId: string
+  seasonId: string
+  fixturesUpserted: number
+  completedFixturesWithOddsRequested: number
+  oddsRequestsAttempted: number
+  oddsSnapshotsInserted: number
+  duplicateOddsSnapshotsSkipped: number
+  demoOddsSnapshotsInserted: number
+  oddsWarning: string | null
+  catalog: {
+    competitionsUpserted: number
+    seasonsUpserted: number
+    teamsUpserted: number
+    bookmakersUpserted: number
+    marketsUpserted: number
+  }
+}
+
+export interface SportmonksBulkSeasonSkip {
+  leagueId: string
+  leagueName: string
+  reason: string
+}
+
+export interface SportmonksBulkSeasonImportResult {
+  seasonLabelOrId: string
+  leaguesImported: number
+  leaguesSkipped: number
+  fixturesUpserted: number
+  oddsSnapshotsInserted: number
+  demoOddsSnapshotsInserted: number
+  results: SportmonksSeasonImportResult[]
+  skipped: SportmonksBulkSeasonSkip[]
+}
+
+export interface DemoOddsSeedResult {
+  matchesProcessed: number
+  snapshotsInserted: number
 }
 
 /** A single data-quality check within a report. */

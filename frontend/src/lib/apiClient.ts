@@ -92,8 +92,13 @@ import type {
   OddsSnapshot,
   PatternQueryRequest,
   PatternResult,
+  ProviderCompetition,
+  ProviderSeason,
   RecentMatch,
   SimilarMatch,
+  SportmonksBulkSeasonImportResult,
+  SportmonksSeasonImportResult,
+  DemoOddsSeedResult,
 } from './types'
 
 /**
@@ -107,6 +112,53 @@ async function apiPost<TResponse>(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
+  })
+}
+
+/** GET /api/v1/ingestion/sportmonks/leagues. */
+export async function getSportmonksLeagues(): Promise<ProviderCompetition[]> {
+  return apiFetch<ProviderCompetition[]>('/api/v1/ingestion/sportmonks/leagues')
+}
+
+/** GET /api/v1/ingestion/sportmonks/leagues/{leagueId}/seasons. */
+export async function getSportmonksSeasons(leagueId: string): Promise<ProviderSeason[]> {
+  return apiFetch<ProviderSeason[]>(`/api/v1/ingestion/sportmonks/leagues/${encodeURIComponent(leagueId)}/seasons`)
+}
+
+/** POST /api/v1/ingestion/sportmonks/seasons/import. */
+export async function postSportmonksSeasonImport(
+  leagueId: string,
+  seasonId: string,
+  seedDemoOdds = false,
+): Promise<SportmonksSeasonImportResult> {
+  return apiPost<SportmonksSeasonImportResult>('/api/v1/ingestion/sportmonks/seasons/import', {
+    leagueId,
+    seasonId,
+    seedDemoOdds,
+  })
+}
+
+/** POST /api/v1/ingestion/sportmonks/seasons/import-all. */
+export async function postSportmonksBulkSeasonImport(
+  seasonLabelOrId: string,
+  options?: { seedDemoOdds?: boolean; maxLeagues?: number; skipLeagues?: number },
+): Promise<SportmonksBulkSeasonImportResult> {
+  return apiPost<SportmonksBulkSeasonImportResult>('/api/v1/ingestion/sportmonks/seasons/import-all', {
+    seasonLabelOrId,
+    seedDemoOdds: options?.seedDemoOdds ?? true,
+    maxLeagues: options?.maxLeagues ?? 10,
+    skipLeagues: options?.skipLeagues ?? 0,
+  })
+}
+
+/** POST /api/v1/ingestion/sportmonks/demo-odds/seed. */
+export async function postSeedDemoOdds(
+  leagueId?: string,
+  seasonId?: string,
+): Promise<DemoOddsSeedResult> {
+  return apiPost<DemoOddsSeedResult>('/api/v1/ingestion/sportmonks/demo-odds/seed', {
+    leagueId: leagueId ?? null,
+    seasonId: seasonId ?? null,
   })
 }
 
