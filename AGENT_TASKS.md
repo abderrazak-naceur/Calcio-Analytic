@@ -95,7 +95,7 @@ These capabilities must be treated as first-class product requirements, using ex
 - [ ] DATA-002 Historical backfill for configurable periods.
 - [ ] DATA-003 Persist opening/current/pre-kickoff/closing/min/max odds without overwriting snapshots.
 - [ ] DATA-004 Provider/bookmaker/market provenance and completeness checks.
-- [ ] DATA-005 Representative SportMonks payload integration tests.
+- [x] DATA-005 Representative SportMonks payload integration tests. Existing provider tests cover leagues, pagination, fixtures/results/teams, 1X2 odds mapping and missing-token errors with representative JSON payloads.
 - [ ] DATA-006 Scheduled odds/result synchronization respecting provider limits.
 
 ### P2 — Advanced analytics
