@@ -15,4 +15,19 @@ public sealed class WorkerOptions
     /// Values less than or equal to zero are coerced to the default at runtime.
     /// </summary>
     public int IntervalSeconds { get; set; } = 30;
+
+    /// <summary>Enables the scheduled SportMonks synchronization loop.</summary>
+    public bool SportmonksSyncEnabled { get; set; }
+
+    /// <summary>Minimum delay between SportMonks HTTP-backed ingestion operations.</summary>
+    public int SportmonksRequestDelayMilliseconds { get; set; } = 1000;
+
+    /// <summary>Maximum number of matches synchronized in one cycle.</summary>
+    public int SportmonksBatchSize { get; set; } = 25;
+
+    /// <summary>How far ahead scheduled/pre-match fixtures are synchronized.</summary>
+    public int SportmonksLookaheadHours { get; set; } = 24;
+
+    /// <summary>How far back finished fixtures are rechecked for result corrections.</summary>
+    public int SportmonksRecentHours { get; set; } = 12;
 }

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -25,6 +25,7 @@
     <ProjectReference Include="..\..\src\CalcioAnalytic.Ingestion\CalcioAnalytic.Ingestion.csproj" />
     <ProjectReference Include="..\..\src\CalcioAnalytic.Analytics\CalcioAnalytic.Analytics.csproj" />
     <ProjectReference Include="..\..\src\CalcioAnalytic.Infrastructure\CalcioAnalytic.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\CalcioAnalytic.Workers\CalcioAnalytic.Workers.csproj" />
   </ItemGroup>
 
 </Project>

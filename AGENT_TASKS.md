@@ -96,7 +96,7 @@ These capabilities must be treated as first-class product requirements, using ex
 - [ ] DATA-003 Persist opening/current/pre-kickoff/closing/min/max odds without overwriting snapshots.
 - [x] DATA-004 Provider/bookmaker/market provenance and completeness checks. Odds snapshots now persist the supplying provider directly, with FK/index integrity, provenance coverage metrics in Data Quality, and end-to-end verification.
 - [x] DATA-005 Representative SportMonks payload integration tests. Existing provider tests cover leagues, pagination, fixtures/results/teams, 1X2 odds mapping and missing-token errors with representative JSON payloads.
-- [ ] DATA-006 Scheduled odds/result synchronization respecting provider limits.
+- [x] DATA-006 Scheduled odds/result synchronization respecting provider limits. Added opt-in SportMonks worker with bounded batches, configurable lookahead/recent windows, minimum request delay and safe disabled-by-default behavior when no token is configured.
 
 ### P2 — Advanced analytics
 

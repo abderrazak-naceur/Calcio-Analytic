@@ -14,6 +14,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddIngestion();
 builder.Services.AddMockProvider();
+builder.Services.AddSportmonksProvider();
 builder.Services.AddAnalytics();
 
 // Bind worker options from the "Worker" section (falls back to defaults if absent).
@@ -21,6 +22,7 @@ builder.Services.Configure<WorkerOptions>(
     builder.Configuration.GetSection(WorkerOptions.SectionName));
 
 builder.Services.AddHostedService<PostMatchProcessingWorker>();
+builder.Services.AddHostedService<SportmonksSyncWorker>();
 
 var host = builder.Build();
 host.Run();
