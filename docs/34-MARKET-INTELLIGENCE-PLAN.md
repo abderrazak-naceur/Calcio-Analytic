@@ -284,4 +284,4 @@ backfill remain separate data-depth tasks.
 
 ## Verified repository state
 
-The implementation described above is currently integrated in `main`. The remaining gaps are primarily real SportMonks validation, historical data depth/backfill, richer read models, Upcoming Analysis, Daily Reports and data-quality hardening. These are intentionally kept separate from the already working Market vs Reality vertical slice.
+The implementation described above is currently integrated in `main`. The remaining gaps are primarily real SportMonks validation, historical data depth/backfill, richer production read models, Daily Reports and data-quality hardening. Upcoming Analysis and the dedicated Upsets view are now part of the working Market Intelligence slice.

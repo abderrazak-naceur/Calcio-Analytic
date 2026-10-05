@@ -84,7 +84,7 @@ These capabilities must be treated as first-class product requirements, using ex
 - [x] MARKET-008 Historical odds-range statistics: sample, wins, losses, hit/miss rate, upset rate, implied vs actual probability, flat-stake P/L and ROI. Implemented for Market vs Reality with deterministic statistics tests and dashboard presentation.
 - [x] MARKET-009 Upcoming analysis: today, tomorrow, 2/7/14/30 days using comparable historical situations. Added 1X2 upcoming endpoint, historical comparable statistics and dashboard view with minimum-sample filtering.
 - [x] MARKET-010 Dedicated Market Failures and Upsets views. Market Failures and dedicated Upsets routes are live and use the market-outcome read API.
-- [~] MARKET-011 Main Analysis Dashboard connected to market-outcome read API; richer optimized production read models remain.
+- [x] MARKET-011 Main Analysis Dashboard connected to market-outcome read API; the dashboard now surfaces live 1X2 Market vs Reality KPIs with period and upset-threshold controls.
 - [x] MARKET-012 Match Detail market-outcome and odds-history presentation. Market Reality is live in Match Detail; deeper odds-history presentation remains a separate data-depth enhancement.
 - [ ] MARKET-013 Daily Market Report.
 - [ ] MARKET-014 Data-quality visibility for missing/incomplete odds/results.

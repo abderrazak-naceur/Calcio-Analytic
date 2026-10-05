@@ -10,6 +10,7 @@ import {
   getHealth,
   getHighOddsAnalytics,
   getHighOddsCatalog,
+  getMarketOutcomeAnalytics,
   getRecentMatches,
   getSportmonksLeagues,
   getSportmonksSeasons,
@@ -22,6 +23,7 @@ import type {
   DemoOddsSeedResult,
   HighOddsAnalytics,
   HighOddsCatalog,
+  MarketOutcomeAnalytics,
   ProviderCompetition,
   ProviderSeason,
   RecentMatch,
@@ -47,6 +49,11 @@ type HealthState =
 type HighOddsState =
   | { kind: 'loading' }
   | { kind: 'ready'; data: HighOddsAnalytics }
+  | { kind: 'error'; message: string }
+
+type MarketOutcomeState =
+  | { kind: 'loading' }
+  | { kind: 'ready'; data: MarketOutcomeAnalytics }
   | { kind: 'error'; message: string }
 
 const UPSET_THRESHOLDS = [3, 5, 6, 7, 8, 10] as const
@@ -108,6 +115,7 @@ function Dashboard() {
   const [recent, setRecent] = useState<RecentState>({ kind: 'loading' })
   const [health, setHealth] = useState<HealthState>({ kind: 'loading' })
   const [highOdds, setHighOdds] = useState<HighOddsState>({ kind: 'loading' })
+  const [marketOutcome, setMarketOutcome] = useState<MarketOutcomeState>({ kind: 'loading' })
   const [catalog, setCatalog] = useState<HighOddsCatalog | null>(null)
   const [minOdds, setMinOdds] = useState<number>(6)
   const [periodDays, setPeriodDays] = useState<number>(30)
@@ -164,12 +172,33 @@ function Dashboard() {
     }
   }, [])
 
+  const loadMarketOutcome = useCallback(async () => {
+    setMarketOutcome({ kind: 'loading' })
+    try {
+      const data = await getMarketOutcomeAnalytics({
+        fromUtc: toIsoRange(periodDays).fromUtc,
+        toUtc: toIsoRange(periodDays).toUtc,
+        marketCode: '1X2',
+        upsetThreshold: minOdds,
+        page: 1,
+        pageSize: 1,
+      })
+      setMarketOutcome({ kind: 'ready', data })
+    } catch (error) {
+      setMarketOutcome({ kind: 'error', message: describeError(error) })
+    }
+  }, [minOdds, periodDays])
+
   useEffect(() => {
     void loadSummary()
     void loadRecent()
     void loadHealth()
     void getHighOddsCatalog().then(setCatalog).catch(() => setCatalog(null))
   }, [loadSummary, loadRecent, loadHealth])
+
+  useEffect(() => {
+    void loadMarketOutcome()
+  }, [loadMarketOutcome])
 
   useEffect(() => {
     let cancelled = false
@@ -377,6 +406,8 @@ function Dashboard() {
         threshold={minOdds}
         onRetry={() => void loadSummary()}
       />
+
+      <MarketRealityKpi state={marketOutcome} />
 
       <div className="flex flex-wrap items-center gap-2 rounded-xl border border-white/5 bg-[#0a0f1c] p-3">
         <span className="px-1 text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">
@@ -680,6 +711,34 @@ function Dashboard() {
       )}
     </div>
   )
+}
+
+function MarketRealityKpi({ state }: { state: MarketOutcomeState }) {
+  if (state.kind === 'loading') {
+    return <Card><Spinner label="Loading Market vs Reality…" /></Card>
+  }
+  if (state.kind === 'error') {
+    return <Card><p className="text-sm text-red-400">Market vs Reality unavailable: {state.message}</p></Card>
+  }
+  const { summary } = state.data
+  return (
+    <Card
+      title="Market vs Reality · 1X2"
+      actions={<Link to="/market-outcomes" className="text-xs font-semibold text-emerald-400 hover:text-emerald-300">Open analysis →</Link>}
+    >
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+        <Metric label="Markets" value={formatNum(summary.totalMarkets)} />
+        <Metric label="Favorite hit" value={formatPct(summary.actualProbabilityPercentage ?? 0)} />
+        <Metric label="Failure" value={formatPct(summary.favoriteFailureRatePercentage ?? 0)} />
+        <Metric label="Upsets" value={formatNum(summary.upsetCount)} />
+        <Metric label="Flat ROI" value={`${summary.roiPercentage.toFixed(2)}%`} />
+      </div>
+    </Card>
+  )
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return <div className="rounded-lg border border-white/5 bg-white/[0.02] p-3"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</p><p className="mt-1 text-lg font-bold text-white">{value}</p></div>
 }
 
 function KpiStrip({
