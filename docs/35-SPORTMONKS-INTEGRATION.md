@@ -37,6 +37,10 @@ The adapter requests pre-match odds and preserves provider/bookmaker timestamps.
 
 Historical odds must remain append-only. No post-kickoff snapshot may become pre-match evidence.
 
+## Current status
+
+The adapter, ingestion controller, dependency injection, configuration forwarding and representative mapping tests are implemented and CI is green. The integration is **not** considered fully validated yet because the repository still needs a real SportMonks credential/subscription check, representative odds coverage and historical-depth measurement.
+
 ## Validation still required
 
 Before marking DATA-001 DONE:
