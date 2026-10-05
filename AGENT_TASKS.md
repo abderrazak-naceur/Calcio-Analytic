@@ -3,7 +3,7 @@
 ## Repository status — verified on main
 
 - Main contains the merged Market Intelligence vertical slice.
-- Latest CI verification is green across backend, frontend, Python analytics and Docker Compose validation.
+- CI workflow is configured for backend, frontend, Python analytics and Docker Compose validation. Current connector data does not expose a new status result for the newest main commits, so no new green result is claimed for those commits.
 - The former `feature/platform-completion-phase-1` branch no longer contains commits ahead of `main`; its work is integrated in main.
 - The former `feature/high-odds-intelligence` branch also has no unique commits ahead of main; its work is already integrated.
 - SportMonks remains the primary provider, but DATA-001 stays partial until a real credential/subscription is validated against representative odds coverage and historical depth.
@@ -124,14 +124,11 @@ Advanced models must be used to compare model probability vs market probability 
 
 ## Current next execution order
 
-1. Validate the real SportMonks connection, subscribed markets and historical odds depth.
+1. Validate the real SportMonks connection, subscribed markets and historical odds depth (DATA-001).
 2. Harden historical Market vs Reality aggregation for 1X2, Over/Under and BTTS.
-3. Implement historical odds-range statistics including P/L and ROI.
-4. ~~Implement Upcoming Analysis for today/2/7/14/30-day windows.~~ Done for the current 1X2 market slice.
-5. Complete dedicated Upsets view and richer dashboard/read models.
-6. Add Daily Market Report and scheduled jobs.
-7. Add historical backfill and provenance hardening; data-quality visibility is now available.
-8. Only then expand advanced model comparison and SaaS capabilities.
+3. Expand historical/provider coverage and validate data-quality completeness.
+4. Optimize read models and production observability where measured scale justifies it.
+5. Only then expand advanced model comparison and SaaS capabilities.
 
 ## Correct execution order
 
