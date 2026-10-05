@@ -12,6 +12,7 @@ import {
   getMatchAiSummary,
   getMatchAnalysis,
   getMatchOdds,
+  getMarketOutcomeAnalytics,
 } from '../lib/apiClient'
 import type {
   BookmakerDispersion,
@@ -20,6 +21,7 @@ import type {
   MarketAnalysis,
   MatchAiSummary,
   MatchAnalysisReport,
+  MarketOutcomeAnalytics,
   OddsMovement,
   OddsSnapshot,
 } from '../lib/types'
@@ -31,6 +33,7 @@ const TABS = [
   'Bookmakers',
   'Markets',
   'Statistics',
+  'Market Reality',
   'Data Quality',
   'AI Summary',
 ] as const
@@ -54,6 +57,13 @@ type DataQualityState =
   | { kind: 'idle' }
   | { kind: 'loading' }
   | { kind: 'ready'; report: DataQualityReport }
+  | { kind: 'empty' }
+  | { kind: 'error'; message: string }
+
+type MarketOutcomeState =
+  | { kind: 'idle' }
+  | { kind: 'loading' }
+  | { kind: 'ready'; data: MarketOutcomeAnalytics }
   | { kind: 'empty' }
   | { kind: 'error'; message: string }
 
@@ -89,6 +99,7 @@ function MatchDetail() {
     kind: 'idle',
   })
   const [aiSummary, setAiSummary] = useState<AiSummaryState>({ kind: 'idle' })
+  const [marketOutcome, setMarketOutcome] = useState<MarketOutcomeState>({ kind: 'idle' })
 
   const loadReport = useCallback(async (matchId: string) => {
     setReport({ kind: 'loading' })
@@ -164,11 +175,31 @@ function MatchDetail() {
     }
   }, [id, tab, dataQuality.kind, loadDataQuality])
 
+  const loadMarketOutcome = useCallback(async (matchId: string) => {
+    setMarketOutcome({ kind: 'loading' })
+    try {
+      const data = await getMarketOutcomeAnalytics({ matchId, marketCode: '1X2', pageSize: 50 })
+      setMarketOutcome(data.results.length === 0 ? { kind: 'empty' } : { kind: 'ready', data })
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        setMarketOutcome({ kind: 'empty' })
+        return
+      }
+      setMarketOutcome({ kind: 'error', message: describeError(error) })
+    }
+  }, [])
+
   useEffect(() => {
     if (id && tab === 'AI Summary' && aiSummary.kind === 'idle') {
       void loadAiSummary(id)
     }
   }, [id, tab, aiSummary.kind, loadAiSummary])
+
+  useEffect(() => {
+    if (id && tab === 'Market Reality' && marketOutcome.kind === 'idle') {
+      void loadMarketOutcome(id)
+    }
+  }, [id, tab, marketOutcome.kind, loadMarketOutcome])
 
   if (!id) {
     return <p className="text-sm text-red-400">Missing match id.</p>
@@ -206,6 +237,8 @@ function MatchDetail() {
         <div className="pt-6">
           {tab === 'Odds' ? (
             <OddsTab state={odds} onRetry={() => void loadOdds(id)} />
+          ) : tab === 'Market Reality' ? (
+            <MarketRealityTab state={marketOutcome} onRetry={() => void loadMarketOutcome(id)} />
           ) : tab === 'Data Quality' ? (
             <DataQualityTab
               state={dataQuality}
@@ -225,6 +258,65 @@ function MatchDetail() {
           )}
         </div>
       </Card>
+    </div>
+  )
+}
+
+function MarketRealityTab({
+  state,
+  onRetry,
+}: {
+  state: MarketOutcomeState
+  onRetry: () => void
+}) {
+  if (state.kind === 'idle' || state.kind === 'loading') return <Spinner label="Loading market reality…" />
+  if (state.kind === 'empty') return <p className="text-sm text-slate-400">No settled pre-kickoff market outcome is available for this match.</p>
+  if (state.kind === 'error') {
+    return (
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-red-400">Could not load market reality: {state.message}</p>
+        <button type="button" onClick={onRetry} className="rounded-md bg-slate-800 px-3 py-1.5 text-sm font-medium text-slate-200">Retry</button>
+      </div>
+    )
+  }
+
+  const { summary, results } = state.data
+  return (
+    <div className="space-y-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <MiniKpi label="HIT" value={summary.hitCount} />
+        <MiniKpi label="MISS" value={summary.missCount} />
+        <MiniKpi label="UPSETS" value={summary.upsetCount} />
+        <MiniKpi label="Failure" value={summary.favoriteFailureRatePercentage ?? 0} suffix="%" />
+      </div>
+      <div className="grid gap-3 md:grid-cols-5">
+        {summary.upsetThresholds.map((item) => (
+          <div key={item.threshold} className="rounded-lg border border-slate-800 bg-slate-950/50 p-3">
+            <p className="text-xs text-slate-500">{item.threshold.toFixed(0)}+ winner</p>
+            <p className="mt-1 text-lg font-semibold text-white">{item.winnerCount}</p>
+          </div>
+        ))}
+      </div>
+      <DataTable
+        columns={[
+          { header: 'Bookmaker', render: (row) => row.bookmakerName },
+          { header: 'Favorite', render: (row) => `${row.favoriteSelection} @ ${row.favoriteOdds.toFixed(2)}` },
+          { header: 'Winner', render: (row) => row.winnerSelection ? `${row.winnerSelection} @ ${row.winnerOdds?.toFixed(2) ?? '—'}` : '—' },
+          { header: 'Result', render: (row) => row.isUpset ? 'UPSET' : row.classification },
+        ] satisfies ReadonlyArray<Column<MarketOutcomeAnalytics['results'][number]>>,
+        rows={results}
+        rowKey={(row) => `${row.bookmakerId}-${row.marketLineId}`}
+        emptyMessage="No market outcomes."
+      />
+    </div>
+  )
+}
+
+function MiniKpi({ label, value, suffix = '' }: { label: string; value: number; suffix?: string }) {
+  return (
+    <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+      <p className="text-xs text-slate-500">{label}</p>
+      <p className="mt-1 text-xl font-bold text-white">{value}{suffix}</p>
     </div>
   )
 }

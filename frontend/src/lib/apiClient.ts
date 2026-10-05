@@ -84,6 +84,7 @@ import type {
   HighOddsAnalytics,
   HighOddsCatalog,
   MatchAiSummary,
+  MarketOutcomeAnalytics,
   MatchAnalysisReport,
   MatchDetail,
   MatchSummary,
@@ -91,13 +92,8 @@ import type {
   OddsSnapshot,
   PatternQueryRequest,
   PatternResult,
-  ProviderCompetition,
-  ProviderSeason,
   RecentMatch,
   SimilarMatch,
-  SportmonksBulkSeasonImportResult,
-  SportmonksSeasonImportResult,
-  DemoOddsSeedResult,
 } from './types'
 
 /**
@@ -112,59 +108,6 @@ async function apiPost<TResponse>(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
-}
-
-/** GET /api/v1/ingestion/sportmonks/leagues. */
-export async function getSportmonksLeagues(): Promise<ProviderCompetition[]> {
-  return apiFetch<ProviderCompetition[]>('/api/v1/ingestion/sportmonks/leagues')
-}
-
-/** GET /api/v1/ingestion/sportmonks/leagues/{leagueId}/seasons. */
-export async function getSportmonksSeasons(
-  leagueId: string,
-): Promise<ProviderSeason[]> {
-  return apiFetch<ProviderSeason[]>(
-    `/api/v1/ingestion/sportmonks/leagues/${encodeURIComponent(leagueId)}/seasons`,
-  )
-}
-
-/** POST /api/v1/ingestion/sportmonks/seasons/import. */
-export async function postSportmonksSeasonImport(
-  leagueId: string,
-  seasonId: string,
-  seedDemoOdds = false,
-): Promise<SportmonksSeasonImportResult> {
-  return apiPost<SportmonksSeasonImportResult>(
-    '/api/v1/ingestion/sportmonks/seasons/import',
-    { leagueId, seasonId, seedDemoOdds },
-  )
-}
-
-/** POST /api/v1/ingestion/sportmonks/seasons/import-all. */
-export async function postSportmonksBulkSeasonImport(
-  seasonLabelOrId: string,
-  options?: { seedDemoOdds?: boolean; maxLeagues?: number; skipLeagues?: number },
-): Promise<SportmonksBulkSeasonImportResult> {
-  return apiPost<SportmonksBulkSeasonImportResult>(
-    '/api/v1/ingestion/sportmonks/seasons/import-all',
-    {
-      seasonLabelOrId,
-      seedDemoOdds: options?.seedDemoOdds ?? true,
-      maxLeagues: options?.maxLeagues ?? 10,
-      skipLeagues: options?.skipLeagues ?? 0,
-    },
-  )
-}
-
-/** POST /api/v1/ingestion/sportmonks/demo-odds/seed. */
-export async function postSeedDemoOdds(
-  leagueId?: string,
-  seasonId?: string,
-): Promise<DemoOddsSeedResult> {
-  return apiPost<DemoOddsSeedResult>(
-    '/api/v1/ingestion/sportmonks/demo-odds/seed',
-    { leagueId: leagueId ?? null, seasonId: seasonId ?? null },
-  )
 }
 
 /** GET /api/v1/matches — optionally filtered by status. */
@@ -239,6 +182,7 @@ export async function getHighOddsAnalytics(params: {
   pageSize?: number
 }): Promise<HighOddsAnalytics> {
   const query = new URLSearchParams()
+  if (params.matchId) query.set('matchId', params.matchId)
   if (params.fromUtc) query.set('fromUtc', params.fromUtc)
   if (params.toUtc) query.set('toUtc', params.toUtc)
   if (params.minOdds !== undefined) query.set('minOdds', String(params.minOdds))
@@ -343,4 +287,35 @@ export async function getMatchAiSummary(id: string): Promise<MatchAiSummary> {
     }
     throw error
   }
+}
+
+
+/** GET /api/v1/analytics/market-outcomes. */
+export async function getMarketOutcomeAnalytics(params: {
+  matchId?: string
+  fromUtc?: string
+  toUtc?: string
+  marketCode?: string
+  minFavoriteOdds?: number
+  maxFavoriteOdds?: number
+  upsetThreshold?: number
+  bookmakerId?: string
+  classification?: string
+  page?: number
+  pageSize?: number
+}): Promise<MarketOutcomeAnalytics> {
+  const query = new URLSearchParams()
+  if (params.fromUtc) query.set('fromUtc', params.fromUtc)
+  if (params.toUtc) query.set('toUtc', params.toUtc)
+  if (params.marketCode) query.set('marketCode', params.marketCode)
+  if (params.minFavoriteOdds !== undefined) query.set('minFavoriteOdds', String(params.minFavoriteOdds))
+  if (params.maxFavoriteOdds !== undefined) query.set('maxFavoriteOdds', String(params.maxFavoriteOdds))
+  if (params.upsetThreshold !== undefined) query.set('upsetThreshold', String(params.upsetThreshold))
+  if (params.bookmakerId) query.set('bookmakerId', params.bookmakerId)
+  if (params.classification) query.set('classification', params.classification)
+  query.set('page', String(params.page ?? 1))
+  query.set('pageSize', String(params.pageSize ?? 50))
+  return apiFetch<MarketOutcomeAnalytics>(
+    '/api/v1/analytics/market-outcomes?' + query.toString(),
+  )
 }

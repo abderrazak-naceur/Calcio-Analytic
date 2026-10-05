@@ -1,4 +1,5 @@
 using CalcioAnalytic.Application.Abstractions.Clock;
+using CalcioAnalytic.Application.Abstractions.Features;
 using CalcioAnalytic.Application.Abstractions.Persistence;
 using CalcioAnalytic.Infrastructure.Persistence;
 using CalcioAnalytic.Infrastructure.Time;
@@ -28,6 +29,7 @@ public static class DependencyInjection
 
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
         services.AddScoped<IMatchRepository, MatchRepository>();
+        services.AddScoped<IPointInTimeFeatureStore, PointInTimeFeatureStore>();
         services.AddScoped<IProviderEntityMapRepository, ProviderEntityMapRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddSingleton<IClock, SystemClock>();

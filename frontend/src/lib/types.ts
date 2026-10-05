@@ -219,69 +219,11 @@ export interface DashboardSummary {
 export interface RecentMatch {
   id: string
   homeTeamId: string
-  homeTeamName: string
   awayTeamId: string
-  awayTeamName: string
   kickoffUtc: string
   status: MatchStatus
   homeScore: number | null
   awayScore: number | null
-}
-
-export interface ProviderCompetition {
-  externalId: string
-  name: string
-  countryName: string | null
-  tier: string | null
-}
-
-export interface ProviderSeason {
-  externalId: string
-  competitionExternalId: string
-  label: string
-  startDate: string | null
-  endDate: string | null
-}
-
-export interface SportmonksSeasonImportResult {
-  leagueId: string
-  seasonId: string
-  fixturesUpserted: number
-  completedFixturesWithOddsRequested: number
-  oddsRequestsAttempted: number
-  oddsSnapshotsInserted: number
-  duplicateOddsSnapshotsSkipped: number
-  demoOddsSnapshotsInserted: number
-  oddsWarning: string | null
-  catalog: {
-    competitionsUpserted: number
-    seasonsUpserted: number
-    teamsUpserted: number
-    bookmakersUpserted: number
-    marketsUpserted: number
-  }
-}
-
-export interface SportmonksBulkSeasonSkip {
-  leagueId: string
-  leagueName: string
-  reason: string
-}
-
-export interface SportmonksBulkSeasonImportResult {
-  seasonLabelOrId: string
-  leaguesImported: number
-  leaguesSkipped: number
-  fixturesUpserted: number
-  oddsSnapshotsInserted: number
-  demoOddsSnapshotsInserted: number
-  results: SportmonksSeasonImportResult[]
-  skipped: SportmonksBulkSeasonSkip[]
-}
-
-export interface DemoOddsSeedResult {
-  matchesProcessed: number
-  snapshotsInserted: number
 }
 
 /** A single data-quality check within a report. */
@@ -406,4 +348,76 @@ export interface HighOddsCatalogItem {
 export interface HighOddsCatalog {
   competitions: HighOddsCatalogItem[]
   bookmakers: HighOddsCatalogItem[]
+}
+
+
+export interface MarketOutcomeQuery {
+  fromUtc: string | null
+  toUtc: string | null
+  marketCode: string
+  minFavoriteOdds: number | null
+  maxFavoriteOdds: number | null
+  upsetThreshold: number
+  bookmakerId: string | null
+  classification: string | null
+  page: number
+  pageSize: number
+}
+
+export interface MarketOutcomeRow {
+  matchId: string
+  kickoffUtc: string
+  competitionId: string
+  competitionName: string
+  homeTeamId: string
+  homeTeamName: string
+  awayTeamId: string
+  awayTeamName: string
+  bookmakerId: string
+  bookmakerName: string
+  marketLineId: string
+  marketCode: string
+  line: number | null
+  favoriteSelection: string
+  favoriteOdds: number
+  favoriteStatus: string
+  classification: string
+  isUpset: boolean
+  winnerSelection: string | null
+  winnerOdds: number | null
+}
+
+export interface MarketOutcomeThresholdStat {
+  threshold: number
+  winnerCount: number
+  percentageOfFavoriteFailures: number | null
+}
+
+export interface MarketFailureOddsRange {
+  range: string
+  sampleSize: number
+  hitCount: number
+  missCount: number
+  upsetCount: number
+  failureRatePercentage: number | null
+}
+
+export interface MarketOutcomeSummary {
+  totalMarkets: number
+  hitCount: number
+  missCount: number
+  upsetCount: number
+  unknownCount: number
+  favoriteFailureRatePercentage: number | null
+  upsetThresholds: MarketOutcomeThresholdStat[]
+  favoriteOddsRanges: MarketFailureOddsRange[]
+}
+
+export interface MarketOutcomeAnalytics {
+  query: MarketOutcomeQuery
+  summary: MarketOutcomeSummary
+  results: MarketOutcomeRow[]
+  totalResults: number
+  page: number
+  pageSize: number
 }

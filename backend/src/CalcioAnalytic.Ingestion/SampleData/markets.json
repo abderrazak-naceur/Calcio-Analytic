@@ -10,5 +10,11 @@
     "name": "Over/Under 2.5 Goals",
     "code": "OU",
     "description": "Total full-time goals over or under 2.5."
+  },
+  {
+    "externalId": "btts",
+    "name": "Both Teams To Score",
+    "code": "BTTS",
+    "description": "Both teams to score at least one goal."
   }
 ]

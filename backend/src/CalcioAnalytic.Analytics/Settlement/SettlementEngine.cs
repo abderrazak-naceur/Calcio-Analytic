@@ -17,6 +17,10 @@ namespace CalcioAnalytic.Analytics.Settlement;
 /// others are <c>Lost</c>.
 /// </item>
 /// <item>
+/// BTTS: a line with selections named "Yes" and/or "No". Yes wins when both
+/// teams score at least one goal; No wins otherwise.
+/// </item>
+/// <item>
 /// Over/Under: a line with a numeric <see cref="SettlementMarketLine.Line"/>
 /// whose selections are named "Over"/"Under". Compare total goals to the line:
 /// total &gt; line =&gt; Over Won / Under Lost; total &lt; line =&gt; Over Lost /
@@ -37,6 +41,8 @@ public sealed class SettlementEngine : ISettlementEngine
     private const string Away = "Away";
     private const string Over = "Over";
     private const string Under = "Under";
+    private const string Yes = "Yes";
+    private const string No = "No";
 
     /// <inheritdoc />
     public IReadOnlyList<SelectionSettlement> Settle(SettlementInput input)
@@ -70,6 +76,10 @@ public sealed class SettlementEngine : ISettlementEngine
             else if (IsOverUnder(line))
             {
                 SettleOverUnder(results, line, totalGoals, line.Line!.Value);
+            }
+            else if (IsBtts(line))
+            {
+                SettleBtts(results, line, homeScore, awayScore);
             }
             else
             {
@@ -156,6 +166,47 @@ public sealed class SettlementEngine : ISettlementEngine
             {
                 status = SettlementStatus.Won;
             }
+
+            results.Add(new SelectionSettlement(line.MarketLineId, selection.SelectionId, status));
+        }
+    }
+
+    private static bool IsBtts(SettlementMarketLine line)
+    {
+        if (line.Selections.Count == 0)
+        {
+            return false;
+        }
+
+        var any = false;
+        foreach (var selection in line.Selections)
+        {
+            if (IsName(selection, Yes) || IsName(selection, No))
+            {
+                any = true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        return any;
+    }
+
+    private static void SettleBtts(
+        List<SelectionSettlement> results,
+        SettlementMarketLine line,
+        int homeScore,
+        int awayScore)
+    {
+        var bothTeamsScored = homeScore > 0 && awayScore > 0;
+
+        foreach (var selection in line.Selections)
+        {
+            var status = IsName(selection, Yes)
+                ? (bothTeamsScored ? SettlementStatus.Won : SettlementStatus.Lost)
+                : (bothTeamsScored ? SettlementStatus.Lost : SettlementStatus.Won);
 
             results.Add(new SelectionSettlement(line.MarketLineId, selection.SelectionId, status));
         }

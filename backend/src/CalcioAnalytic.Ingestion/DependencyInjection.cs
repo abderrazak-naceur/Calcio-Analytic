@@ -5,6 +5,7 @@ using CalcioAnalytic.Ingestion.Providers;
 using CalcioAnalytic.Ingestion.Providers.Mock;
 using CalcioAnalytic.Ingestion.Providers.Sportmonks;
 using CalcioAnalytic.Ingestion.Services;
+using CalcioAnalytic.Ingestion.Scraping;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -27,6 +28,7 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddSingleton<IProviderRegistry, ProviderRegistry>();
+        services.AddScraping();
         services.AddScoped<ICatalogIngestionService, CatalogIngestionService>();
         services.AddScoped<IMatchIngestionService, MatchIngestionService>();
         services.AddScoped<IOddsIngestionService, OddsIngestionService>();
@@ -34,24 +36,6 @@ public static class DependencyInjection
         services.AddScoped<ISettlementService, SettlementService>();
         services.AddScoped<IMatchAnalysisPersistenceService, MatchAnalysisPersistenceService>();
         services.AddScoped<IResultReconciliationService, ResultReconciliationService>();
-
-        return services;
-    }
-
-    /// <summary>
-    /// Registers the deterministic, embedded-resource backed <see cref="MockFileProvider"/>
-    /// as an <see cref="IProviderAdapter"/> (provider code "mock"). Additive and idempotent:
-    /// it is safe to call alongside <see cref="AddIngestion"/> and other provider registrations,
-    /// and only registers the mock adapter once.
-    /// </summary>
-    /// <param name="services">The service collection to add to.</param>
-    /// <returns>The same service collection, for chaining.</returns>
-    public static IServiceCollection AddMockProvider(this IServiceCollection services)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        var descriptor = ServiceDescriptor.Singleton<IProviderAdapter, MockFileProvider>();
-        services.TryAddEnumerable(descriptor);
 
         return services;
     }
@@ -71,6 +55,24 @@ public static class DependencyInjection
         });
         services.AddSingleton<IProviderAdapter>(serviceProvider =>
             serviceProvider.GetRequiredService<SportmonksProvider>());
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the deterministic, embedded-resource backed <see cref="MockFileProvider"/>
+    /// as an <see cref="IProviderAdapter"/> (provider code "mock"). Additive and idempotent:
+    /// it is safe to call alongside <see cref="AddIngestion"/> and other provider registrations,
+    /// and only registers the mock adapter once.
+    /// </summary>
+    /// <param name="services">The service collection to add to.</param>
+    /// <returns>The same service collection, for chaining.</returns>
+    public static IServiceCollection AddMockProvider(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        var descriptor = ServiceDescriptor.Singleton<IProviderAdapter, MockFileProvider>();
+        services.TryAddEnumerable(descriptor);
 
         return services;
     }

@@ -114,7 +114,7 @@ public sealed class FullSliceTests
         var db = verify.ServiceProvider.GetRequiredService<CalcioAnalyticDbContext>();
 
         // Match is Inter 2-1 Juventus (home win, 3 goals).
-        // 1X2: exactly one Won among Home/Draw/Away. Over/Under 2.5: Over Won.
+        // 1X2: exactly one Won among Home/Draw/Away. Over/Under 2.5: Over Won. BTTS Yes also wins.
         var settlements = await db.MarketSettlements
             .Where(s => s.MatchId == matchId)
             .ToListAsync();
@@ -124,6 +124,16 @@ public sealed class FullSliceTests
         Assert.Contains(settlements, s => s.Status == SettlementStatus.Lost);
         // No selection should be left Unknown for these supported markets.
         Assert.DoesNotContain(settlements, s => s.Status == SettlementStatus.Unknown);
+
+        var bttsLine = await (
+            from line in db.MarketLines
+            join market in db.Markets on line.MarketId equals market.Id
+            where line.MatchId == matchId && market.Code == "BTTS"
+            select line.Id).SingleAsync();
+        var btts = settlements.Where(s => s.MarketLineId == bttsLine).ToList();
+        Assert.Equal(2, btts.Count);
+        Assert.Contains(btts, s => s.Status == SettlementStatus.Won);
+        Assert.Contains(btts, s => s.Status == SettlementStatus.Lost);
     }
 
     [Fact]

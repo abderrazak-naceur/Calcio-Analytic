@@ -1,6 +1,7 @@
 using CalcioAnalytic.Domain.Analytics;
 using CalcioAnalytic.Domain.Catalog;
 using CalcioAnalytic.Domain.Common;
+using CalcioAnalytic.Domain.Features;
 using CalcioAnalytic.Domain.Matches;
 using CalcioAnalytic.Domain.Odds;
 using CalcioAnalytic.Domain.Settlement;
@@ -53,6 +54,7 @@ public class CalcioAnalyticDbContext : DbContext
     public DbSet<MatchStatistic> MatchStatistics => Set<MatchStatistic>();
     public DbSet<MatchEvent> MatchEvents => Set<MatchEvent>();
     public DbSet<MatchAnalysis> MatchAnalyses => Set<MatchAnalysis>();
+    public DbSet<MatchFeatureSnapshot> MatchFeatureSnapshots => Set<MatchFeatureSnapshot>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
