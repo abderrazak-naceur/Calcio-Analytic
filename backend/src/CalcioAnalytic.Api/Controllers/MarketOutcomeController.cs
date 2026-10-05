@@ -166,13 +166,13 @@ public sealed class MarketOutcomeController : ControllerBase
         var upsetCount = latest.Count(x => x.IsUpset);
         var unknownCount = latest.Count(x => x.Classification == "UNKNOWN");
         var decided = hitCount + missCount;
-        var failureRate = decided == 0 ? null : decimal.Round(missCount * 100m / decided, 2);
+        decimal? failureRate = decided == 0 ? null : decimal.Round(missCount * 100m / decided, 2);
 
         var paged = latest.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
         var query = new MarketOutcomeQueryDto(
             matchId,
-            from,
+            fromUtcBound,
             to,
             normalizedMarket,
             minFavoriteOdds,
