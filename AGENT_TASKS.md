@@ -87,7 +87,7 @@ These capabilities must be treated as first-class product requirements, using ex
 - [x] MARKET-011 Main Analysis Dashboard connected to market-outcome read API; the dashboard now surfaces live 1X2 Market vs Reality KPIs with period and upset-threshold controls.
 - [x] MARKET-012 Match Detail market-outcome and odds-history presentation. Market Reality is live in Match Detail; deeper odds-history presentation remains a separate data-depth enhancement.
 - [ ] MARKET-013 Daily Market Report.
-- [ ] MARKET-014 Data-quality visibility for missing/incomplete odds/results.
+- [x] MARKET-014 Data-quality visibility for missing/incomplete odds/results. Added global quality summary API and Data Quality dashboard for odds, results, settlements, duplicate snapshots and stale scheduled matches.
 
 ### P2 — SportMonks depth and historical coverage
 
@@ -130,7 +130,7 @@ Advanced models must be used to compare model probability vs market probability 
 4. ~~Implement Upcoming Analysis for today/2/7/14/30-day windows.~~ Done for the current 1X2 market slice.
 5. Complete dedicated Upsets view and richer dashboard/read models.
 6. Add Daily Market Report and scheduled jobs.
-7. Add data-quality visibility and historical backfill.
+7. Add historical backfill and provenance hardening; data-quality visibility is now available.
 8. Only then expand advanced model comparison and SaaS capabilities.
 
 ## Correct execution order

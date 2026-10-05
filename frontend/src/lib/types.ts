@@ -552,3 +552,15 @@ export interface DailyMarketReport {
     isUpset: boolean
   }>
 }
+
+export interface DataQualitySummary {
+  totalMatches: number
+  finishedMatches: number
+  missingOddsMatches: number
+  missingResults: number
+  missingSettlements: number
+  duplicateOddsMatches: number
+  staleScheduledMatches: number
+  qualityScorePercentage: number
+  generatedAtUtc: string
+}

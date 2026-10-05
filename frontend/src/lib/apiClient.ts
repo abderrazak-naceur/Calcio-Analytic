@@ -87,6 +87,7 @@ import type {
   MarketOutcomeAnalytics,
   UpcomingAnalysis,
   DailyMarketReport,
+  DataQualitySummary,
   MatchAnalysisReport,
   MatchDetail,
   MatchSummary,
@@ -372,6 +373,11 @@ export async function getMarketOutcomeAnalytics(params: {
   return apiFetch<MarketOutcomeAnalytics>(
     '/api/v1/analytics/market-outcomes?' + query.toString(),
   )
+}
+
+/** GET /api/v1/dataquality/summary. */
+export async function getDataQualitySummary(): Promise<DataQualitySummary> {
+  return apiFetch<DataQualitySummary>('/api/v1/dataquality/summary')
 }
 
 /** GET /api/v1/analytics/upcoming. */

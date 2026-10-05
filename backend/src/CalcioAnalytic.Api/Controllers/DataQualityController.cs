@@ -114,4 +114,59 @@ public sealed class DataQualityController : ControllerBase
 
         return Ok(DataQualityReportDto.FromReport(report));
     }
+
+    [HttpGet("summary")]
+    [ProducesResponseType(typeof(DataQualitySummaryDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<DataQualitySummaryDto>> GetSummary(CancellationToken ct)
+    {
+        var totalMatches = await _db.Matches.AsNoTracking().CountAsync(ct);
+        var finishedMatches = await _db.Matches.AsNoTracking()
+            .CountAsync(m => m.Status == Domain.Matches.MatchStatus.Finished
+                || m.Status == Domain.Matches.MatchStatus.Analyzed
+                || m.Status == Domain.Matches.MatchStatus.Reconciled
+                || m.Status == Domain.Matches.MatchStatus.SettlementPending, ct);
+
+        var missingOdds = await _db.Matches.AsNoTracking()
+            .Where(m => m.Status != Domain.Matches.MatchStatus.Scheduled
+                && !_db.OddsSnapshots.Any(o => o.MatchId == m.Id))
+            .CountAsync(ct);
+
+        var missingResults = await _db.Matches.AsNoTracking()
+            .CountAsync(m => (m.Status == Domain.Matches.MatchStatus.Finished
+                    || m.Status == Domain.Matches.MatchStatus.Analyzed
+                    || m.Status == Domain.Matches.MatchStatus.Reconciled)
+                && (m.HomeScore == null || m.AwayScore == null), ct);
+
+        var missingSettlements = await _db.Matches.AsNoTracking()
+            .CountAsync(m => (m.Status == Domain.Matches.MatchStatus.Finished
+                    || m.Status == Domain.Matches.MatchStatus.Analyzed
+                    || m.Status == Domain.Matches.MatchStatus.Reconciled)
+                && !_db.MarketSettlements.Any(s => s.MatchId == m.Id), ct);
+
+        var duplicateOddsMatches = await _db.OddsSnapshots.AsNoTracking()
+            .GroupBy(o => o.MatchId)
+            .Where(g => g.Count() > g.Select(x => x.PayloadHash).Distinct().Count())
+            .Select(g => g.Key)
+            .CountAsync(ct);
+
+        var staleCutoff = DateTime.UtcNow.AddDays(-2);
+        var staleScheduled = await _db.Matches.AsNoTracking()
+            .CountAsync(m => (m.Status == Domain.Matches.MatchStatus.Scheduled || m.Status == Domain.Matches.MatchStatus.PreMatch)
+                && m.KickoffUtc < staleCutoff, ct);
+
+        var issues = missingOdds + missingResults + missingSettlements + duplicateOddsMatches + staleScheduled;
+        var denominator = Math.Max(1, finishedMatches + totalMatches);
+        var score = decimal.Max(0m, decimal.Round(100m - issues * 100m / denominator, 2));
+
+        return Ok(new DataQualitySummaryDto(
+            totalMatches,
+            finishedMatches,
+            missingOdds,
+            missingResults,
+            missingSettlements,
+            duplicateOddsMatches,
+            staleScheduled,
+            score,
+            DateTime.UtcNow));
+    }
 }

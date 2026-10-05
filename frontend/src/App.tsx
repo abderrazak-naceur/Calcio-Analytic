@@ -13,6 +13,7 @@ import MarketOutcomes from './pages/MarketOutcomes'
 import UpcomingAnalysis from './pages/UpcomingAnalysis'
 import Upsets from './pages/Upsets'
 import DailyReport from './pages/DailyReport'
+import DataQuality from './pages/DataQuality'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/upcoming" element={<UpcomingAnalysis />} />
           <Route path="/upsets" element={<Upsets />} />
           <Route path="/daily-report" element={<DailyReport />} />
+          <Route path="/data-quality" element={<DataQuality />} />
           <Route path="/backtesting" element={<BacktestingLab />} />
         </Route>
       </Routes>
