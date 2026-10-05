@@ -86,6 +86,47 @@ export default function MarketOutcomes() {
             <Kpi label="Failure rate" value={data.summary.favoriteFailureRatePercentage ?? 0} suffix="%" />
           </div>
 
+          <Card title="Upset thresholds">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+              {data.summary.upsetThresholds.map((item) => (
+                <div key={item.threshold} className="rounded-lg border border-slate-800 bg-slate-950/60 p-3">
+                  <p className="text-xs text-slate-500">{item.threshold.toFixed(0)}+ winner odds</p>
+                  <p className="mt-1 text-xl font-semibold text-white">{item.winnerCount}</p>
+                  <p className="text-xs text-amber-400">{item.percentageOfFavoriteFailures ?? 0}% of failures</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card title="Favorite failure by odds range">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[700px] text-left text-sm">
+                <thead className="text-xs uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th className="pb-3">Favorite odds</th>
+                    <th className="pb-3">Sample</th>
+                    <th className="pb-3">Hits</th>
+                    <th className="pb-3">Misses</th>
+                    <th className="pb-3">Failure</th>
+                    <th className="pb-3">Upsets</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.summary.favoriteOddsRanges.map((item) => (
+                    <tr key={item.range} className="border-t border-slate-800">
+                      <td className="py-2 text-slate-200">{item.range}</td>
+                      <td className="py-2">{item.sampleSize}</td>
+                      <td className="py-2 text-green-400">{item.hitCount}</td>
+                      <td className="py-2 text-red-400">{item.missCount}</td>
+                      <td className="py-2">{item.failureRatePercentage ?? 0}%</td>
+                      <td className="py-2 text-amber-400">{item.upsetCount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
           <Card title="Historical outcomes">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[900px] text-left text-sm">

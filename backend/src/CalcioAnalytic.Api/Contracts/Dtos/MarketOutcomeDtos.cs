@@ -34,13 +34,28 @@ public sealed record MarketOutcomeRowDto(
     string? WinnerSelection,
     decimal? WinnerOdds);
 
+public sealed record MarketOutcomeThresholdStatDto(
+    decimal Threshold,
+    int WinnerCount,
+    decimal? PercentageOfFavoriteFailures);
+
+public sealed record MarketFailureOddsRangeDto(
+    string Range,
+    int SampleSize,
+    int HitCount,
+    int MissCount,
+    int UpsetCount,
+    decimal? FailureRatePercentage);
+
 public sealed record MarketOutcomeSummaryDto(
     int TotalMarkets,
     int HitCount,
     int MissCount,
     int UpsetCount,
     int UnknownCount,
-    decimal? FavoriteFailureRatePercentage);
+    decimal? FavoriteFailureRatePercentage,
+    IReadOnlyList<MarketOutcomeThresholdStatDto> UpsetThresholds,
+    IReadOnlyList<MarketFailureOddsRangeDto> FavoriteOddsRanges);
 
 public sealed record MarketOutcomeAnalyticsResponseDto(
     MarketOutcomeQueryDto Query,

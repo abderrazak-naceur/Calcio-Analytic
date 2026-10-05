@@ -387,6 +387,21 @@ export interface MarketOutcomeRow {
   winnerOdds: number | null
 }
 
+export interface MarketOutcomeThresholdStat {
+  threshold: number
+  winnerCount: number
+  percentageOfFavoriteFailures: number | null
+}
+
+export interface MarketFailureOddsRange {
+  range: string
+  sampleSize: number
+  hitCount: number
+  missCount: number
+  upsetCount: number
+  failureRatePercentage: number | null
+}
+
 export interface MarketOutcomeSummary {
   totalMarkets: number
   hitCount: number
@@ -394,6 +409,8 @@ export interface MarketOutcomeSummary {
   upsetCount: number
   unknownCount: number
   favoriteFailureRatePercentage: number | null
+  upsetThresholds: MarketOutcomeThresholdStat[]
+  favoriteOddsRanges: MarketFailureOddsRange[]
 }
 
 export interface MarketOutcomeAnalytics {

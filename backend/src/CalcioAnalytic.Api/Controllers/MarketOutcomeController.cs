@@ -176,13 +176,31 @@ public sealed class MarketOutcomeController : ControllerBase
             page,
             pageSize);
 
+        var thresholdStats = new[] { 5m, 6m, 7m, 8m, 10m }
+            .Select(threshold =>
+            {
+                var winnerCount = latest.Count(x =>
+                    x.Classification == "MISS" &&
+                    x.WinnerOdds.HasValue &&
+                    x.WinnerOdds.Value >= threshold);
+                return new MarketOutcomeThresholdStatDto(
+                    threshold,
+                    winnerCount,
+                    missCount == 0 ? null : decimal.Round(winnerCount * 100m / missCount, 2));
+            })
+            .ToList();
+
+        var favoriteOddsRanges = BuildFavoriteOddsRanges(latest);
+
         var summary = new MarketOutcomeSummaryDto(
             total,
             hitCount,
             missCount,
             upsetCount,
             unknownCount,
-            failureRate);
+            failureRate,
+            thresholdStats,
+            favoriteOddsRanges);
 
         return Ok(new MarketOutcomeAnalyticsResponseDto(
             query,
@@ -191,6 +209,42 @@ public sealed class MarketOutcomeController : ControllerBase
             total,
             page,
             pageSize));
+    }
+
+    private static IReadOnlyList<MarketFailureOddsRangeDto> BuildFavoriteOddsRanges(
+        IReadOnlyList<MarketOutcomeRowDto> rows)
+    {
+        var definitions = new (string Name, decimal Min, decimal? Max)[]
+        {
+            ("1.01–1.20", 1.01m, 1.20m),
+            ("1.21–1.40", 1.21m, 1.40m),
+            ("1.41–1.60", 1.41m, 1.60m),
+            ("1.61–1.80", 1.61m, 1.80m),
+            ("1.81–2.00", 1.81m, 2.00m),
+            ("2.01–2.50", 2.01m, 2.50m),
+            ("2.51–3.00", 2.51m, 3.00m),
+            ("3.01+", 3.01m, null),
+        };
+
+        return definitions.Select(definition =>
+        {
+            var bucket = rows.Where(row =>
+                row.FavoriteOdds >= definition.Min &&
+                (!definition.Max.HasValue || row.FavoriteOdds <= definition.Max.Value));
+            var list = bucket.ToList();
+            var hits = list.Count(row => row.Classification == "HIT");
+            var misses = list.Count(row => row.Classification == "MISS");
+            var upsets = list.Count(row => row.IsUpset);
+            var decided = hits + misses;
+
+            return new MarketFailureOddsRangeDto(
+                definition.Name,
+                list.Count,
+                hits,
+                misses,
+                upsets,
+                decided == 0 ? null : decimal.Round(misses * 100m / decided, 2));
+        }).ToList();
     }
 
     private sealed record RawMarketOutcomeRow(
