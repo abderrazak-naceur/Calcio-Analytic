@@ -86,6 +86,15 @@ export default function MarketOutcomes() {
             <Kpi label="Failure rate" value={data.summary.favoriteFailureRatePercentage ?? 0} suffix="%" />
           </div>
 
+          <Card title="Historical odds economics">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              <Kpi label="Implied probability" value={data.summary.impliedProbabilityPercentage ?? 0} suffix="%" />
+              <Kpi label="Actual hit rate" value={data.summary.actualProbabilityPercentage ?? 0} suffix="%" />
+              <Kpi label="Flat stake P/L" value={data.summary.profitUnits} suffix="u" />
+              <Kpi label="Flat stake ROI" value={data.summary.roiPercentage} suffix="%" />
+            </div>
+          </Card>
+
           <Card title="Upset thresholds">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
               {data.summary.upsetThresholds.map((item) => (
@@ -109,6 +118,10 @@ export default function MarketOutcomes() {
                     <th className="pb-3">Misses</th>
                     <th className="pb-3">Failure</th>
                     <th className="pb-3">Upsets</th>
+                    <th className="pb-3">Implied</th>
+                    <th className="pb-3">Actual</th>
+                    <th className="pb-3">P/L</th>
+                    <th className="pb-3">ROI</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -120,6 +133,10 @@ export default function MarketOutcomes() {
                       <td className="py-2 text-red-400">{item.missCount}</td>
                       <td className="py-2">{item.failureRatePercentage ?? 0}%</td>
                       <td className="py-2 text-amber-400">{item.upsetCount}</td>
+                      <td className="py-2">{item.impliedProbabilityPercentage ?? 0}%</td>
+                      <td className="py-2">{item.actualProbabilityPercentage ?? 0}%</td>
+                      <td className={item.profitUnits >= 0 ? 'py-2 text-green-400' : 'py-2 text-red-400'}>{item.profitUnits.toFixed(2)}u</td>
+                      <td className={item.roiPercentage >= 0 ? 'py-2 text-green-400' : 'py-2 text-red-400'}>{item.roiPercentage.toFixed(2)}%</td>
                     </tr>
                   ))}
                 </tbody>

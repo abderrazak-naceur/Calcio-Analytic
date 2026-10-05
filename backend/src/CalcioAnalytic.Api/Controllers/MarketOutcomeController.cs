@@ -198,6 +198,8 @@ public sealed class MarketOutcomeController : ControllerBase
             .ToList();
 
         var favoriteOddsRanges = BuildFavoriteOddsRanges(latest);
+        var overallStats = MarketOutcomeStatisticsCalculator.Calculate(
+            latest.Select(x => (x.FavoriteOdds, x.Classification == "HIT" ? (bool?)true : x.Classification == "MISS" ? false : null)));
 
         var summary = new MarketOutcomeSummaryDto(
             total,
@@ -207,7 +209,11 @@ public sealed class MarketOutcomeController : ControllerBase
             unknownCount,
             failureRate,
             thresholdStats,
-            favoriteOddsRanges);
+            favoriteOddsRanges,
+            overallStats.ImpliedProbabilityPercentage,
+            overallStats.ActualProbabilityPercentage,
+            overallStats.ProfitUnits,
+            overallStats.RoiPercentage);
 
         return Ok(new MarketOutcomeAnalyticsResponseDto(
             query,
@@ -243,6 +249,8 @@ public sealed class MarketOutcomeController : ControllerBase
             var misses = list.Count(row => row.Classification == "MISS");
             var upsets = list.Count(row => row.IsUpset);
             var decided = hits + misses;
+            var stats = MarketOutcomeStatisticsCalculator.Calculate(
+                list.Select(row => (row.FavoriteOdds, row.Classification == "HIT" ? (bool?)true : row.Classification == "MISS" ? false : null)));
 
             return new MarketFailureOddsRangeDto(
                 definition.Name,
@@ -250,7 +258,11 @@ public sealed class MarketOutcomeController : ControllerBase
                 hits,
                 misses,
                 upsets,
-                decided == 0 ? null : decimal.Round(misses * 100m / decided, 2));
+                decided == 0 ? null : decimal.Round(misses * 100m / decided, 2),
+                stats.ImpliedProbabilityPercentage,
+                stats.ActualProbabilityPercentage,
+                stats.ProfitUnits,
+                stats.RoiPercentage);
         }).ToList();
     }
 

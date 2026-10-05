@@ -81,7 +81,7 @@ These capabilities must be treated as first-class product requirements, using ex
 - [~] MARKET-005 1X2 historical market analysis. First historical read endpoint implemented; broader backfill/robustness remains.
 - [~] MARKET-006 Over/Under 1.5 / 2.5 / 3.5 analysis. Settlement/API path is generic; representative 2.5 fixture exists.
 - [~] MARKET-007 BTTS YES/NO analysis. Settlement and representative fixture added; historical aggregation remains.
-- [ ] MARKET-008 Historical odds-range statistics: sample, wins, losses, hit/miss rate, upset rate, implied vs actual probability, flat-stake P/L and ROI.
+- [x] MARKET-008 Historical odds-range statistics: sample, wins, losses, hit/miss rate, upset rate, implied vs actual probability, flat-stake P/L and ROI. Implemented for Market vs Reality with deterministic statistics tests and dashboard presentation.
 - [ ] MARKET-009 Upcoming analysis: today, tomorrow, 2/7/14/30 days using comparable historical situations.
 - [~] MARKET-010 Dedicated Market Failures and Upsets views. Market Failures route is live; dedicated Upsets view remains.
 - [~] MARKET-011 Main Analysis Dashboard connected to market-outcome read API; richer optimized production read models remain.

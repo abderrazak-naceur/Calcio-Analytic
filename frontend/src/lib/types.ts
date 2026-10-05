@@ -458,6 +458,10 @@ export interface MarketFailureOddsRange {
   missCount: number
   upsetCount: number
   failureRatePercentage: number | null
+  impliedProbabilityPercentage: number | null
+  actualProbabilityPercentage: number | null
+  profitUnits: number
+  roiPercentage: number
 }
 
 export interface MarketOutcomeSummary {
@@ -469,6 +473,10 @@ export interface MarketOutcomeSummary {
   favoriteFailureRatePercentage: number | null
   upsetThresholds: MarketOutcomeThresholdStat[]
   favoriteOddsRanges: MarketFailureOddsRange[]
+  impliedProbabilityPercentage: number | null
+  actualProbabilityPercentage: number | null
+  profitUnits: number
+  roiPercentage: number
 }
 
 export interface MarketOutcomeAnalytics {

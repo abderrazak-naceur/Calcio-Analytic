@@ -115,6 +115,11 @@ Post-kickoff prices must never be used as pre-match evidence.
 
 ## Historical analysis
 
+Historical market outcome statistics now expose sample size, wins/losses, favorite hit rate,
+average implied probability, actual hit rate, one-unit flat-stake profit/loss and ROI for
+favorite-odds ranges. The calculation excludes UNKNOWN outcomes and invalid odds and uses only
+pre-kickoff settled observations from a single bookmaker/market line.
+
 Users must be able to filter by:
 
 - date range;

@@ -46,7 +46,11 @@ public sealed record MarketFailureOddsRangeDto(
     int HitCount,
     int MissCount,
     int UpsetCount,
-    decimal? FailureRatePercentage);
+    decimal? FailureRatePercentage,
+    decimal? ImpliedProbabilityPercentage,
+    decimal? ActualProbabilityPercentage,
+    decimal ProfitUnits,
+    decimal RoiPercentage);
 
 public sealed record MarketOutcomeSummaryDto(
     int TotalMarkets,
@@ -56,7 +60,11 @@ public sealed record MarketOutcomeSummaryDto(
     int UnknownCount,
     decimal? FavoriteFailureRatePercentage,
     IReadOnlyList<MarketOutcomeThresholdStatDto> UpsetThresholds,
-    IReadOnlyList<MarketFailureOddsRangeDto> FavoriteOddsRanges);
+    IReadOnlyList<MarketFailureOddsRangeDto> FavoriteOddsRanges,
+    decimal? ImpliedProbabilityPercentage,
+    decimal? ActualProbabilityPercentage,
+    decimal ProfitUnits,
+    decimal RoiPercentage);
 
 public sealed record MarketOutcomeAnalyticsResponseDto(
     MarketOutcomeQueryDto Query,
