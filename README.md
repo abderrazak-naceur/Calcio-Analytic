@@ -69,6 +69,23 @@ Prerequisites: .NET 10 SDK, Node.js 20+, Python 3.11+, Docker.
    Health: `GET http://localhost:8080/health`
    OpenAPI: `http://localhost:8080/swagger`
 
+### Sportmonks import
+
+The dashboard can import subscribed leagues and seasons from Sportmonks Football
+API v3. Configure the API token as a .NET user secret (do not put it in a checked-in
+settings file or frontend environment variable):
+
+```powershell
+dotnet user-secrets set "Sportmonks:ApiToken" "<your-token>" --project .\backend\src\CalcioAnalytic.Api\CalcioAnalytic.Api.csproj
+```
+
+Restart the API, open the dashboard, select a league and season, and choose
+**Import season**. The import saves the season fixtures and requests standard
+pre-match odds for finished matches. Sportmonks requires its Odds add-on for
+odds endpoints. Standard odds are the available fixture prices, not a complete
+historical timeline of bookmaker movements; availability for old fixtures also
+depends on the leagues and seasons in the Sportmonks subscription.
+
 4. Run the Python analytics service:
 
    ```bash

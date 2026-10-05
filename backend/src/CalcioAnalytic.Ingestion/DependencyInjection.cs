@@ -3,6 +3,7 @@ using CalcioAnalytic.Application.Ingestion;
 using CalcioAnalytic.Application.Settlement;
 using CalcioAnalytic.Ingestion.Providers;
 using CalcioAnalytic.Ingestion.Providers.Mock;
+using CalcioAnalytic.Ingestion.Providers.Sportmonks;
 using CalcioAnalytic.Ingestion.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -51,6 +52,25 @@ public static class DependencyInjection
 
         var descriptor = ServiceDescriptor.Singleton<IProviderAdapter, MockFileProvider>();
         services.TryAddEnumerable(descriptor);
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the Sportmonks Football API v3 adapter.
+    /// The API token is read from the Sportmonks:ApiToken configuration key.
+    /// </summary>
+    public static IServiceCollection AddSportmonksProvider(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services.AddHttpClient<SportmonksProvider>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.sportmonks.com/v3/");
+            client.Timeout = TimeSpan.FromSeconds(60);
+        });
+        services.AddSingleton<IProviderAdapter>(serviceProvider =>
+            serviceProvider.GetRequiredService<SportmonksProvider>());
 
         return services;
     }

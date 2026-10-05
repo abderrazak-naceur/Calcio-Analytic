@@ -226,6 +226,39 @@ export interface RecentMatch {
   awayScore: number | null
 }
 
+export interface ProviderCompetition {
+  externalId: string
+  name: string
+  countryName: string | null
+  tier: string | null
+}
+
+export interface ProviderSeason {
+  externalId: string
+  competitionExternalId: string
+  label: string
+  startDate: string | null
+  endDate: string | null
+}
+
+export interface SportmonksSeasonImportResult {
+  leagueId: string
+  seasonId: string
+  fixturesUpserted: number
+  completedFixturesWithOddsRequested: number
+  oddsRequestsAttempted: number
+  oddsSnapshotsInserted: number
+  duplicateOddsSnapshotsSkipped: number
+  oddsWarning: string | null
+  catalog: {
+    competitionsUpserted: number
+    seasonsUpserted: number
+    teamsUpserted: number
+    bookmakersUpserted: number
+    marketsUpserted: number
+  }
+}
+
 /** A single data-quality check within a report. */
 export interface DataQualityCheck {
   code: string

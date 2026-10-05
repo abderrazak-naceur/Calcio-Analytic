@@ -61,6 +61,7 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddIngestion();
 builder.Services.AddMockProvider();
+builder.Services.AddSportmonksProvider();
 builder.Services.AddAnalytics();
 
 // OpenTelemetry tracing and metrics. Exports via OTLP only when an endpoint is

@@ -91,8 +91,11 @@ import type {
   OddsSnapshot,
   PatternQueryRequest,
   PatternResult,
+  ProviderCompetition,
+  ProviderSeason,
   RecentMatch,
   SimilarMatch,
+  SportmonksSeasonImportResult,
 } from './types'
 
 /**
@@ -107,6 +110,31 @@ async function apiPost<TResponse>(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
+}
+
+/** GET /api/v1/ingestion/sportmonks/leagues. */
+export async function getSportmonksLeagues(): Promise<ProviderCompetition[]> {
+  return apiFetch<ProviderCompetition[]>('/api/v1/ingestion/sportmonks/leagues')
+}
+
+/** GET /api/v1/ingestion/sportmonks/leagues/{leagueId}/seasons. */
+export async function getSportmonksSeasons(
+  leagueId: string,
+): Promise<ProviderSeason[]> {
+  return apiFetch<ProviderSeason[]>(
+    `/api/v1/ingestion/sportmonks/leagues/${encodeURIComponent(leagueId)}/seasons`,
+  )
+}
+
+/** POST /api/v1/ingestion/sportmonks/seasons/import. */
+export async function postSportmonksSeasonImport(
+  leagueId: string,
+  seasonId: string,
+): Promise<SportmonksSeasonImportResult> {
+  return apiPost<SportmonksSeasonImportResult>(
+    '/api/v1/ingestion/sportmonks/seasons/import',
+    { leagueId, seasonId },
+  )
 }
 
 /** GET /api/v1/matches — optionally filtered by status. */

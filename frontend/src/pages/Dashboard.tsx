@@ -9,15 +9,16 @@ import {
   getDashboardSummary,
   getHealth,
   getRecentMatches,
-  postIngestCatalog,
-  postIngestFixture,
-  postIngestOdds,
-  postIngestStatistics,
+  getSportmonksLeagues,
+  getSportmonksSeasons,
+  postSportmonksSeasonImport,
 } from '../lib/apiClient'
 import type {
   DashboardSummary,
-  IngestionRequest,
+  ProviderCompetition,
+  ProviderSeason,
   RecentMatch,
+  SportmonksSeasonImportResult,
 } from '../lib/types'
 
 type SummaryState =
@@ -33,31 +34,6 @@ type RecentState =
 type HealthState =
   | { kind: 'loading' }
   | { kind: 'healthy'; status: string }
-  | { kind: 'error'; message: string }
-
-const INGEST_BODY: IngestionRequest = {
-  providerCode: 'mock',
-  competitionExternalId: 'serie-a',
-  seasonExternalId: 'serie-a-2024-2025',
-  matchExternalId: 'match-001',
-}
-
-interface IngestStep {
-  label: string
-  run: (body: IngestionRequest) => Promise<unknown>
-}
-
-const INGEST_STEPS: readonly IngestStep[] = [
-  { label: 'Catalog', run: postIngestCatalog },
-  { label: 'Fixture', run: postIngestFixture },
-  { label: 'Odds', run: postIngestOdds },
-  { label: 'Statistics', run: postIngestStatistics },
-]
-
-type StepStatus =
-  | { kind: 'pending' }
-  | { kind: 'running' }
-  | { kind: 'success' }
   | { kind: 'error'; message: string }
 
 function formatTimestamp(iso: string): string {
@@ -81,10 +57,18 @@ function Dashboard() {
   const [summary, setSummary] = useState<SummaryState>({ kind: 'loading' })
   const [recent, setRecent] = useState<RecentState>({ kind: 'loading' })
   const [health, setHealth] = useState<HealthState>({ kind: 'loading' })
-  const [stepStatuses, setStepStatuses] = useState<StepStatus[]>(
-    INGEST_STEPS.map(() => ({ kind: 'pending' })),
-  )
-  const [ingesting, setIngesting] = useState(false)
+  const [leagues, setLeagues] = useState<ProviderCompetition[]>([])
+  const [seasons, setSeasons] = useState<ProviderSeason[]>([])
+  const [selectedLeagueId, setSelectedLeagueId] = useState('')
+  const [selectedSeasonId, setSelectedSeasonId] = useState('')
+  const [leagueError, setLeagueError] = useState<string | null>(null)
+  const [seasonError, setSeasonError] = useState<string | null>(null)
+  const [loadingLeagues, setLoadingLeagues] = useState(true)
+  const [loadingSeasons, setLoadingSeasons] = useState(false)
+  const [importingSeason, setImportingSeason] = useState(false)
+  const [importError, setImportError] = useState<string | null>(null)
+  const [importResult, setImportResult] =
+    useState<SportmonksSeasonImportResult | null>(null)
 
   const loadSummary = useCallback(async () => {
     setSummary({ kind: 'loading' })
@@ -122,29 +106,79 @@ function Dashboard() {
     void loadHealth()
   }, [loadSummary, loadRecent, loadHealth])
 
-  const runIngestion = useCallback(async () => {
-    setIngesting(true)
-    const statuses: StepStatus[] = INGEST_STEPS.map(() => ({ kind: 'pending' }))
-    setStepStatuses([...statuses])
+  useEffect(() => {
+    let active = true
+    setLoadingLeagues(true)
+    void getSportmonksLeagues()
+      .then((data) => {
+        if (!active) return
+        setLeagues(data)
+        setLeagueError(null)
+      })
+      .catch((error: unknown) => {
+        if (!active) return
+        setLeagueError(describeError(error))
+      })
+      .finally(() => {
+        if (active) setLoadingLeagues(false)
+      })
 
-    for (let i = 0; i < INGEST_STEPS.length; i += 1) {
-      statuses[i] = { kind: 'running' }
-      setStepStatuses([...statuses])
-      try {
-        await INGEST_STEPS[i].run(INGEST_BODY)
-        statuses[i] = { kind: 'success' }
-        setStepStatuses([...statuses])
-      } catch (error) {
-        statuses[i] = { kind: 'error', message: describeError(error) }
-        setStepStatuses([...statuses])
-        break
-      }
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!selectedLeagueId) {
+      setSeasons([])
+      setSelectedSeasonId('')
+      setSeasonError(null)
+      setLoadingSeasons(false)
+      return
     }
 
-    setIngesting(false)
-    await loadSummary()
-    await loadRecent()
-  }, [loadSummary, loadRecent])
+    let active = true
+    setLoadingSeasons(true)
+    setSeasons([])
+    setSelectedSeasonId('')
+    void getSportmonksSeasons(selectedLeagueId)
+      .then((data) => {
+        if (!active) return
+        setSeasons(data)
+        setSeasonError(null)
+      })
+      .catch((error: unknown) => {
+        if (!active) return
+        setSeasonError(describeError(error))
+      })
+      .finally(() => {
+        if (active) setLoadingSeasons(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [selectedLeagueId])
+
+  const importSeason = useCallback(async () => {
+    if (!selectedLeagueId || !selectedSeasonId) return
+    setImportingSeason(true)
+    setImportError(null)
+    setImportResult(null)
+    try {
+      const result = await postSportmonksSeasonImport(
+        selectedLeagueId,
+        selectedSeasonId,
+      )
+      setImportResult(result)
+      await loadSummary()
+      await loadRecent()
+    } catch (error) {
+      setImportError(describeError(error))
+    } finally {
+      setImportingSeason(false)
+    }
+  }, [loadRecent, loadSummary, selectedLeagueId, selectedSeasonId])
 
   return (
     <div className="space-y-6">
@@ -164,35 +198,107 @@ function Dashboard() {
         <RecentMatches state={recent} onRetry={() => void loadRecent()} />
       </Card>
 
-      <Card
-        title="Ingest demo data"
-        actions={
+      <Card title="Import Sportmonks season">
+        <p className="mb-4 text-sm text-slate-400">
+          Select a league and season to import its fixtures and available
+          pre-match odds for finished matches. Sportmonks Odds add-on is
+          required. Standard odds provide the available price snapshots, not
+          the complete historical movement timeline.
+        </p>
+
+        <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
+          <label className="block text-sm text-slate-300">
+            League
+            <select
+              value={selectedLeagueId}
+              onChange={(event) => setSelectedLeagueId(event.target.value)}
+              disabled={loadingLeagues || importingSeason}
+              className="mt-1 block w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-white disabled:opacity-60"
+            >
+              <option value="">
+                {loadingLeagues ? 'Loading leagues…' : 'Select a league'}
+              </option>
+              {leagues.map((league) => (
+                <option key={league.externalId} value={league.externalId}>
+                  {league.name}
+                  {league.countryName ? ` — ${league.countryName}` : ''}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block text-sm text-slate-300">
+            Season
+            <select
+              value={selectedSeasonId}
+              onChange={(event) => setSelectedSeasonId(event.target.value)}
+              disabled={!selectedLeagueId || loadingSeasons || importingSeason}
+              className="mt-1 block w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-white disabled:opacity-60"
+            >
+              <option value="">
+                {loadingSeasons
+                  ? 'Loading seasons…'
+                  : selectedLeagueId
+                    ? 'Select a season'
+                    : 'Select a league first'}
+              </option>
+              {seasons.map((season) => (
+                <option key={season.externalId} value={season.externalId}>
+                  {season.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
           <button
             type="button"
-            onClick={() => void runIngestion()}
-            disabled={ingesting}
-            className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-green-500 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={() => void importSeason()}
+            disabled={!selectedLeagueId || !selectedSeasonId || importingSeason}
+            className="rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-green-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {ingesting ? 'Running…' : 'Run ingestion'}
+            {importingSeason ? 'Importing season…' : 'Import season'}
           </button>
-        }
-      >
-        <p className="mb-4 text-sm text-slate-400">
-          Runs catalog → fixture → odds → statistics for provider{' '}
-          <code className="rounded bg-slate-800 px-1.5 py-0.5 text-slate-300">
-            mock
-          </code>{' '}
-          (Serie A 2024–2025, match-001).
-        </p>
-        <ol className="space-y-2">
-          {INGEST_STEPS.map((step, index) => (
-            <li key={step.label} className="flex items-center gap-3">
-              <StepIcon status={stepStatuses[index]} />
-              <span className="w-24 text-sm text-slate-200">{step.label}</span>
-              <StepMessage status={stepStatuses[index]} />
-            </li>
-          ))}
-        </ol>
+        </div>
+
+        {leagueError && (
+          <p className="mt-3 text-sm text-red-400">
+            Could not load Sportmonks leagues: {leagueError}. Check the local
+            Sportmonks API token configuration.
+          </p>
+        )}
+        {seasonError && (
+          <p className="mt-3 text-sm text-red-400">
+            Could not load seasons: {seasonError}
+          </p>
+        )}
+        {importingSeason && (
+          <p className="mt-4 text-sm text-amber-300">
+            Importing fixtures and querying odds for completed matches. This
+            may take several minutes for a full season.
+          </p>
+        )}
+        {importError && (
+          <p className="mt-4 text-sm text-red-400">
+            Season import failed: {importError}
+          </p>
+        )}
+        {importResult && (
+          <div className="mt-4 space-y-2 text-sm" role="status">
+            <p className="text-emerald-300">
+              Imported {importResult.fixturesUpserted} fixtures; requested odds
+              for {importResult.oddsRequestsAttempted} of{' '}
+              {importResult.completedFixturesWithOddsRequested} finished matches;
+              saved {importResult.oddsSnapshotsInserted} odds snapshots
+              {importResult.duplicateOddsSnapshotsSkipped > 0
+                ? ` (${importResult.duplicateOddsSnapshotsSkipped} duplicates skipped)`
+                : ''}
+              .
+            </p>
+            {importResult.oddsWarning && (
+              <p className="text-amber-300">{importResult.oddsWarning}</p>
+            )}
+          </div>
+        )}
       </Card>
     </div>
   )
@@ -350,40 +456,6 @@ function HealthChip({ state }: { state: HealthState }) {
       API unreachable
     </span>
   )
-}
-
-function StepIcon({ status }: { status: StepStatus }) {
-  const base = 'flex h-5 w-5 items-center justify-center rounded-full text-xs'
-  switch (status.kind) {
-    case 'running':
-      return (
-        <span
-          className="h-4 w-4 animate-spin rounded-full border-2 border-slate-600 border-t-green-500"
-          aria-hidden="true"
-        />
-      )
-    case 'success':
-      return (
-        <span className={`${base} bg-green-500/20 text-green-400`}>✓</span>
-      )
-    case 'error':
-      return <span className={`${base} bg-red-500/20 text-red-400`}>✕</span>
-    default:
-      return <span className={`${base} bg-slate-700/50 text-slate-500`}>•</span>
-  }
-}
-
-function StepMessage({ status }: { status: StepStatus }) {
-  switch (status.kind) {
-    case 'running':
-      return <span className="text-sm text-slate-400">Running…</span>
-    case 'success':
-      return <span className="text-sm text-green-400">Done</span>
-    case 'error':
-      return <span className="text-sm text-red-400">{status.message}</span>
-    default:
-      return <span className="text-sm text-slate-500">Pending</span>
-  }
 }
 
 function describeError(error: unknown): string {

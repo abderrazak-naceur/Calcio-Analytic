@@ -45,6 +45,7 @@ services:
       ConnectionStrings__Postgres: ${ConnectionStrings__Postgres}
       ConnectionStrings__Redis: ${ConnectionStrings__Redis}
       ANALYTICS_BASE_URL: ${ANALYTICS_BASE_URL}
+      Sportmonks__ApiToken: ${Sportmonks__ApiToken:-}
     ports:
       - "${API_PORT}:8080"
     networks:
