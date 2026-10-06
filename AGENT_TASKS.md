@@ -65,6 +65,9 @@ ELO / Poisson / Dixon-Coles restano **Advanced Analytics / Phase 2** e non devon
 - [x] TASK-021 Implement SimilarMatchEngine.
 - [~] TASK-022 Implement optimized read models.
 - [x] TASK-023 Implement analytics APIs.
+- [x] TASK-024 Dashboard — connected to market-outcome read API with live Market vs Reality KPIs and period/upset-threshold controls.
+- [x] TASK-025 Match list — routes to `/matches` with ingestion entry point.
+- [x] TASK-026 Match detail — routes to `/matches/:id` with Market Reality market-outcome and odds-history presentation.
 - [~] TASK-027 Odds movement explorer.
 - [~] TASK-028 Bookmaker comparison explorer.
 - [x] TASK-029 Historical pattern explorer.
