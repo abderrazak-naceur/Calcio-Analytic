@@ -94,3 +94,14 @@ Use stable error codes:
 - ANALYSIS_NOT_READY
 - RATE_LIMITED
 - INTERNAL_ERROR
+
+## API key security
+
+Write endpoints may require an API key credential. Customer keys must never
+be persisted as plaintext: generation returns the secret once, while the
+persisted representation contains a SHA-256 hash, a short key prefix, scopes
+and revocation/audit timestamps. Validation uses fixed-time comparison and
+rejects revoked keys. The current implementation retains the legacy
+configuration-key path for existing local deployments; PostgreSQL-backed
+customer key CRUD, tenant association, quotas and full audit history remain
+an explicit follow-up.

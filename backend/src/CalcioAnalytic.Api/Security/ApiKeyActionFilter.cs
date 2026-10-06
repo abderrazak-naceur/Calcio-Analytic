@@ -17,12 +17,16 @@ public sealed class ApiKeyActionFilter : IAsyncActionFilter
     private const string ProtectedPathPrefix = "/api/v1/ingestion";
 
     private readonly IOptionsMonitor<ApiKeyOptions> _options;
+    private readonly IApiKeyValidator _validator;
 
     /// <summary>Initializes the filter with a monitor over the API-key options.</summary>
     /// <param name="options">The API-key options monitor.</param>
-    public ApiKeyActionFilter(IOptionsMonitor<ApiKeyOptions> options)
+    public ApiKeyActionFilter(
+        IOptionsMonitor<ApiKeyOptions> options,
+        IApiKeyValidator validator)
     {
         _options = options;
+        _validator = validator;
     }
 
     /// <summary>
@@ -44,7 +48,7 @@ public sealed class ApiKeyActionFilter : IAsyncActionFilter
 
         if (options.Enabled && isProtected)
         {
-            if (!IsAuthorized(context.HttpContext, options))
+            if (!await IsAuthorizedAsync(context.HttpContext, options))
             {
                 context.Result = new UnauthorizedResult();
                 return;
@@ -54,13 +58,8 @@ public sealed class ApiKeyActionFilter : IAsyncActionFilter
         await next();
     }
 
-    private static bool IsAuthorized(HttpContext httpContext, ApiKeyOptions options)
+    private async ValueTask<bool> IsAuthorizedAsync(HttpContext httpContext, ApiKeyOptions options)
     {
-        if (options.Keys is null || options.Keys.Length == 0)
-        {
-            return false;
-        }
-
         if (!httpContext.Request.Headers.TryGetValue(options.HeaderName, out var provided))
         {
             return false;
@@ -72,6 +71,8 @@ public sealed class ApiKeyActionFilter : IAsyncActionFilter
             return false;
         }
 
-        return options.Keys.Any(k => string.Equals(k, key, StringComparison.Ordinal));
+        var record = await _validator.ValidateAsync(key, httpContext.RequestAborted);
+        return record is not null
+            && record.Scopes.Contains("ingestion:write", StringComparer.OrdinalIgnoreCase);
     }
 }

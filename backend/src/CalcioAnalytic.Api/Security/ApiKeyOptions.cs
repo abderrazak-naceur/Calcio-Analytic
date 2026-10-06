@@ -19,6 +19,11 @@ public sealed class ApiKeyOptions
     /// <summary>The request header carrying the API key. Defaults to <c>X-Api-Key</c>.</summary>
     public string HeaderName { get; set; } = "X-Api-Key";
 
-    /// <summary>The set of accepted API keys. Empty by default.</summary>
+    /// <summary>The set of legacy accepted API keys. Empty by default.</summary>
+    /// <remarks>
+    /// Retained for backward compatibility with local/dev configuration. New
+    /// customer keys must be persisted as hashes and are resolved through
+    /// <see cref="IApiKeyValidator"/>.
+    /// </remarks>
     public string[] Keys { get; set; } = Array.Empty<string>();
 }

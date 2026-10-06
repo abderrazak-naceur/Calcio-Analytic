@@ -107,7 +107,7 @@ These capabilities must be treated as first-class product requirements, using ex
 - [x] TASK-035 Backtesting engine.
 - [x] TASK-036 OpenTelemetry dashboards. Added an OTLP collector, Prometheus and Grafana Compose stack with a provisioned operations dashboard using real ASP.NET Core/runtime telemetry; domain counters remain additive as instrumentation is introduced.
 - [ ] TASK-037 Partition large tables.
-- [~] TASK-038 Customer API and API keys.
+- [~] TASK-038 Customer API and API keys. Added secure API-key generation/validation primitives (SHA-256 hash at rest, fixed-time comparison, scopes and revocation metadata) and replaced direct raw-key comparison in the ingestion filter. Full persisted customer/API-key CRUD and tenant/audit quota management still require PostgreSQL-backed implementation and end-to-end verification.
 - [~] TASK-039 AI-generated descriptive summaries. Added an opt-in OpenAI-compatible LLM provider with strict JSON/guardrail prompting, provider/model provenance and deterministic fallback; existing UI remains compatible. Python runtime dependencies are not installed on this workstation, so the pytest suite still needs a CI/analytics-environment verification before marking DONE.
 - [x] TASK-040 High Odds Intelligence.
 

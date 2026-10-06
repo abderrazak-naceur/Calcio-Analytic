@@ -15,6 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 // API-key authentication options (disabled by default; see appsettings.json).
 builder.Services.Configure<ApiKeyOptions>(
     builder.Configuration.GetSection(ApiKeyOptions.SectionName));
+builder.Services.AddSingleton<ApiKeyCredentialService>();
+builder.Services.AddSingleton<IApiKeyValidator, ApiKeyValidator>();
 
 // MVC controllers. Serialize enums as their string names to keep the JSON
 // contract stable and human-readable. A global action filter enforces API-key
