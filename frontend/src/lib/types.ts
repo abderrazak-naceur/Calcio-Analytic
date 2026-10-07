@@ -14,7 +14,9 @@ export interface MatchSummary {
   competitionId: string
   seasonId: string
   homeTeamId: string
+  homeTeamName: string
   awayTeamId: string
+  awayTeamName: string
   kickoffUtc: string
   status: MatchStatus
   homeScore: number | null
