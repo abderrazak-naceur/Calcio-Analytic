@@ -51,8 +51,8 @@ function MatchList() {
 
   const columns: ReadonlyArray<Column<MatchSummary>> = [
     { header: 'Kickoff', render: (m) => formatKickoff(m.kickoffUtc) },
-    { header: 'Home', render: (m) => m.homeTeamId },
-    { header: 'Away', render: (m) => m.awayTeamId },
+    { header: 'Home', render: (m) => m.homeTeamName },
+    { header: 'Away', render: (m) => m.awayTeamName },
     {
       header: 'Score',
       render: (m) => formatScore(m),
