@@ -190,7 +190,8 @@ public sealed class OddsIngestionService : IOddsIngestionService
                     var bookmakerTimestampUtc = snapshot.BookmakerTimestamp.UtcDateTime;
                     var providerTimestampUtc = snapshot.ProviderTimestamp.UtcDateTime;
 
-                    var hash = snapshot.RawPayloadHash ?? ComputeSelectionHash(
+                    var hash = ComputeSelectionHash(
+                        snapshot.RawPayloadHash,
                         snapshot.BookmakerExternalId,
                         snapshot.MatchExternalId,
                         line,
@@ -355,6 +356,7 @@ public sealed class OddsIngestionService : IOddsIngestionService
     /// snapshots collapse to one row.
     /// </summary>
     private static string ComputeSelectionHash(
+        string? rawPayloadHash,
         string bookmakerExternalId,
         string matchExternalId,
         ProviderMarketLineDto line,
@@ -365,6 +367,7 @@ public sealed class OddsIngestionService : IOddsIngestionService
         var marketLineKey = $"{line.MarketExternalId}:{lineValue}:{line.Period ?? string.Empty}";
         var payload = string.Join(
             '|',
+            rawPayloadHash ?? string.Empty,
             bookmakerExternalId,
             matchExternalId,
             marketLineKey,
