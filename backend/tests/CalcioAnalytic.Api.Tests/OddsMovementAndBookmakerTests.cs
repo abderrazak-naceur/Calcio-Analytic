@@ -233,7 +233,7 @@ public sealed class OddsMovementAndBookmakerTests
 
         var result = await controller.GetBookmakers(matchId, CancellationToken.None);
         var ok = Assert.IsType<OkObjectResult>(result.Result);
-        var dispersions = Assert.IsType<IReadOnlyList<BookmakerDispersionDto>>(ok.Value);
+        var dispersions = Assert.IsAssignableFrom<IReadOnlyList<BookmakerDispersionDto>>(ok.Value);
 
         Assert.NotEmpty(dispersions);
 
@@ -259,7 +259,7 @@ public sealed class OddsMovementAndBookmakerTests
 
         var result = await controller.GetMovement(bogusId, CancellationToken.None);
         var ok = Assert.IsType<OkObjectResult>(result.Result);
-        var movements = Assert.IsType<IReadOnlyList<OddsMovementDto>>(ok.Value);
+        var movements = Assert.IsAssignableFrom<IReadOnlyList<OddsMovementDto>>(ok.Value);
 
         Assert.Empty(movements);
     }
@@ -274,7 +274,7 @@ public sealed class OddsMovementAndBookmakerTests
 
         var result = await controller.GetBookmakers(bogusId, CancellationToken.None);
         var ok = Assert.IsType<OkObjectResult>(result.Result);
-        var dispersions = Assert.IsType<IReadOnlyList<BookmakerDispersionDto>>(ok.Value);
+        var dispersions = Assert.IsAssignableFrom<IReadOnlyList<BookmakerDispersionDto>>(ok.Value);
 
         Assert.Empty(dispersions);
     }
