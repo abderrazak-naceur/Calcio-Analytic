@@ -66,6 +66,11 @@ public sealed class IngestionPipelineTests
         Assert.NotEqual(Guid.Empty, match.HomeTeamId);
         Assert.NotEqual(Guid.Empty, match.AwayTeamId);
         Assert.NotEqual(match.HomeTeamId, match.AwayTeamId);
+
+        var homeTeam = await db.Teams.SingleAsync(t => t.Id == match.HomeTeamId);
+        var awayTeam = await db.Teams.SingleAsync(t => t.Id == match.AwayTeamId);
+        Assert.Equal("FC Internazionale Milano", homeTeam.Name);
+        Assert.Equal("Juventus FC", awayTeam.Name);
     }
 
     [Fact]

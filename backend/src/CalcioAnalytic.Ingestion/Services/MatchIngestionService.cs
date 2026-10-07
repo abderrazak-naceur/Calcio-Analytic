@@ -87,15 +87,19 @@ public sealed class MatchIngestionService : IMatchIngestionService
         ArgumentException.ThrowIfNullOrWhiteSpace(seasonExternalId);
 
         var fixtures = _registry.Get<IFixtureProvider>(providerCode);
+        var football = _registry.Get<IFootballProvider>(providerCode);
         var provider = await EnsureProviderAsync(providerCode, ct).ConfigureAwait(false);
         var helper = BuildHelper(provider.Id);
+
+        var teamLookup = (await football.GetTeamsAsync(competitionExternalId, seasonExternalId, ct).ConfigureAwait(false))
+            .ToDictionary(t => t.ExternalId, StringComparer.Ordinal);
 
         var dtos = await fixtures.GetFixturesAsync(competitionExternalId, seasonExternalId, ct).ConfigureAwait(false);
 
         var ids = new List<Guid>();
         foreach (var dto in dtos)
         {
-            var id = await UpsertMatchAsync(provider.Id, helper, dto, ct).ConfigureAwait(false);
+            var id = await UpsertMatchAsync(provider.Id, helper, dto, teamLookup, ct).ConfigureAwait(false);
             ids.Add(id);
         }
 
@@ -134,7 +138,18 @@ public sealed class MatchIngestionService : IMatchIngestionService
         var provider = await EnsureProviderAsync(providerCode, ct).ConfigureAwait(false);
         var helper = BuildHelper(provider.Id);
 
-        var id = await UpsertMatchAsync(provider.Id, helper, dto, ct).ConfigureAwait(false);
+        IReadOnlyDictionary<string, ProviderTeamDto> teamLookup = new Dictionary<string, ProviderTeamDto>(StringComparer.Ordinal);
+        if (!string.IsNullOrWhiteSpace(dto.SeasonExternalId))
+        {
+            var football = _registry.Get<IFootballProvider>(providerCode);
+            teamLookup = (await football.GetTeamsAsync(
+                dto.CompetitionExternalId,
+                dto.SeasonExternalId,
+                ct).ConfigureAwait(false))
+                .ToDictionary(t => t.ExternalId, StringComparer.Ordinal);
+        }
+
+        var id = await UpsertMatchAsync(provider.Id, helper, dto, teamLookup, ct).ConfigureAwait(false);
         await _unitOfWork.SaveChangesAsync(ct).ConfigureAwait(false);
         return id;
     }
@@ -146,6 +161,7 @@ public sealed class MatchIngestionService : IMatchIngestionService
         Guid providerId,
         CatalogUpsertHelper helper,
         ProviderMatchDto dto,
+        IReadOnlyDictionary<string, ProviderTeamDto> teamLookup,
         CancellationToken ct)
     {
         // Resolve-or-create the referenced catalog entities so FKs are valid.
@@ -154,8 +170,8 @@ public sealed class MatchIngestionService : IMatchIngestionService
 
         var seasonId = await ResolveSeasonAsync(providerId, helper, dto, ct).ConfigureAwait(false);
 
-        var homeTeamId = await ResolveTeamAsync(providerId, helper, dto.HomeTeamExternalId, ct).ConfigureAwait(false);
-        var awayTeamId = await ResolveTeamAsync(providerId, helper, dto.AwayTeamExternalId, ct).ConfigureAwait(false);
+        var homeTeamId = await ResolveTeamAsync(providerId, helper, dto.HomeTeamExternalId, teamLookup, ct).ConfigureAwait(false);
+        var awayTeamId = await ResolveTeamAsync(providerId, helper, dto.AwayTeamExternalId, teamLookup, ct).ConfigureAwait(false);
 
         var status = MapStatus(dto.Status);
         var kickoffUtc = dto.KickoffUtc.UtcDateTime;
@@ -242,9 +258,17 @@ public sealed class MatchIngestionService : IMatchIngestionService
         Guid providerId,
         CatalogUpsertHelper helper,
         string teamExternalId,
+        IReadOnlyDictionary<string, ProviderTeamDto> teamLookup,
         CancellationToken ct)
-        => helper.UpsertTeamAsync(
+    {
+        if (teamLookup.TryGetValue(teamExternalId, out var team))
+        {
+            return helper.UpsertTeamAsync(team, ct);
+        }
+
+        return helper.UpsertTeamAsync(
             new ProviderTeamDto(teamExternalId, teamExternalId, null, null, null), ct);
+    }
 
     private async Task<Provider> EnsureProviderAsync(string providerCode, CancellationToken ct)
     {
